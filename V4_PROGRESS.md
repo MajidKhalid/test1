@@ -17,10 +17,10 @@
 ## Phase A — structure, content, bug fixes
 
 ### ① Deletions and restructure (brief sections 4, 7)
-- [ ] 4 · Leadership Hub: scan for unique load-bearing content (list for Majid if any), then delete `SPARK_Leadership_Hub.html`; remove Hub tile "08 · FOR LEADERSHIP", rail links, deep links, cross-references
-- [ ] 7 · Three Faces page: create new page (proposed name pending) with chapters Innovator / End User / Leadership; built on spark-identity
-- [ ] 7 · Retire "THE TWO FACES" rail group; Admin Guide out of public nav (file stays in repo); Governance Command Centre linked from ch.3
-- [ ] 7 · Hub rail, tiles, cross-links updated across the set
+- [x] 4 · Leadership Hub: scanned (7 unique items listed for Majid in change report: L6 demand table, L6 KPI/funnel numbers, L6 leadership-call flags, L7 newer three-decisions set incl. AI-003 correction ask [survives as CLAUDE.md open thread 4], L0 "Launched" status chip, full formal-AR leadership narrative, 2 punch lines); file deleted; only inbound refs were Hub-internal, all removed
+- [x] 7 · Three Faces page: `SPARK_Three_Faces.html` created (name shipped: "The three faces of SPARK"; alternates for Majid: "SPARK, three ways" / "Who SPARK serves"). Verify green incl. --lang + embedded. NOTE: ch.1 journey strip + ch.2 chat mock are first-pass; upgrade to the ref1-adapted animation + faithful Nawaf mirror AFTER Portal rework (dependency noted in brief order deviation)
+- [x] 7 · "THE TWO FACES" rail group retired; Admin Guide out of public nav (file stays); Command Centre out of rail/tiles, linked from Three Faces ch.3 (target _blank)
+- [x] 7 · Hub rail, tiles (6, renumbered), names map, iframes updated; Hub home copy now three-faces; Hub visible text em-dash-free; old #lead/#guide/#centre deep links fall back to home (same pattern as retired #portal)
 
 ### ② Customer Portal (brief section 3)
 - [ ] 3.1 · Cut framework-led opening; one quiet trust line; remove current hero animation
