@@ -53,15 +53,17 @@
 ### ④ How It Works (brief section 8) — verify green (28/28 rv, embedded)
 - [x] 8 · Cover gains two-offerings cards (playground Live · V1 / LLM service Beta · Phase 2 dashed+greyed) + V1/V2/V3 plan line + three-faces line linking SPARK_Three_Faces.html; engine figure carries "Beta · Phase 2 · with V2" chip; flow demo now nested rings (KSA outer + MoEnergy inner, internet outside both); narration/notes updated; touched copy em-dash-free. No framework-first copy existed; nothing contradicts the new Portal opening
 
-### ⑤ Global sweep (brief section 2) — last, across the surviving set
-- [ ] 2.1 · Em dash scrub, all user-visible text, both languages (grep = 0 at ship)
-- [ ] 2.2 · Language pass (plain professional English, jargon explained)
-- [ ] 2.3 · Global EN/AR switcher site-wide (same fixed position; per-page buttons removed)
-- [ ] 2.4 · Favicon on every surviving page (data URI)
-- [ ] 2.5 · Sidebar hierarchy fix (rail vs scrollspy distinct active states) everywhere
-- [ ] 2.6 · Anchor offset / scroll-margin-top check on all pages
-- [ ] 2.8 · Both offerings + Beta · Phase 2 badge everywhere the service is described; "approved to Ministry requirements" wording guard
-- [ ] 2.9 · Launch announcements: em dash scrub (30), plain-language pass both languages, Phase-1 copy aligned with 6.10 (V1 now, all IT staff, immediate start); [PORTAL-LINK] kept
+### ⑤ Global sweep (brief section 2) — DONE via 9-agent workflow + orchestrator re-verification (all green)
+- [x] 2.1 · Em dash scrub complete: census 0 across all 10 HTML files (was ~398 remaining after the reworks); en dashes in numeric ranges kept
+- [x] 2.2 · Light language pass done during scrubbing (no wholesale rewrites)
+- [x] 2.3 · EN/AR switcher site-wide: Brief (~270 new AR strings), How It Works, Automation Strategy (124), Command Centre (84 + JS I18N dict + rerender), Hub (rail/tiles/crumb) now fully bilingual; Portal/Register/Three Faces already were. Admin Guide stays EN (internal). Announcements are side-by-side bilingual by design. NOTE FOR MAJID: all new Arabic is fresh MSA needing native review (open thread 0a widened)
+- [x] 2.4 · Favicon on every page (Register's data-URI line copied verbatim)
+- [x] 2.5 · Scrollspy active = accent bar + weight on every sidebar page; Hub rail keeps the filled pill (two levels now distinct)
+- [x] 2.6 · scroll-margin-top added per page (12px fixed-sidebar pages; sticky-header pages per height)
+- [x] 2.7 · Google Fonts CDN links REMOVED everywhere; IBM Plex Sans Arabic embedded base64 (files grew accordingly). ONE remaining CDN exception: Command Centre's pre-existing SheetJS script for the optional workbook drop (v3 carry-over, degrades gracefully; documented for Majid)
+- [x] 2.8 · Audited set-wide; offerings + Beta · Phase 2 present wherever the service is described (portal, brief, how-it-works, three faces, register FAQ)
+- [x] 2.9 · Announcements: 30→0 em dashes, plain-language pass EN+AR, Phase 1 aligned with the V1-now ask (V1/V2 rendered as النسخة الأولى/الثانية), [PORTAL-LINK] + clipboard mechanics intact
+- Sweep incidents: Admin Guide agent ran a transient repo-wide git stash/pop (restored cleanly; independent re-verification of all 10 files passed afterward). Portal .scene svg + all diagram SVGs pinned direction:ltr for deterministic RTL bounds
 
 ## Phase B — visual layer (brief section 9; only after Phase A verifies green)
 - [ ] 9.1 · Motion foundation (floating-artifact kit, pointer-tilt/scroll-parallax) on every surviving page
