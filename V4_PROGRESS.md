@@ -50,8 +50,8 @@
 - [x] 6.11 · Objections block removed
 - [x] 6.12 · Deliverable index removed (clause table in 05 untouched)
 
-### ④ How It Works (brief section 8)
-- [ ] 8 · Revamped: two offerings + Beta badge, hub-and-spoke engine, MoEnergy-boundary sovereignty, three faces, V1/V2/V3 plan; contradictions with new Portal opening removed
+### ④ How It Works (brief section 8) — verify green (28/28 rv, embedded)
+- [x] 8 · Cover gains two-offerings cards (playground Live · V1 / LLM service Beta · Phase 2 dashed+greyed) + V1/V2/V3 plan line + three-faces line linking SPARK_Three_Faces.html; engine figure carries "Beta · Phase 2 · with V2" chip; flow demo now nested rings (KSA outer + MoEnergy inner, internet outside both); narration/notes updated; touched copy em-dash-free. No framework-first copy existed; nothing contradicts the new Portal opening
 
 ### ⑤ Global sweep (brief section 2) — last, across the surviving set
 - [ ] 2.1 · Em dash scrub, all user-visible text, both languages (grep = 0 at ship)

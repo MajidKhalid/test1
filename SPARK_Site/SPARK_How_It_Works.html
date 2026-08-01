@@ -182,15 +182,26 @@ html.embedded .nav .dg,html.embedded .nav .foot{display:none}
       </div>
       <div style="background:rgba(254,115,74,.12);border:1px solid rgba(254,115,74,.42);border-radius:14px;padding:16px 20px">
         <b style="color:#FFB699">Q3 · An API key per person?</b>
-        <p style="font-size:13.5px;color:#D7E6F5;margin:6px 0 0"><b>NO — not in v1, and not the way it sounds.</b> The model server has no built-in keys or logins. Per-person keys are a service you would have to build. Attribution comes from <b>projects</b> instead — and that is what showback and the register actually need. Section 03 explains honestly what this does and doesn’t give you.</p>
+        <p style="font-size:13.5px;color:#D7E6F5;margin:6px 0 0"><b>NO, not in v1, and not the way it sounds.</b> The model server has no built-in keys or logins. Per-person keys are a service you would have to build. Attribution comes from <b>projects</b> instead, and that is what showback and the register actually need. Section 03 explains honestly what this does and doesn’t give you.</p>
       </div>
     </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:50em;margin-top:18px">
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 18px">
+        <span style="display:inline-block;font-size:10.5px;font-weight:700;color:#7FE0A8;border:1px solid rgba(127,224,168,.5);border-radius:12px;padding:2px 10px">Live · V1</span>
+        <p style="font-size:13px;color:#D7E6F5;margin:8px 0 0"><b>The governed GCP playground.</b> An isolated project per use case: compute, storage, and services, with or without AI. Open now.</p>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.25);border-radius:14px;padding:14px 18px;opacity:.85">
+        <span style="display:inline-block;font-size:10.5px;font-weight:700;color:#B7C0D1;border:1px dashed rgba(183,192,209,.6);border-radius:12px;padding:2px 10px">Beta · Phase 2</span>
+        <p style="font-size:13px;color:#B9C8DC;margin:8px 0 0"><b>LLM as a service on Ministry GPUs.</b> Models approved to Ministry requirements, one shared engine for every use case. Arrives with V2; this page explains its architecture in depth.</p>
+      </div>
+    </div>
+    <p style="font-size:12.5px;color:#8FA9C8;max-width:50em;margin-top:14px">The plan: <b style="color:#D7E6F5">V1</b> opens now with the playground · <b style="color:#D7E6F5">V2</b> brings the shared engine two weeks after launch · <b style="color:#D7E6F5">V3</b> lands at month three. Who it serves: the innovator, the end user, and leadership · <a href="SPARK_Three_Faces.html" style="color:#4FA8EF">the three faces of SPARK</a>.</p>
   </div>
 </section>
 
 <section class="page" id="h1"><div class="pgwrap">
   <div class="kick rv">01 · Structure</div>
-  <h1 class="pt rv">One project per use case — not per person</h1>
+  <h1 class="pt rv">One project per use case, not per person</h1>
   <p class="lead rv">The project is the container for everything that matters: access, budget, labels, expiry, and the register row. People are <b>added into</b> a use case’s project; they never get one of their own.</p>
   <div class="stage rv">
     <svg viewBox="0 0 940 400" font-family="IBM Plex Sans,sans-serif">
@@ -209,8 +220,10 @@ html.embedded .nav .dg,html.embedded .nav .foot{display:none}
       <rect x="44" y="196" width="254" height="40" rx="10" fill="#FEEDE6"/>
       <text x="60" y="212" font-size="10" fill="#C74E28" font-weight="700">Llama 3.1 · Qwen 2.5 · Mistral</text>
       <text x="60" y="228" font-size="9.5" fill="#7A4632">one copy, shared by everyone</text>
+      <rect x="196" y="60" width="102" height="15" rx="7.5" fill="none" stroke="#8b96ac" stroke-dasharray="3 2" stroke-width="0.9"/>
+      <text x="247" y="71" text-anchor="middle" font-size="8" fill="#616d86">Beta · Phase 2 · with V2</text>
       <!-- workspaces -->
-      <text x="360" y="70" font-size="12.5" font-weight="700" fill="#0A3C6E">One project per use case — isolated from each other</text>
+      <text x="360" y="70" font-size="12.5" font-weight="700" fill="#0A3C6E">One project per use case · isolated from each other</text>
       <g>
         <rect x="360" y="82" width="176" height="94" rx="12" fill="#EAF3FC" stroke="#0180E9"/>
         <text x="376" y="102" font-size="11" font-weight="700" fill="#0A3C6E">OCR pilot · ITDT Apps</text>
@@ -247,7 +260,7 @@ html.embedded .nav .dg,html.embedded .nav .foot{display:none}
         <path class="flow" d="M556 140 C440 200 360 175 318 160"/>
         <path class="flow" d="M752 150 C560 230 380 185 318 166"/>
       </g>
-      <text x="330" y="286" font-size="11" fill="#02636A" font-weight="700">every workspace calls the same private address — internal network only</text>
+      <text x="330" y="286" font-size="11" fill="#02636A" font-weight="700">every workspace calls the same private address · internal network only</text>
       <!-- isolation note -->
       <rect x="26" y="300" width="902" height="76" rx="12" fill="#fff" stroke="#DEE5EC"/>
       <text x="44" y="324" font-size="12" font-weight="700" fill="#081631">Why one project each, and not one big shared project</text>
@@ -271,7 +284,7 @@ html.embedded .nav .dg,html.embedded .nav .foot{display:none}
 <section class="page" id="h2"><div class="pgwrap">
   <div class="kick rv">02 · The call</div>
   <h1 class="pt rv">Watch a prompt travel</h1>
-  <p class="lead rv">Press play. This is exactly what happens when someone in a workspace asks the model a question — five hops, none of them leaving Ministry infrastructure.</p>
+  <p class="lead rv">Press play. This is exactly what happens when someone in a workspace asks the model a question: five hops, none of them leaving Ministry infrastructure, and none leaving the Ministry's own boundary.</p>
   <div class="stage rv">
     <div class="ctrl">
       <span class="lbl">Demo</span>
@@ -279,11 +292,13 @@ html.embedded .nav .dg,html.embedded .nav .foot{display:none}
       <button id="btnBlocked">Try from the internet</button>
       <button id="btnCross">Try reaching another workspace</button>
     </div>
-    <svg viewBox="0 0 940 352" font-family="IBM Plex Sans,sans-serif" id="flowSvg">
+    <svg viewBox="0 0 940 408" font-family="IBM Plex Sans,sans-serif" id="flowSvg">
       <defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#02636A"/></marker></defs>
       <!-- boundary -->
-      <rect x="120" y="14" width="806" height="252" rx="16" fill="#F7FAFC" stroke="#2E9E6E" stroke-width="1.6"/>
-      <text x="140" y="36" font-size="11.5" font-weight="700" fill="#1E7B4B">MINISTRY BOUNDARY · me-central2 (Dammam) · nothing crosses this line</text>
+      <rect x="8" y="4" width="924" height="292" rx="20" fill="none" stroke="#D9A03C" stroke-width="1.2" stroke-dasharray="9 7"/>
+      <text x="26" y="24" font-size="10.5" font-weight="700" fill="#9A6A1A" letter-spacing="1.4">SAUDI ARABIA · SOVEREIGN TERRITORY</text>
+      <rect x="24" y="34" width="892" height="238" rx="16" fill="#F7FAFC" stroke="#2E9E6E" stroke-width="1.8"/>
+      <text x="44" y="56" font-size="11.5" font-weight="700" fill="#1E7B4B">MOENERGY BOUNDARY · me-central2 (Dammam) · data never crosses this line</text>
       <!-- person -->
       <g color="#113879"><circle cx="58" cy="120" r="26" fill="#fff" stroke="#B9C8D8" stroke-width="1.6"/><svg x="44" y="106" width="28" height="28" viewBox="0 0 24 24"><use href="#icUser"/></svg>
       <text x="58" y="164" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0E1B2E">Analyst</text>
@@ -330,12 +345,12 @@ html.embedded .nav .dg,html.embedded .nav .foot{display:none}
       <g id="wsDone" opacity="0"><rect x="176" y="200" width="158" height="24" rx="12" fill="#2E9E6E"/><text x="255" y="216" text-anchor="middle" font-size="10" fill="#fff" font-weight="700">✓ answer received</text></g>
       <!-- blocked internet -->
       <g id="gBlocked" opacity="0">
-        <g color="#C0341C"><circle cx="58" cy="232" r="22" fill="#FDE7E1"/><svg x="46" y="220" width="24" height="24" viewBox="0 0 24 24"><use href="#icGlobe"/></svg></g>
-        <text x="58" y="270" text-anchor="middle" font-size="9.5" font-weight="700" fill="#C0341C">Internet</text>
-        <path d="M84 232 H118" stroke="#C0341C" stroke-width="2"/>
-        <g><line x1="122" y1="220" x2="146" y2="244" stroke="#C0341C" stroke-width="3.2"/><line x1="146" y1="220" x2="122" y2="244" stroke="#C0341C" stroke-width="3.2"/></g>
-        <text x="160" y="228" font-size="11" font-weight="700" fill="#C0341C">No public IP. No inbound route. No exception.</text>
-        <text x="160" y="244" font-size="10" fill="#7A4632">The model server has no internet address — there is nothing to attack from outside.</text>
+        <g color="#C0341C"><circle cx="58" cy="348" r="22" fill="#FDE7E1"/><svg x="46" y="336" width="24" height="24" viewBox="0 0 24 24"><use href="#icGlobe"/></svg></g>
+        <text x="58" y="388" text-anchor="middle" font-size="9.5" font-weight="700" fill="#C0341C">Internet</text>
+        <path d="M58 326 V306" stroke="#C0341C" stroke-width="2"/>
+        <g><line x1="46" y1="288" x2="70" y2="312" stroke="#C0341C" stroke-width="3.2"/><line x1="70" y1="288" x2="46" y2="312" stroke="#C0341C" stroke-width="3.2"/></g>
+        <text x="96" y="336" font-size="11" font-weight="700" fill="#C0341C">No public IP. No inbound route. No exception.</text>
+        <text x="96" y="352" font-size="10" fill="#7A4632">The model server has no internet address; there is nothing to attack from outside either ring.</text>
       </g>
       <!-- cross-project -->
       <g id="gCross" opacity="0">
@@ -351,7 +366,7 @@ html.embedded .nav .dg,html.embedded .nav .foot{display:none}
         <text x="684" y="232" font-size="9.5" fill="#7A4632">Membership is per project.</text>
         <text x="684" y="246" font-size="9.5" fill="#7A4632">Sharing the model ≠ sharing data.</text>
       </g>
-      <text x="470" y="344" font-size="10.5" fill="#5E6B7A" id="flowNote" text-anchor="middle">Both hops stay inside the boundary — the prompt, the data, and the answer never touch the internet.</text>
+      <text x="470" y="400" font-size="10.5" fill="#5E6B7A" id="flowNote" text-anchor="middle">Both hops stay inside the inner ring: the prompt, the data, and the answer never touch the internet, and never leave MoEnergy.</text>
     </svg>
     <div class="narr" id="narr">Press <b>Play the request</b> to watch a prompt travel from the analyst to the GPU and back.</div>
   </div>
@@ -479,30 +494,30 @@ function setOn(i){btns.forEach(function(b,k){b.classList.toggle('on',k===i)});}
 function clearScenes(){gB.setAttribute('opacity','0');gC.setAttribute('opacity','0');
   sB.setAttribute('opacity','0');wD.setAttribute('opacity','0');
   flowTimers.forEach(clearTimeout);flowTimers=[];
-  fNote.textContent='Both hops stay inside the boundary — the prompt, the data, and the answer never touch the internet.';}
+  fNote.textContent='Both hops stay inside the inner ring: the prompt, the data, and the answer never touch the internet, and never leave MoEnergy.';}
 function playFlow(){
   setOn(0);clearScenes();
   pReq.classList.remove('run');pRes.classList.remove('run');
   void pReq.offsetWidth;
   narr.innerHTML='<b>1 · </b>The analyst runs a prompt inside their own workspace project…';
   pReq.classList.add('run'); if(mReq.beginElement) mReq.beginElement();
-  setTimeout(function(){narr.innerHTML='<b>2 · </b>The request crosses the internal VPC to the private address <b>10.20.0.5:11434</b> — no internet involved.';},900);
+  setTimeout(function(){narr.innerHTML='<b>2 · </b>The request crosses the internal VPC to the private address <b>10.20.0.5:11434</b>, no internet involved.';},900);
   setTimeout(function(){narr.innerHTML='<b>3 · </b>The firewall checks it: port 11434, from an internal range, to the tagged model server. Allowed.';},1600);
   flowTimers.push(setTimeout(function(){narr.innerHTML='<b>4 · </b>The GPU loads the model and generates the answer on Ministry hardware.';sB.setAttribute('opacity','1');},2400));
   flowTimers.push(setTimeout(function(){pRes.classList.add('run'); if(mRes.beginElement) mRes.beginElement();
-    narr.innerHTML='<b>5 · </b>The answer returns down the same private path. <b>No vendor ever saw the prompt — because there is no vendor.</b>';},3200));
+    narr.innerHTML='<b>5 · </b>The answer returns down the same private path. <b>No vendor ever saw the prompt, because there is no vendor.</b>';},3200));
   flowTimers.push(setTimeout(function(){sB.setAttribute('opacity','0');wD.setAttribute('opacity','1');},5400));
   flowTimers.push(setTimeout(function(){wD.setAttribute('opacity','0');},8200));
 }
 document.getElementById('btnPlay').onclick=playFlow;
 document.getElementById('btnBlocked').onclick=function(){setOn(1);clearScenes();
   pReq.classList.remove('run');pRes.classList.remove('run');
-  gB.setAttribute('opacity','1');fNote.textContent='There is no inbound path — the model server has no public address for the internet to reach.';
-  narr.innerHTML='<b>Blocked.</b> The model server has <b>no public IP and no inbound internet route</b>. There is no address to attack from outside the Ministry — which is why sovereignty here is structural, not a policy promise.';};
+  gB.setAttribute('opacity','1');fNote.textContent='There is no inbound path: the model server has no public address for the internet to reach.';
+  narr.innerHTML='<b>Blocked.</b> The model server has <b>no public IP and no inbound internet route</b>. There is no address to attack from outside the Ministry, which is why sovereignty here is structural, not a policy promise.';};
 document.getElementById('btnCross').onclick=function(){setOn(2);clearScenes();
   pReq.classList.remove('run');pRes.classList.remove('run');
-  gC.setAttribute('opacity','1');fNote.textContent='Same GPU, separate worlds — project IAM keeps every team\'s data its own.';
-  narr.innerHTML='<b>Denied.</b> Workspaces share the <b>model</b>, never the <b>data</b>. Each use case is its own project with its own IAM — being able to call the same GPU gives you no path into anyone else\'s files.';};
+  gC.setAttribute('opacity','1');fNote.textContent='Same GPU, separate worlds: project IAM keeps every team\'s data its own.';
+  narr.innerHTML='<b>Denied.</b> Workspaces share the <b>model</b>, never the <b>data</b>. Each use case is its own project with its own IAM; being able to call the same GPU gives you no path into anyone else\'s files.';};
 setTimeout(playFlow,900);
 </script>
 <script>if(window.self!==window.top){document.documentElement.classList.add("embedded")}</script>
