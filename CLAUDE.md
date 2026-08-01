@@ -6,8 +6,9 @@ This repo is the **SPARK artifact set** handed over from a Claude Cowork session
 
 ## Layout
 
-- `SPARK_Site/` — the product: 8 self-contained HTML files (open `SPARK_Hub.html`) + project memory. Edit these in place; never split assets out.
-- `tools/verify.js` — Playwright verifier. **Every HTML change must pass it before you declare done.**
+- `SPARK_Site/` — the product: 10 self-contained HTML files (open `SPARK_Hub.html`) + project memory. Edit these in place; never split assets out. (`SPARK_Portal.html` is retired from the Hub but kept on disk.)
+- `spark-identity/` — the official identity package (logos, fonts, tokens, BRAND.md). Source of truth for the two new portals and anything built from now on.
+- `tools/verify.js` — Playwright verifier (`--demo --counters --form --chat --lang`). **Every HTML change must pass it before you declare done.** If Playwright's own Chromium is unavailable, set `CHROMIUM_PATH` to a system Chromium.
 - `SPARK_Context_Handoff.md` — session history, people, design contract, why each decision was made.
 - `shots/` — created by the verifier; screenshots to actually look at.
 
