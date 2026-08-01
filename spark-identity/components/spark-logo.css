@@ -5,12 +5,21 @@
 
 /* The orb: the Digital Energy gradient blob, used as SPARK's full stop. */
 .spark-orb{width:.27em;height:.27em;border-radius:50%;flex:none;align-self:baseline;
+  position:relative;overflow:hidden;background:var(--de-teal-500,#0b8f92)}
+/* the orb is alive: two colour families counter-rotate within the crisp circle */
+.spark-orb::before,.spark-orb::after{content:"";position:absolute;inset:-30%;border-radius:50%}
+.spark-orb::before{
   background:
-    radial-gradient(circle at 30% 72%, var(--de-blue-300,#63b3ff) 0%, rgba(99,179,255,0) 58%),
-    radial-gradient(circle at 72% 28%, var(--de-green-500,#00ac29) 0%, rgba(0,172,41,0) 58%),
-    radial-gradient(circle at 55% 55%, var(--de-gold-300,#dfc28c) 0%, rgba(223,194,140,0) 62%),
-    radial-gradient(circle at 42% 40%, var(--de-teal-300,#6fd2d0) 0%, rgba(111,210,208,0) 68%),
-    var(--de-teal-500,#0b8f92)}
+    radial-gradient(circle at 30% 72%, var(--de-blue-300,#63b3ff) 0%, rgba(99,179,255,0) 55%),
+    radial-gradient(circle at 72% 28%, var(--de-green-500,#00ac29) 0%, rgba(0,172,41,0) 55%);
+  animation: spark-orb-swirl 13s linear infinite}
+.spark-orb::after{
+  background:
+    radial-gradient(circle at 62% 62%, var(--de-gold-300,#dfc28c) 0%, rgba(223,194,140,0) 55%),
+    radial-gradient(circle at 38% 34%, var(--de-teal-300,#6fd2d0) 0%, rgba(111,210,208,0) 60%);
+  animation: spark-orb-swirl 19s linear infinite reverse}
+@keyframes spark-orb-swirl { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce){ .spark-orb::before,.spark-orb::after{animation:none} }
 .spark-lockup--inverse .spark-orb{box-shadow:0 0 .5em rgba(111,210,208,.42)}
 
 .spark-sublabel{font-family:var(--font-body,"IBM Plex Sans Arabic",sans-serif);font-weight:600;
