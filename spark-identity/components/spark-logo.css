@@ -1,14 +1,32 @@
 /* SPARK logo — composition rules. Requires brand/tokens/*.css to be loaded. */
-.spark-lockup{display:inline-flex;align-items:center;gap:.38em;line-height:1}
-.spark-lockup__glyph{width:.8em;height:.8em;flex:none}
-.spark-lockup__word{font-family:var(--font-display,"Lafet",sans-serif);font-size:1em;letter-spacing:.055em;color:var(--text-primary,#081631)}
+.spark-lockup{display:inline-flex;align-items:baseline;gap:.17em;line-height:1}
+.spark-lockup__word{font-family:var(--font-display,"Lafet",serif);font-size:1em;letter-spacing:.055em;color:var(--text-primary,#081631)}
 .spark-lockup--inverse .spark-lockup__word{color:#fff}
 
-/* Merged SPARK / Digital Energy mark. Halves are optically offset around the blade. */
+/* The orb: the Digital Energy gradient blob, used as SPARK's full stop. */
+.spark-orb{width:.27em;height:.27em;border-radius:50%;flex:none;align-self:baseline;
+  background:
+    radial-gradient(circle at 30% 72%, var(--de-blue-300,#63b3ff) 0%, rgba(99,179,255,0) 58%),
+    radial-gradient(circle at 72% 28%, var(--de-green-500,#00ac29) 0%, rgba(0,172,41,0) 58%),
+    radial-gradient(circle at 55% 55%, var(--de-gold-300,#dfc28c) 0%, rgba(223,194,140,0) 62%),
+    radial-gradient(circle at 42% 40%, var(--de-teal-300,#6fd2d0) 0%, rgba(111,210,208,0) 68%),
+    var(--de-teal-500,#0b8f92)}
+.spark-lockup--inverse .spark-orb{box-shadow:0 0 .5em rgba(111,210,208,.42)}
+
+.spark-sublabel{font-family:var(--font-body,"IBM Plex Sans Arabic",sans-serif);font-weight:600;
+  font-size:.19em;letter-spacing:.26em;color:var(--text-secondary,#616d86);margin-top:.16em}
+.spark-lockup--inverse + .spark-sublabel{color:var(--de-gray-400,#8b96ac)}
+
+/* Merged SPARK / Digital Energy marks. */
 .spark-de{display:inline-flex;align-items:center;gap:.34em}
 .spark-de__spark{transform:translateY(-0.22em)}
 .spark-de__blade{width:.24em;height:2.32em;flex:none}
 .spark-de__de{height:1.56em;transform:translateY(.22em)}
 
-/* Clearspace: never less than the glyph's height on every side. */
-.spark-clearspace{padding:1em}
+/* Hinge variant: the orb sits between the two wordmarks and serves both. */
+.spark-de--hinge{gap:.41em}
+.spark-de--hinge .spark-de__spark,.spark-de--hinge .spark-de__de{transform:none}
+.spark-de--hinge .spark-de__de{height:1.41em}
+
+/* Clearspace: never less than twice the orb diameter on every side. */
+.spark-clearspace{padding:.54em}

@@ -2,53 +2,65 @@ import './spark-logo.css';
 import deWordmarkNavy from '../brand/logos/de-wordmark-navy.png';
 import deWordmarkWhite from '../brand/logos/de-wordmark-white.png';
 
-const SPARK_PATH = 'M32 1c2.1 17.6 11.3 28.3 31 31-19.7 2.7-28.9 13.4-31 31-2.1-17.6-11.3-28.3-31-31 19.7-2.7 28.9-13.4 31-31Z';
 const BLADE_PATH = 'M35.5 2.5 43 7.5 12.5 127.5 5 122.5Z';
 
-export function SparkGlyph({ size = 32, mono }) {
-  const id = 'sparkGrad';
-  return (
-    <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden="true">
-      {!mono && (
-        <defs>
-          <linearGradient id={id} x1="0.1" y1="1" x2="0.9" y2="0">
-            <stop offset="0" stopColor="#e85a30" />
-            <stop offset="0.55" stopColor="#ff734a" />
-            <stop offset="1" stopColor="#dfc28c" />
-          </linearGradient>
-        </defs>
-      )}
-      <path d={SPARK_PATH} fill={mono || `url(#${id})`} />
-    </svg>
-  );
+/** The Digital Energy gradient orb — SPARK's full stop. Sized in em by its parent. */
+export function SparkOrb({ className = '' }) {
+  return <span className={'spark-orb ' + className} aria-hidden="true" />;
 }
 
-/** Primary product mark. size = wordmark cap size in px (min 20). */
-export function SparkLockup({ size = 40, inverse = false }) {
-  return (
+/**
+ * Primary product mark.
+ * size = wordmark font-size in px (min 20). Sub-label is dropped below 30px.
+ */
+export function SparkLockup({ size = 40, inverse = false, sublabel = false }) {
+  const mark = (
     <span className={'spark-lockup' + (inverse ? ' spark-lockup--inverse' : '')} style={{ fontSize: size }}>
-      <SparkGlyph size={size * 0.8} />
       <span className="spark-lockup__word">SPARK</span>
+      <SparkOrb />
+    </span>
+  );
+  if (!sublabel || size < 30) return mark;
+  return (
+    <span style={{ display: 'inline-flex', flexDirection: 'column', fontSize: size }}>
+      {mark}
+      <span className="spark-sublabel">A DIGITAL ENERGY INITIATIVE</span>
     </span>
   );
 }
 
-/** Merged mark: SPARK / طاقتنا رقمية, split by the gradient blade. */
-export function SparkDigitalEnergyLockup({ size = 40, inverse = false }) {
+function Blade() {
   return (
-    <span className="spark-de" style={{ fontSize: size }} role="img"
-          aria-label="SPARK — a Digital Energy product">
-      <span className="spark-de__spark"><SparkLockup size={size} inverse={inverse} /></span>
-      <svg className="spark-de__blade" viewBox="0 0 46 130" aria-hidden="true">
-        <defs>
-          <linearGradient id="bladeGrad" x1="0.5" y1="0" x2="0.5" y2="1">
-            <stop offset="0" stopColor="#ff734a" />
-            <stop offset="0.45" stopColor="#0b8f92" />
-            <stop offset="1" stopColor="#00ac29" />
-          </linearGradient>
-        </defs>
-        <path d={BLADE_PATH} fill="url(#bladeGrad)" />
-      </svg>
+    <svg className="spark-de__blade" viewBox="0 0 46 130" aria-hidden="true">
+      <defs>
+        <linearGradient id="sparkBlade" x1="0.5" y1="0" x2="0.5" y2="1">
+          <stop offset="0" stopColor="var(--de-blue-500, #0080e8)" />
+          <stop offset="0.5" stopColor="var(--de-teal-500, #0b8f92)" />
+          <stop offset="1" stopColor="var(--de-green-500, #00ac29)" />
+        </linearGradient>
+      </defs>
+      <path d={BLADE_PATH} fill="url(#sparkBlade)" />
+    </svg>
+  );
+}
+
+/**
+ * Merged mark: SPARK / طاقتنا رقمية.
+ * variant "slash" (default) splits the two halves with the gradient blade;
+ * variant "hinge" lets the single orb serve as the join between them.
+ */
+export function SparkDigitalEnergyLockup({ size = 40, inverse = false, variant = 'slash' }) {
+  const hinge = variant === 'hinge';
+  return (
+    <span className={'spark-de' + (hinge ? ' spark-de--hinge' : '')} style={{ fontSize: size }}
+          role="img" aria-label="SPARK — a Digital Energy initiative">
+      <span className="spark-de__spark">
+        <span className={'spark-lockup' + (inverse ? ' spark-lockup--inverse' : '')} style={{ fontSize: size }}>
+          <span className="spark-lockup__word">SPARK</span>
+          {!hinge && <SparkOrb />}
+        </span>
+      </span>
+      {hinge ? <SparkOrb /> : <Blade />}
       <img className="spark-de__de" alt="" src={inverse ? deWordmarkWhite : deWordmarkNavy} />
     </span>
   );

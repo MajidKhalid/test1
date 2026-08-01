@@ -1,0 +1,78 @@
+/* SPARK × Digital Energy — floating artifact system
+   Elegant-minimalist motion for the SPARK site. All GPU-friendly transforms,
+   slow loops, small amplitudes. Shapes keep their own fixed colours (BRAND.md §4).
+   Speed is globally tunable: set --de-motion-speed (default 1; 0.5 = half speed). */
+
+:root { --de-motion-speed: 1; }
+
+/* ---- keyframes ---- */
+@keyframes de-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  25%      { transform: translate3d(7px, -11px, 0) rotate(1.2deg); }
+  50%      { transform: translate3d(-5px, -17px, 0) rotate(-1deg); }
+  75%      { transform: translate3d(-9px, -6px, 0) rotate(0.8deg); }
+}
+@keyframes de-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }
+@keyframes de-glow    { 0%, 100% { opacity: 0.32; } 50% { opacity: 0.58; } }
+@keyframes de-spin     { to { transform: rotate(360deg); } }
+@keyframes de-spin-rev { to { transform: rotate(-360deg); } }
+@keyframes de-ring     { to { transform: rotateY(360deg); } }
+@keyframes de-tilt {
+  0%, 100% { transform: rotateX(7deg) rotateY(-8deg); }
+  50%      { transform: rotateX(10deg) rotateY(8deg); }
+}
+@keyframes de-sweep { 0% { transform: translateY(-130%); } 100% { transform: translateY(230%); } }
+
+/* ---- floating (drift) ---- */
+.de-float        { animation: de-drift calc(18s / var(--de-motion-speed)) ease-in-out infinite; will-change: transform; }
+.de-float--slow  { animation-duration: calc(28s / var(--de-motion-speed)); }
+.de-float--fast  { animation-duration: calc(12s / var(--de-motion-speed)); }
+/* stagger siblings with inline animation-delay (negative values start mid-loop): style="animation-delay:-7s" */
+
+/* depth-of-field field layers (parallax by blur + scale, not position) */
+.de-field__far  { filter: blur(7px);   opacity: 0.16; }
+.de-field__mid  { filter: blur(2.5px); opacity: 0.32; }
+.de-field__near { filter: none;        opacity: 0.55; }
+
+/* ---- breathing orb ---- */
+.de-breathe { animation: de-breathe calc(7s / var(--de-motion-speed)) ease-in-out infinite; will-change: transform; }
+.de-breathe__halo {
+  position: absolute; inset: -34%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(111, 210, 208, 0.5) 0%, rgba(111, 210, 208, 0) 66%);
+  animation: de-glow calc(7s / var(--de-motion-speed)) ease-in-out infinite;
+}
+
+/* ---- orbit ornament (2D) ----
+   .de-orbit spins; each __pivot is pre-rotated into place and counter-rotated
+   so the shape itself stays upright while it travels the circle. */
+.de-orbit { position: relative; animation: de-spin calc(46s / var(--de-motion-speed)) linear infinite; will-change: transform; }
+.de-orbit--rev { animation-name: de-spin-rev; }
+.de-orbit__pivot { position: absolute; left: 50%; top: 50%; }
+.de-orbit__item  { animation: de-spin-rev calc(46s / var(--de-motion-speed)) linear infinite; will-change: transform; }
+.de-orbit--rev .de-orbit__item { animation-name: de-spin; }
+
+/* ---- 3D depth ring (carousel) ---- */
+.de-ring3d-stage { perspective: 1100px; }
+.de-ring3d { position: relative; transform-style: preserve-3d; animation: de-ring calc(52s / var(--de-motion-speed)) linear infinite; will-change: transform; }
+.de-ring3d__item { position: absolute; left: 50%; top: 50%; }
+/* place each item inline: style="transform:translate(-50%,-50%) rotateY(90deg) translateZ(170px)" */
+
+/* ---- 3D tilt card ---- */
+.de-tilt { perspective: 900px; }
+.de-tilt__card { animation: de-tilt calc(16s / var(--de-motion-speed)) ease-in-out infinite; transform-style: preserve-3d; will-change: transform; }
+
+/* ---- blade light sweep ---- */
+.de-sweep { position: relative; overflow: hidden; }
+.de-sweep::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 46%;
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%);
+  animation: de-sweep calc(6s / var(--de-motion-speed)) ease-in-out infinite;
+}
+
+/* ---- accessibility ---- */
+@media (prefers-reduced-motion: reduce) {
+  .de-float, .de-float--slow, .de-float--fast, .de-breathe, .de-breathe__halo,
+  .de-orbit, .de-orbit__item, .de-ring3d, .de-tilt__card, .de-sweep::after {
+    animation: none !important;
+  }
+}
