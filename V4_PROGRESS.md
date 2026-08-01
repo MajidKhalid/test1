@@ -18,7 +18,7 @@
 
 ### ① Deletions and restructure (brief sections 4, 7)
 - [x] 4 · Leadership Hub: scanned (7 unique items listed for Majid in change report: L6 demand table, L6 KPI/funnel numbers, L6 leadership-call flags, L7 newer three-decisions set incl. AI-003 correction ask [survives as CLAUDE.md open thread 4], L0 "Launched" status chip, full formal-AR leadership narrative, 2 punch lines); file deleted; only inbound refs were Hub-internal, all removed
-- [x] 7 · Three Faces page: `SPARK_Three_Faces.html` created (name shipped: "The three faces of SPARK"; alternates for Majid: "SPARK, three ways" / "Who SPARK serves"). Verify green incl. --lang + embedded. NOTE: ch.1 journey strip + ch.2 chat mock are first-pass; upgrade to the ref1-adapted animation + faithful Nawaf mirror AFTER Portal rework (dependency noted in brief order deviation)
+- [x] 7 · Three Faces page: `SPARK_Three_Faces.html` created (name shipped: "The three faces of SPARK"; alternates for Majid: "SPARK, three ways" / "Who SPARK serves"). Verify green incl. --lang + embedded. ch.1 now carries the ported 16s journey animation (SVG pinned direction:ltr for the RTL bounds pass; SAME FIX NEEDED on the Portal .scene svg after the sweep); ch.2 is a faithful mirror of the new Nawaf layout (composer on top, empty-state greeting, tool chips). Verify green incl. --lang
 - [x] 7 · "THE TWO FACES" rail group retired; Admin Guide out of public nav (file stays); Command Centre out of rail/tiles, linked from Three Faces ch.3 (target _blank)
 - [x] 7 · Hub rail, tiles (6, renumbered), names map, iframes updated; Hub home copy now three-faces; Hub visible text em-dash-free; old #lead/#guide/#centre deep links fall back to home (same pattern as retired #portal)
 

@@ -149,6 +149,52 @@ html.embedded{--nav-w:190px}
 html.embedded .nav .brandmark,html.embedded .nav .foot{display:none}
 html.embedded .foot2{display:none}
 @media (prefers-reduced-motion:reduce){.rv{transition:none;opacity:1;transform:none}.herochip i{animation:none}}
+/* v4: hero journey loop (16s) */
+.scene svg{width:100%;height:auto;display:block;max-height:470px}
+.jy{opacity:0}
+.jy-form{animation:jyForm 16s infinite}
+@keyframes jyForm{0%{opacity:0;transform:translateY(8px)}3%,88%{opacity:1;transform:none}96%,100%{opacity:0}}
+.jy-send{transform-origin:99px 86px;animation:jySend 16s infinite}
+@keyframes jySend{0%,5%{opacity:0;transform:scale(.4)}8%{opacity:.9;transform:scale(1)}13%,100%{opacity:0;transform:scale(1.7)}}
+.jy-label{transform-origin:164px 36px;animation:jyLabel 16s infinite}
+@keyframes jyLabel{0%,9%{opacity:0;transform:scale(.5)}12%,88%{opacity:1;transform:scale(1)}96%,100%{opacity:0}}
+.jy-wire{animation:jyWire 16s infinite}
+@keyframes jyWire{0%,10%{opacity:0}14%,88%{opacity:.75}96%,100%{opacity:0}}
+.jy-logrow1{animation:jyRow1 16s infinite}
+@keyframes jyRow1{0%,12%{opacity:0}16%,90%{opacity:1}97%,100%{opacity:0}}
+.jy-check{transform-origin:216px 120px;animation:jyCheck 16s infinite}
+@keyframes jyCheck{0%,20%{opacity:0;transform:scale(.5)}24%,88%{opacity:1;transform:scale(1)}96%,100%{opacity:0}}
+.jy-ws{transform-origin:140px 300px;animation:jyWs 16s infinite}
+@keyframes jyWs{0%,28%{opacity:0;transform:scale(.92) translateY(10px)}33%,92%{opacity:1;transform:none}98%,100%{opacity:0}}
+.jy-eng{animation:jyEng 16s infinite}
+@keyframes jyEng{0%{opacity:0}6%,92%{opacity:1}98%,100%{opacity:0}}
+.jy-call{stroke-dashoffset:120;animation:jyCall 16s infinite}
+@keyframes jyCall{0%,36%{opacity:0;stroke-dashoffset:120}44%{opacity:1;stroke-dashoffset:0}92%{opacity:1;stroke-dashoffset:-90}98%,100%{opacity:0}}
+.jy-calltxt{animation:jyCalltxt 16s infinite}
+@keyframes jyCalltxt{0%,38%{opacity:0}44%,90%{opacity:1}97%,100%{opacity:0}}
+.jy-pkt{animation:jyPkt 16s infinite}
+@keyframes jyPkt{0%,44%{opacity:0;transform:translate(238px,300px)}47%{opacity:1}54%{opacity:1;transform:translate(326px,300px)}56%{opacity:0;transform:translate(326px,300px)}60%{opacity:1;transform:translate(326px,300px)}67%{opacity:1;transform:translate(238px,300px)}69%,100%{opacity:0}}
+.jy-echo{stroke-dashoffset:160;animation:jyEcho 16s infinite}
+@keyframes jyEcho{0%,52%{opacity:0;stroke-dashoffset:160}60%{opacity:.9;stroke-dashoffset:0}90%{opacity:.9}97%,100%{opacity:0}}
+.jy-logrow2{animation:jyRow2 16s infinite}
+@keyframes jyRow2{0%,58%{opacity:0}63%,92%{opacity:1}98%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.jy{opacity:1;animation:none!important}.jy-send{opacity:0}.jy-call,.jy-echo{stroke-dashoffset:0}.jy-pkt{opacity:0}}
+/* three-faces ch.1 journey figure */
+.jyfig{background:radial-gradient(900px 520px at 80% -10%,#12305f 0%,var(--de-navy-950) 60%,#050c1d 100%);border-radius:18px;padding:26px 22px;box-shadow:var(--shadow)}
+.jyfig svg{width:100%;height:auto;display:block;max-height:470px;direction:ltr}
+/* ch.2 faithful mirror bits */
+.ccomposer{display:flex;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);background:#fff;align-items:center}
+.ccomposer .cinput{flex:1;border:1px solid var(--de-gray-300);border-radius:12px;padding:10px 14px;font-size:13px;color:var(--de-gray-500);background:var(--de-gray-50);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ccomposer .csend{width:38px;height:38px;border-radius:12px;background:var(--de-navy-950);color:#fff;display:inline-flex;align-items:center;justify-content:center;flex:none;font-size:13px}
+[dir=rtl] .ccomposer .csend{transform:scaleX(-1)}
+.cempty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:10px 0 4px}
+.cempty .corb{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 30% 72%,#63b3ff 0%,rgba(99,179,255,0) 58%),radial-gradient(circle at 72% 28%,#00ac29 0%,rgba(0,172,41,0) 58%),radial-gradient(circle at 55% 55%,#dfc28c 0%,rgba(223,194,140,0) 62%),radial-gradient(circle at 42% 40%,#6fd2d0 0%,rgba(111,210,208,0) 68%),#0b8f92;box-shadow:0 0 14px rgba(111,210,208,.4)}
+.cempty b{font-family:var(--font-display);font-size:20px;font-weight:400;color:var(--de-navy-950)}
+html[lang=ar] .cempty b{font-family:var(--font-body);font-weight:700}
+.cempty i{font-style:normal;font-size:11.5px;color:var(--de-gray-500)}
+.ctools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:4px 0 6px}
+.ctool{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 12px;font-size:11.5px;font-weight:600;color:var(--de-gray-600)}
+.ctool .ctlogo{width:16px;height:16px;border-radius:5px;display:inline-block}
 </style>
 </head>
 <body>
@@ -202,7 +248,80 @@ html.embedded .foot2{display:none}
     <h2 class="sec rv" data-ar="مساحة محوكمة للبناء، دون انتظار">A governed space to build, without the wait</h2>
     <p class="sub rv" data-ar="طلب واحد على بوابة العملاء يتحول إلى مساحة عمل معزولة داخل نطاق الوزارة. التصنيفات تُطبق تلقائياً، والحوكمة تعمل في الخلفية، ولا تحتاج إلى معرفة تقنية عميقة لتبدأ.">One application on the customer portal becomes an isolated workspace inside the Ministry's boundary. Labels apply automatically, governance runs in the background, and you need no deep technical knowledge to start.</p>
 
-    <div class="journey">
+<div class="jyfig rv" id="jyscene" aria-hidden="true">
+        <svg viewBox="0 0 560 470" font-family="IBM Plex Sans Arabic,sans-serif">
+          <defs>
+            <linearGradient id="jyBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#63b3ff"/><stop offset="1" stop-color="#0080e8"/></linearGradient>
+            <radialGradient id="jyOrb" cx="0.42" cy="0.4" r="0.7"><stop offset="0" stop-color="#6fd2d0"/><stop offset="0.55" stop-color="#0b8f92"/><stop offset="1" stop-color="#00646a"/></radialGradient>
+          </defs>
+          <!-- ① application -->
+          <g class="jy jy-form">
+            <rect x="24" y="34" width="150" height="104" rx="12" fill="rgba(255,255,255,.97)"/>
+            <text x="42" y="58" font-size="11" font-weight="700" fill="#081631" data-ar="الطلب">Application</text>
+            <rect x="42" y="70" width="98" height="6" rx="3" fill="#d6dce6"/>
+            <rect x="42" y="84" width="114" height="6" rx="3" fill="#d6dce6"/>
+            <rect x="42" y="98" width="76" height="6" rx="3" fill="#d6dce6"/>
+            <rect x="42" y="114" width="52" height="12" rx="6" fill="url(#jyBlue)"/>
+          </g>
+          <circle class="jy jy-send" cx="99" cy="86" r="16" fill="none" stroke="#0080e8" stroke-width="2"/>
+          <!-- ② labels applied -->
+          <g class="jy jy-label">
+            <rect x="128" y="26" width="72" height="20" rx="10" fill="#e8f5f5" stroke="#0b8f92"/>
+            <text x="164" y="40" text-anchor="middle" font-size="9.5" font-weight="700" fill="#00646a" data-ar="التصنيفات ✓">labels ✓</text>
+          </g>
+          <!-- ③ approval -->
+          <g class="jy jy-check">
+            <circle cx="216" cy="120" r="15" fill="#e6f7ec" stroke="#1e7b4b" stroke-width="1.6"/>
+            <path d="m209.5 120.5 4.5 4.5 9-10" fill="none" stroke="#1e7b4b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="216" y="152" text-anchor="middle" font-size="9.5" fill="#1e7b4b" data-ar="تمت الموافقة">approved</text>
+          </g>
+          <!-- governance log (the other side) -->
+          <g class="jy jy-log">
+            <rect x="364" y="22" width="176" height="128" rx="12" fill="#0e1f42"/>
+            <text x="380" y="46" font-size="10.5" font-weight="700" fill="#fff" data-ar="سجل الحوكمة">Governance log</text>
+            <rect x="380" y="58" width="144" height="12" rx="4" fill="#1c3566"/>
+            <rect class="jy jy-logrow1" x="380" y="76" width="144" height="12" rx="4" fill="#0b8f92"/>
+            <text class="jy jy-logrow1" x="386" y="85.5" font-size="7.5" fill="#eafcfb" data-ar="قيد جديد · التصنيفات مطبقة">new row · labels applied</text>
+            <rect class="jy jy-logrow2" x="380" y="94" width="144" height="12" rx="4" fill="#1e7b4b"/>
+            <text class="jy jy-logrow2" x="386" y="103.5" font-size="7.5" fill="#e6f7ec" data-ar="مساحة العمل نشطة">workspace live</text>
+            <rect x="380" y="112" width="144" height="12" rx="4" fill="#1c3566"/>
+          </g>
+          <path class="jy jy-wire" d="M200 60 C 280 40 320 40 360 50" fill="none" stroke="#8b96ac" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <!-- ④ the Sandboxes boundary -->
+          <rect x="20" y="192" width="520" height="256" rx="16" fill="rgba(245,249,255,.06)" stroke="#63b3ff" stroke-width="1.5" stroke-dasharray="8 6"/>
+          <text x="40" y="216" font-size="10.5" font-weight="700" fill="#63b3ff" data-ar="نطاق الوزارة · مجلد ساندبوكس">Ministry boundary · Sandboxes folder</text>
+          <g class="jy jy-ws">
+            <rect x="48" y="236" width="184" height="128" rx="12" fill="rgba(255,255,255,.97)"/>
+            <text x="66" y="262" font-size="11" font-weight="700" fill="#081631" data-ar="مساحة عملك · مباشرة">Your workspace · live</text>
+            <text x="66" y="280" font-size="9" fill="#616d86" data-ar="مشروع معزول لحالتك">an isolated project, yours</text>
+            <rect x="66" y="292" width="148" height="24" rx="7" fill="#e8f5f5"/>
+            <text x="140" y="308" text-anchor="middle" font-size="8.5" fill="#00646a" data-ar="بياناتك وأدواتك">your data &amp; tools</text>
+            <rect x="66" y="324" width="148" height="24" rx="7" fill="#e6f2fd"/>
+            <text x="140" y="340" text-anchor="middle" font-size="8.5" fill="#0a3c6e" data-ar="الميزانية تراقب تلقائياً">budget watched automatically</text>
+          </g>
+          <!-- shared engine (LLM lane · Phase 2) -->
+          <g class="jy jy-eng">
+            <rect x="332" y="236" width="184" height="168" rx="12" fill="#0e1f42" stroke="#8b96ac" stroke-dasharray="4 3" stroke-width="0.9" opacity="0.92"/>
+            <circle cx="360" cy="262" r="10" fill="url(#jyOrb)"/>
+            <text x="378" y="266" font-size="10.5" font-weight="700" fill="#dbe7f5" data-ar="المحرك المشترك">Shared engine</text>
+            <rect x="348" y="280" width="86" height="16" rx="8" fill="#050c1d" stroke="#8b96ac" stroke-dasharray="3 2" stroke-width="0.8"/>
+            <text x="391" y="291.5" text-anchor="middle" font-size="8" fill="#b7c0d1" data-ar="تجريبي · المرحلة ٢">Beta · Phase 2</text>
+            <rect x="348" y="306" width="70" height="20" rx="6" fill="#1c3566" opacity=".75"/><text x="383" y="319.5" text-anchor="middle" font-size="8" fill="#9fb4cc">Llama 3.1</text>
+            <rect x="426" y="306" width="70" height="20" rx="6" fill="#1c3566" opacity=".75"/><text x="461" y="319.5" text-anchor="middle" font-size="8" fill="#9fb4cc">Qwen 2.5</text>
+            <rect x="348" y="332" width="70" height="20" rx="6" fill="#1c3566" opacity=".75"/><text x="383" y="345.5" text-anchor="middle" font-size="8" fill="#9fb4cc">Mistral 7B</text>
+            <text x="391" y="374" font-size="8.5" fill="#8b96ac" data-ar="نسخة واحدة يشاركها الجميع">one copy, shared by everyone</text>
+            <text x="391" y="392" font-size="8.5" fill="#8b96ac" data-ar="على معالجات الوزارة">on Ministry GPUs</text>
+          </g>
+          <path class="jy jy-call" d="M232 300 H 332" fill="none" stroke="#0b8f92" stroke-width="2" stroke-dasharray="6 5"/>
+          <circle class="jy jy-pkt" cx="0" cy="0" r="4" fill="#6fd2d0"/>
+          <text class="jy jy-calltxt" x="282" y="290" text-anchor="middle" font-size="8.5" fill="#6fd2d0" data-ar="استدعاء داخلي خاص">private internal call</text>
+          <!-- workspace event echoes to the log -->
+          <path class="jy jy-echo" d="M232 252 C 300 200 330 170 372 152" fill="none" stroke="#1e7b4b" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text x="280" y="432" text-anchor="middle" font-size="9.5" fill="#9fb4cc" data-ar="من الطلب إلى مساحة عمل تعمل، والحوكمة ترى كل خطوة تلقائياً">from application to a live workspace, with governance seeing every step automatically</text>
+        </svg>
+      </div>
+
+    <div class="journey" style="margin-top:34px">
       <div class="jstep rv"><div class="jn"><svg><use href="#icPen"/></svg></div><h4 data-ar="قدّم الطلب">Apply</h4><p data-ar="نموذج واحد على بوابة العملاء. عشر دقائق.">One form on the customer portal. Ten minutes.</p></div>
       <div class="jstep rv"><div class="jn"><svg><use href="#icTag"/></svg></div><h4 data-ar="التصنيفات تلقائياً">Labels, automatically</h4><p data-ar="طلبك يصبح قيداً في السجل، والتصنيفات ترافقه في كل مكان.">Your request becomes a register row; labels follow it everywhere.</p></div>
       <div class="jstep rv"><div class="jn"><svg><use href="#icCheck"/></svg></div><h4 data-ar="الموافقة">Approval</h4><p data-ar="أسئلة إطار الحوكمة توجه طلبك إلى المسار الصحيح.">The framework's questions route your request to the right lane.</p></div>
@@ -244,7 +363,18 @@ html.embedded .foot2{display:none}
         </span>
         <span class="chip honesty" data-ar="عرض توضيحي مكتوب مسبقاً · لا يوجد نموذج مباشر">Scripted illustration · no live model</span>
       </div>
+      <div class="ccomposer" aria-hidden="true"><span class="cinput" dir="auto">/contract-clauses Find the termination clause in this services contract.</span><span class="csend">➤</span></div>
       <div class="clog">
+        <div class="cempty">
+          <span class="corb" aria-hidden="true"></span>
+          <b data-ar="للطاقة هنا بيت">Energy has its home</b>
+          <i data-ar="اسأل نواف، أو افتح إحدى الأدوات">Ask Nawaf, or open one of the tools</i>
+        </div>
+        <div class="ctools" aria-hidden="true">
+          <span class="ctool"><span class="ctlogo" style="background:linear-gradient(135deg,#63b3ff,#0080e8)"></span><span data-ar="ذكاء المستندات">Document Intelligence</span></span>
+          <span class="ctool"><span class="ctlogo" style="background:linear-gradient(135deg,#dfc28c,#ae7630)"></span><span data-ar="استوديو تكاليف العروض">Proposal Cost Studio</span></span>
+          <span class="ctool"><span class="ctlogo" style="background:linear-gradient(135deg,#0b8f92,#00646a)"></span><span data-ar="مساعد السياسات">Policy Assistant</span></span>
+        </div>
         <div class="bub me" dir="auto">/contract-clauses Find the termination clause in this services contract.</div>
         <div class="bub ai"><div class="who">Nawaf</div><span data-ar="البند 14 يتناول الإنهاء: يجوز لأي من الطرفين إنهاء الاتفاقية بإشعار كتابي قبل 60 يوماً. أعرض النص الكامل؟">Clause 14 covers termination: either party may end the agreement with 60 days' written notice. Want the full text?</span></div>
       </div>
