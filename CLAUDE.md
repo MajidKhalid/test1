@@ -6,7 +6,7 @@ This repo is the **SPARK artifact set** handed over from a Claude Cowork session
 
 ## Layout
 
-- `SPARK_Site/` — the product: 8 self-contained HTML files (open `SPARK_Hub.html`) + project memory. Edit these in place; never split assets out. (`SPARK_Portal.html` and `SPARK_Leadership_Hub.html` were retired and deleted 1 Aug 2026, recoverable from git history.)
+- `SPARK_Site/` — the product: 9 self-contained HTML files (open `SPARK_Hub.html`) + project memory. Edit these in place; never split assets out. (`SPARK_Portal.html` and `SPARK_Leadership_Hub.html` were retired and deleted 1 Aug 2026, recoverable from git history.)
 - **Global writing rule: never use the em dash "—" in anything produced for this project** (artifacts, emails, UI strings, commits, PRs). See the rule block at the top of `SPARK_Site/CLAUDE.md`.
 - `comms/` — the launch announcements (three phases × AR/EN, copy-to-clipboard, `[PORTAL-LINK]` placeholder).
 - `spark-identity/` — the official identity package (logos, fonts, tokens, BRAND.md, Solids v2 components). Source of truth for the customer portal and anything built from now on.
