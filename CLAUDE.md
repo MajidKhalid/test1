@@ -6,9 +6,10 @@ This repo is the **SPARK artifact set** handed over from a Claude Cowork session
 
 ## Layout
 
-- `SPARK_Site/` — the product: 9 self-contained HTML files (open `SPARK_Hub.html`) + project memory. Edit these in place; never split assets out. (`SPARK_Portal.html` was retired and deleted 1 Aug 2026 — recoverable from git history.)
+- `SPARK_Site/` — the product: 8 self-contained HTML files (open `SPARK_Hub.html`) + project memory. Edit these in place; never split assets out. (`SPARK_Portal.html` and `SPARK_Leadership_Hub.html` were retired and deleted 1 Aug 2026, recoverable from git history.)
+- **Global writing rule: never use the em dash "—" in anything produced for this project** (artifacts, emails, UI strings, commits, PRs). See the rule block at the top of `SPARK_Site/CLAUDE.md`.
 - `comms/` — the launch announcements (three phases × AR/EN, copy-to-clipboard, `[PORTAL-LINK]` placeholder).
-- `spark-identity/` — the official identity package (logos, fonts, tokens, BRAND.md). Source of truth for the two new portals and anything built from now on.
+- `spark-identity/` — the official identity package (logos, fonts, tokens, BRAND.md, Solids v2 components). Source of truth for the customer portal and anything built from now on.
 - `tools/verify.js` — Playwright verifier (`--demo --counters --form --chat --lang`). **Every HTML change must pass it before you declare done.** If Playwright's own Chromium is unavailable, set `CHROMIUM_PATH` to a system Chromium.
 - `SPARK_Context_Handoff.md` — session history, people, design contract, why each decision was made.
 - `shots/` — created by the verifier; screenshots to actually look at.

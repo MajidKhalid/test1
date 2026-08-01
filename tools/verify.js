@@ -117,17 +117,17 @@ const fs = require('fs');
       if (window._switchView) { window._switchView('apply'); await new Promise(s => setTimeout(s, 900)); }
       document.getElementById('af-submit').click(); await new Promise(s => setTimeout(s, 200));
       r.emptyRejected = /missing|ناقصة/.test(document.getElementById('af-note')?.textContent || '');
-      const fill = { 'af-name': 'Contract clause finder', 'af-desc': 'Finds clauses in contracts', 'af-owner': 'A. Analyst · Legal · a@moenergy.gov.sa', 'af-sponsor': 'Head of Legal', 'af-lmmail': 'line.manager@moenergy.gov.sa', 'af-how': 'Cuts review time', 'af-success': 'Review time halved in 90 days', 'af-just': 'Covers workspace compute and storage for the prototype phase', 'af-notes': '' };
+      const fill = { 'af-name': 'Contract clause finder', 'af-desc': 'Finds clauses in contracts', 'af-owner': 'A. Analyst · Legal · a@moenergy.gov.sa', 'af-sponsor': 'Head of Legal', 'af-lmmail': 'line.manager@moenergy.gov.sa', 'af-how': 'Cuts review time', 'af-success': 'Review time halved in 90 days', 'af-just': 'Covers workspace compute and storage for the prototype phase', 'af-budget': '80', 'af-notes': '' };
       for (const id in fill) { const e = document.getElementById(id); if (e) { e.value = fill[id]; } }
-      for (const id of ['af-budget', 'af-pillar', 'af-cap', 'af-data', 'af-pii']) { const e = document.getElementById(id); if (e) e.selectedIndex = 1; }
+      for (const id of ['af-pillar', 'af-cap', 'af-data', 'af-pii']) { const e = document.getElementById(id); if (e) e.selectedIndex = 1; }
       const stop = ev => { ev.preventDefault(); }; window.addEventListener('beforeunload', stop);
       document.getElementById('af-submit').click(); await new Promise(s => setTimeout(s, 300));
       const href = window._lastMailto || '';
-      r.mailtoOk = href.startsWith('mailto:SPARK@MoEnergy.gov.sa');
-      r.ccOk = href.includes('cc=' + encodeURIComponent('line.manager@moenergy.gov.sa'));
+      r.mailtoOk = href.startsWith('mailto:line.manager@moenergy.gov.sa');
+      r.ccOk = href.includes('cc=SPARK%40MoEnergy.gov.sa');
       const body = decodeURIComponent(href.split('&body=')[1] || '');
-      r.budgetInBody = /Project budget/.test(body) && /Budget justification/.test(body);
-      r.lineManagerInBody = /Line manager email \(in CC\)/.test(body);
+      r.budgetInBody = /Project budget \(USD/.test(body) && /Budget justification/.test(body);
+      r.lineManagerInBody = /Line manager email \(recipient\)/.test(body);
       r.hrefLength = href.length;
       return r;
     });
