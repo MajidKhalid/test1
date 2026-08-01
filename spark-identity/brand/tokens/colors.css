@@ -1,0 +1,90 @@
+/* ============================================================
+   Digital Energy — Color Tokens
+   Sampled directly from the provided lockups:
+   - Navy from the Arabic "Taktna Raqmia" (طاقتنا رقمية) wordmark
+   - Deep Green from the Ministry of Energy wordmark
+   - Blue / Sky / Teal / Orange from the four glow motif tiles
+   ============================================================ */
+
+:root {
+  /* ---- Base palette ---- */
+  --de-navy-950: #081631;
+  --de-navy-900: #0e1f42;
+  --de-navy-700: #1c3566;
+
+  --de-green-900: #004035;
+  --de-green-700: #0a5c4b;
+  --de-green-500: #00ac29;
+
+  --de-blue-700: #113879;
+  --de-blue-500: #0080e8;
+  --de-blue-300: #63b3ff;
+
+  --de-teal-700: #00646a;
+  --de-teal-500: #0b8f92;
+  --de-teal-300: #6fd2d0;
+
+  --de-orange-600: #e85a30;
+  --de-orange-500: #ff734a;
+  --de-orange-300: #ffb08f;
+
+  --de-gold-500: #ae7630;
+  --de-gold-300: #dfc28c;
+
+  /* ---- Neutrals (derived, cool-navy tinted) ---- */
+  --de-white: #ffffff;
+  --de-gray-50: #f5f7fa;
+  --de-gray-100: #e9edf3;
+  --de-gray-200: #d6dce6;
+  --de-gray-300: #b7c0d1;
+  --de-gray-400: #8b96ac;
+  --de-gray-500: #616d86;
+  --de-gray-600: #454f65;
+  --de-gray-700: #2e3750;
+  --de-gray-800: #1c2338;
+  --de-gray-900: #10152a;
+
+  /* ---- Semantic surfaces ---- */
+  --surface-page: var(--de-white);
+  --surface-canvas: var(--de-gray-50);
+  --surface-card: var(--de-white);
+  --surface-sunken: var(--de-gray-100);
+  --surface-inverse: var(--de-navy-950);
+  --surface-brand: var(--de-navy-950);
+
+  /* ---- Semantic text ---- */
+  --text-primary: var(--de-navy-950);
+  --text-secondary: var(--de-gray-600);
+  --text-tertiary: var(--de-gray-400);
+  --text-on-brand: var(--de-white);
+  --text-link: var(--de-blue-500);
+  --text-link-hover: var(--de-blue-700);
+
+  /* ---- Semantic actions ---- */
+  --action-primary: var(--de-navy-950);
+  --action-primary-hover: #142c58;
+  --action-primary-active: #050d1e;
+  --action-secondary: var(--de-teal-700);
+  --action-secondary-hover: #024f54;
+  --action-accent: var(--de-blue-500);
+  --action-accent-hover: #0068bd;
+
+  /* ---- Semantic feedback ---- */
+  --feedback-success: var(--de-green-500);
+  --feedback-success-bg: #e5f8ea;
+  --feedback-warning: var(--de-gold-500);
+  --feedback-warning-bg: #faf1e2;
+  --feedback-danger: #d64545;
+  --feedback-danger-bg: #fbe9e9;
+  --feedback-info: var(--de-blue-500);
+  --feedback-info-bg: #e6f2fd;
+
+  /* ---- Borders ---- */
+  --border-subtle: var(--de-gray-200);
+  --border-default: var(--de-gray-300);
+  --border-strong: var(--de-gray-500);
+  --border-on-brand: rgba(255, 255, 255, 0.24);
+
+  /* ---- Focus ---- */
+  --focus-ring: var(--de-blue-500);
+}

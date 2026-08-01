@@ -1,0 +1,44 @@
+/* ============================================================
+   Digital Energy — Spacing, Radius, Shadow, Motion tokens
+   ============================================================ */
+
+:root {
+  /* 4px base scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* Radii — soft, squircle-leaning (from the four motif tiles) */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+  --radius-blob: 42% 58% 61% 39% / 45% 40% 60% 55%;
+
+  /* Shadows — soft, cool-tinted, low-contrast (no hard drop shadows) */
+  --shadow-sm: 0 1px 2px rgba(8, 22, 49, 0.06), 0 1px 1px rgba(8, 22, 49, 0.04);
+  --shadow-md: 0 6px 16px rgba(8, 22, 49, 0.08), 0 2px 4px rgba(8, 22, 49, 0.04);
+  --shadow-lg: 0 16px 40px rgba(8, 22, 49, 0.14), 0 4px 10px rgba(8, 22, 49, 0.06);
+  --shadow-glow-blue: 0 0 60px rgba(0, 128, 232, 0.35);
+  --shadow-glow-teal: 0 0 60px rgba(11, 143, 146, 0.35);
+  --shadow-glow-orange: 0 0 60px rgba(255, 115, 74, 0.35);
+
+  /* Motion — calm, purposeful; no bounce/elastic easing observed */
+  --ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1); /* @kind other */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1); /* @kind other */
+  --ease-out: cubic-bezier(0, 0, 0.2, 1); /* @kind other */
+  --duration-fast: 120ms; /* @kind other */
+  --duration-base: 220ms; /* @kind other */
+  --duration-slow: 420ms; /* @kind other */
+}

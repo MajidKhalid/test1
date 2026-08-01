@@ -1,0 +1,25 @@
+/* ============================================================
+   Digital Energy — Signature blurred gradient-blob motif
+   Seen behind the Ministry of Energy palm emblem: a soft, organic
+   blob blending blue → gold → green, heavily feathered/blurred.
+   Use as decorative background accents, never as text backgrounds.
+   ============================================================ */
+
+:root {
+  --gradient-blob-primary: radial-gradient(
+      circle at 30% 70%,
+      var(--de-blue-300) 0%,
+      transparent 55%
+    ),
+    radial-gradient(circle at 70% 30%, var(--de-green-500) 0%, transparent 55%),
+    radial-gradient(circle at 55% 55%, var(--de-gold-300) 0%, transparent 60%),
+    radial-gradient(circle at 40% 40%, var(--de-teal-300) 0%, transparent 65%);
+
+  --gradient-brand-dark: linear-gradient(160deg, var(--de-navy-950) 0%, var(--de-navy-700) 100%);
+}
+
+.de-blob-decoration {
+  background: var(--gradient-blob-primary);
+  filter: blur(40px);
+  opacity: 0.9;
+}
