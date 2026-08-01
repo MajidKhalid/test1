@@ -1,0 +1,176 @@
+/* SPARK × Digital Energy — floating artifact system v2 "SOLIDS"
+   The four 2D glow tiles extruded into true 3D objects, plus a glass orb,
+   cursor parallax and native scroll-driven reveals.
+   Pure CSS transforms (compositor-only: transform/opacity/filter), slow loops,
+   reduced-motion safe. Each solid keeps its shape's fixed colour (BRAND.md §4):
+   cube = sky blue #0080e8 · octahedron = deep blue #113879 ·
+   sphere = teal #00646a/#0b8f92 · stack = orange #ff734a · orb = DE blob.
+   Global speed dial: --de-motion-speed (default 1; 0.5 = half speed). */
+
+:root { --de-motion-speed: 1; }
+
+/* ---------------- keyframes ---------------- */
+@keyframes de-turn      { from { transform: rotateX(-16deg) rotateY(0deg); } to { transform: rotateX(-16deg) rotateY(360deg); } }
+@keyframes de-turn-octa { from { transform: rotateX(-11deg) rotateY(0deg); } to { transform: rotateX(-11deg) rotateY(360deg); } }
+@keyframes de-turn-gyro { from { transform: rotateX(-14deg) rotateY(0deg); } to { transform: rotateX(-14deg) rotateY(360deg); } }
+@keyframes de-gyro-billboard { from { transform: translate(-50%, -50%) rotateY(0deg) rotateX(14deg); } to { transform: translate(-50%, -50%) rotateY(-360deg) rotateX(14deg); } }
+@keyframes de-bob       { 0%, 100% { transform: translateZ(0); } 50% { transform: translateZ(18px); } }
+@keyframes de-apart     { 0%, 100% { transform: translateZ(7px); } 50% { transform: translateZ(22px); } }
+@keyframes de-hover     { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-14px,0); } }
+@keyframes de-breathe   { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+@keyframes de-glow      { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.55; } }
+@keyframes de-shadow    { 0%, 100% { transform: scale(1); opacity: .5; } 50% { transform: scale(.82); opacity: .3; } }
+@keyframes de-sweep     { 0% { transform: translateY(-130%); } 100% { transform: translateY(230%); } }
+@keyframes de-reveal-in { from { opacity: 0; transform: translateY(30px) scale(.985); } to { opacity: 1; transform: none; } }
+
+/* ---------------- shared solid scaffolding ----------------
+   Every solid: an outer .de-solid (hover float) wrapping a .de-solid__spin
+   (preserve-3d rotation). Size via inline width/height; face offsets inline. */
+.de-solid { display: inline-block; animation: de-hover calc(11s / var(--de-motion-speed)) ease-in-out infinite; will-change: transform; }
+.de-solid__spin { display: block; position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
+
+/* contact shadow — put as a sibling under the solid */
+.de-shadow { display: block; border-radius: 50%; background: radial-gradient(closest-side, rgba(4,10,24,.42), rgba(4,10,24,0));
+  filter: blur(6px); animation: de-shadow calc(11s / var(--de-motion-speed)) ease-in-out infinite; }
+.de-shadow--light { background: radial-gradient(closest-side, rgba(8,22,49,.24), rgba(8,22,49,0)); }
+
+/* ---------------- CUBE (sky blue tile → cube) ---------------- */
+.de-cube { animation: de-turn calc(26s / var(--de-motion-speed)) linear infinite; }
+.de-cube__face { display: block; position: absolute; inset: 0; background-size: cover; backface-visibility: visible;
+  border: 1px solid rgba(0, 128, 232, 0.35); }
+
+/* ---------------- OCTAHEDRON (deep-blue diamond → octahedron) ---------------- */
+.de-octa { animation: de-turn-octa calc(30s / var(--de-motion-speed)) linear infinite; }
+.de-octa__half { display: block; position: absolute; inset: 0; transform-style: preserve-3d; }
+.de-octa__half--bottom { transform: rotateX(180deg); }
+.de-octa__seat { display: block; position: absolute; left: 0; top: 50%; transform-origin: 50% 100%; transform-style: preserve-3d; }
+/* faces are glassy and hover apart along their normals — an exploded solid */
+.de-octa__face { display: block; width: 100%; height: 100%;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: radial-gradient(circle at 50% 68%, rgba(255,255,255,0) 0%, rgba(99,179,255,.24) 32%, rgba(17,56,121,.8) 60%, #113879 86%);
+  animation: de-apart calc(8s / var(--de-motion-speed)) ease-in-out infinite; will-change: transform; }
+
+/* ---------------- GYRO SPHERE (teal circle → orbital sphere) ---------------- */
+.de-gyro { animation: de-turn-gyro calc(22s / var(--de-motion-speed)) linear infinite; }
+.de-gyro__ring { display: block; position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid rgba(11, 143, 146, 0.9); }
+.de-gyro__ring--faint { border-color: rgba(0, 100, 106, 0.5); }
+/* the ball counter-rotates against the cage so it always faces the viewer */
+.de-gyro__core { display: block; position: absolute; left: 50%; top: 50%; border-radius: 50%;
+  animation: de-gyro-billboard calc(22s / var(--de-motion-speed)) linear infinite;
+  background: radial-gradient(circle at 33% 27%, #eafffe 0%, #9fe5e2 16%, #6fd2d0 32%, #0b8f92 62%, #003e43 100%);
+  box-shadow: inset -5px -8px 14px rgba(0, 42, 46, 0.5), inset 3px 5px 10px rgba(255, 255, 255, 0.35), 0 0 28px rgba(111, 210, 208, 0.45); }
+
+/* ---------------- STACK (orange rounded tile → floating stack) ---------------- */
+.de-stack { transform-style: preserve-3d; }
+.de-stack__tilt { display: block; position: relative; width: 100%; height: 100%; transform: rotateX(56deg) rotateZ(-42deg); transform-style: preserve-3d; }
+.de-stack__layer { display: block; position: absolute; inset: 0; transform-style: preserve-3d; }
+.de-stack__layer > img { position: absolute; inset: 0; width: 100%; height: 100%;
+  animation: de-bob calc(9s / var(--de-motion-speed)) ease-in-out infinite; will-change: transform; }
+
+/* ---------------- GLASS ORB (the SPARK orb as an object) ---------------- */
+.de-orb3d { position: relative; display: inline-block; border-radius: 50%; overflow: hidden;
+  animation: de-breathe calc(7s / var(--de-motion-speed)) ease-in-out infinite; will-change: transform;
+  background: #0b8f92; }
+/* liquid interior: the colour families counter-rotate; shading painted above them */
+.de-orb3d::before, .de-orb3d::after { content: ""; position: absolute; inset: -30%; border-radius: 50%; }
+.de-orb3d::before {
+  background: radial-gradient(circle at 30% 72%, #63b3ff 0%, rgba(99,179,255,0) 55%),
+              radial-gradient(circle at 72% 28%, #00ac29 0%, rgba(0,172,41,0) 55%),
+              radial-gradient(circle at 62% 66%, #dfc28c 0%, rgba(223,194,140,0) 52%);
+  animation: de-orb-swirl calc(13s / var(--de-motion-speed)) linear infinite; }
+.de-orb3d::after { inset: 0;
+  background: radial-gradient(circle at 33% 26%, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 42%),
+              radial-gradient(circle at 72% 88%, rgba(8,22,49,.45) 0%, rgba(8,22,49,0) 58%); }
+@keyframes de-orb-swirl { to { transform: rotate(360deg); } }
+
+/* .orb-live — the liquid wordmark orb for plain-HTML use (size via inline width/height).
+   Same recipe as .spark-orb in spark-logo.css. */
+.orb-live{position:relative;overflow:hidden;border-radius:50%;background:#0b8f92;flex:none;display:inline-block}
+.orb-live::before,.orb-live::after{content:"";position:absolute;inset:-30%;border-radius:50%}
+.orb-live::before{background:radial-gradient(circle at 30% 72%,#63b3ff 0%,rgba(99,179,255,0) 55%),radial-gradient(circle at 72% 28%,#00ac29 0%,rgba(0,172,41,0) 55%);animation:de-orb-swirl calc(13s / var(--de-motion-speed)) linear infinite}
+.orb-live::after{background:radial-gradient(circle at 62% 62%,#dfc28c 0%,rgba(223,194,140,0) 55%),radial-gradient(circle at 38% 34%,#6fd2d0 0%,rgba(111,210,208,0) 60%);animation:de-orb-swirl calc(19s / var(--de-motion-speed)) linear infinite reverse}
+.de-orb3d__spec { display: block; position: absolute; left: 18%; top: 12%; width: 34%; height: 24%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255,255,255,0.95), rgba(255,255,255,0)); transform: rotate(-28deg); }
+.de-orb3d__halo { display: block; position: absolute; inset: -36%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(111,210,208,.5) 0%, rgba(111,210,208,0) 66%);
+  animation: de-glow calc(7s / var(--de-motion-speed)) ease-in-out infinite; }
+
+/* ---------------- cursor parallax ----------------
+   Scene: .de-parallax; layers: .de-plx with data-depth="0.02…0.12".
+   Wire with ~15 lines of JS (see FloatingArtifacts.jsx ParallaxScene):
+   pointer offset × depth × 100px, lerped in rAF, transform on the .de-plx. */
+.de-parallax { position: relative; overflow: hidden; }
+.de-plx { will-change: transform; }
+
+/* ---------------- blade light sweep (unchanged) ---------------- */
+.de-sweep { position: relative; overflow: hidden; }
+.de-sweep::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 46%;
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%);
+  animation: de-sweep calc(6s / var(--de-motion-speed)) ease-in-out infinite; }
+
+/* ---------------- native scroll-driven reveal (progressive) ----------------
+   Falls back to "always visible" where unsupported. */
+@supports (animation-timeline: view()) {
+  .de-reveal { animation: de-reveal-in both; animation-timeline: view(); animation-range: entry 0% entry 55%; }
+}
+
+/* ---------------- accessibility ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .de-solid, .de-cube, .de-octa, .de-octa__face, .de-gyro, .de-gyro__core, .de-stack__layer > img, .de-orb3d,
+  .de-orb3d__halo, .de-shadow, .de-sweep::after, .de-reveal { animation: none !important; }
+  .de-plx { transform: none !important; }
+}
+
+
+/* ---------------- ambient backgrounds (approved set) ----------------
+   Host section: position:relative; drop a .de-bg layer inside, content above it. */
+.de-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+
+/* A · aurora wash */
+@keyframes de-bga-1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(46px,-24px) scale(1.18); } }
+@keyframes de-bga-2 { 0%,100% { transform: translate(0,0) scale(1.1); } 50% { transform: translate(-40px,22px) scale(.92); } }
+@keyframes de-bga-3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(24px,26px); } }
+.de-bg-aurora__b { position: absolute; border-radius: 50%; filter: blur(48px); }
+.de-bg-aurora__b--teal { background: radial-gradient(circle, rgba(111,210,208,.55), transparent 65%); animation: de-bga-1 calc(26s / var(--de-motion-speed)) ease-in-out infinite; }
+.de-bg-aurora__b--blue { background: radial-gradient(circle, rgba(0,128,232,.45), transparent 65%); animation: de-bga-2 calc(32s / var(--de-motion-speed)) ease-in-out infinite; }
+.de-bg-aurora__b--gold { background: radial-gradient(circle, rgba(223,194,140,.35), transparent 65%); animation: de-bga-3 calc(24s / var(--de-motion-speed)) ease-in-out infinite; }
+
+/* B · great orbits */
+@keyframes de-bg-rot { to { transform: rotate(360deg); } }
+.de-bg-orbit { position: absolute; border-radius: 50%; border: 1px solid rgba(111,210,208,.35); animation: de-bg-rot calc(60s / var(--de-motion-speed)) linear infinite; }
+.de-bg-orbit--blue { border-color: rgba(0,128,232,.3); }
+.de-bg-orbit--dashed { border-style: dashed; border-color: rgba(223,194,140,.35); }
+.de-bg-orbit--rev { animation-direction: reverse; }
+.de-bg-orbit__sat { position: absolute; left: 50%; top: -4px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: #6fd2d0; }
+.de-bg-orbit__sat--blue { background: #0080e8; }
+
+/* C · rising embers (use the motif PNGs) */
+@keyframes de-bg-rise { 0% { transform: translateY(0); opacity: 0; } 12% { opacity: .55; } 85% { opacity: .35; } 100% { transform: translateY(-110vh); opacity: 0; } }
+.de-bg-ember { position: absolute; bottom: -50px; animation: de-bg-rise calc(15s / var(--de-motion-speed)) linear infinite; }
+
+/* D · blade streaks — run several with varied delay/duration/position */
+@keyframes de-bg-streak { 0% { transform: translate(-280px,150px) rotate(-24deg); opacity: 0; } 12% { opacity: .85; } 45% { opacity: .85; } 60% { transform: translate(72vw,-160px) rotate(-24deg); opacity: 0; } 100% { transform: translate(72vw,-160px) rotate(-24deg); opacity: 0; } }
+.de-bg-streak { position: absolute; height: 3px; border-radius: 2px; width: 150px;
+  background: linear-gradient(90deg, transparent, #0b8f92, #00ac29, transparent);
+  animation: de-bg-streak calc(7s / var(--de-motion-speed)) ease-in-out infinite; }
+.de-bg-streak--blue { background: linear-gradient(90deg, transparent, #0080e8, #6fd2d0, transparent); }
+.de-bg-streak--sky { background: linear-gradient(90deg, transparent, #63b3ff, #0080e8, transparent); height: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .de-bg-aurora__b, .de-bg-orbit, .de-bg-ember, .de-bg-streak, .de-orb3d::before, .orb-live::before, .orb-live::after { animation: none !important; }
+  .de-bg-ember { opacity: .3; }
+}
+
+
+/* ---------------- section breakers (approved: keystone / wire / metronome) ----------------
+   <div class="de-break (de-break--dark)"> — a hairline seam with one small figure. */
+.de-break { position: relative; height: 110px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.de-break__line { position: absolute; left: 0; right: 0; top: 50%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-subtle,#d6dce6) 12%, var(--border-subtle,#d6dce6) 88%, transparent); }
+.de-break--dark .de-break__line { background: linear-gradient(90deg, transparent, rgba(255,255,255,.16) 12%, rgba(255,255,255,.16) 88%, transparent); }
+.de-break__line--l { right: 53%; } .de-break__line--r { left: 53%; }
+@keyframes de-break-tumble { 0%,18% { transform: rotateX(0deg); } 28%,43% { transform: rotateX(-90deg); } 53%,68% { transform: rotateX(-180deg); } 78%,93% { transform: rotateX(-270deg); } 100% { transform: rotateX(-360deg); } }
+.de-break__tumble { animation: de-break-tumble calc(9s / var(--de-motion-speed)) ease-in-out infinite; }
+@keyframes de-break-wire { 0% { transform: translateY(0); opacity: 0; } 18% { opacity: .6; } 100% { transform: translateY(-52px); opacity: 0; } }
+.de-break__ember { position: absolute; top: 50%; animation: de-break-wire calc(6s / var(--de-motion-speed)) linear infinite; }
+@media (prefers-reduced-motion: reduce) { .de-break__tumble, .de-break__ember { animation: none !important; } .de-break__ember { opacity: .3; } }

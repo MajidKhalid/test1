@@ -1,0 +1,11 @@
+{
+  "name": "spark-artifacts",
+  "private": true,
+  "description": "SPARK (Ministry of Energy governed AI sandbox) — stakeholder artifact set + verification harness",
+  "scripts": {
+    "verify": "node tools/verify.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

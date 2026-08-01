@@ -1,0 +1,7 @@
+/* Digital Energy Design System — global stylesheet entry point.
+   Consumers link only this file; it pulls in the full token closure. */
+@import "tokens/fonts.css";
+@import "tokens/colors.css";
+@import "tokens/typography.css";
+@import "tokens/spacing.css";
+@import "tokens/gradients.css";
