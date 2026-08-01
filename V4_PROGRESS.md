@@ -22,18 +22,19 @@
 - [x] 7 · "THE TWO FACES" rail group retired; Admin Guide out of public nav (file stays); Command Centre out of rail/tiles, linked from Three Faces ch.3 (target _blank)
 - [x] 7 · Hub rail, tiles (6, renumbered), names map, iframes updated; Hub home copy now three-faces; Hub visible text em-dash-free; old #lead/#guide/#centre deep links fall back to home (same pattern as retired #portal)
 
-### ② Customer Portal (brief section 3)
-- [ ] 3.1 · Cut framework-led opening; one quiet trust line; remove current hero animation
-- [ ] 3.1 · New hero animation: full journey loop adapted from ref1 (apply → labels → approval → workspace live → governance log), both offerings, Beta · Phase 2 badge on LLM lane
-- [ ] 3.1 · Value-first headline (options for Majid, recommended one shipped)
-- [ ] 3.2 · Budget: numeric input, placeholder `80 USD`, justification + counter kept; all "band/range" copy updated
-- [ ] 3.2 · Mailto reversed: To = line manager, CC = SPARK@MoEnergy.gov.sa (both languages, all strings incl. clipboard fallback); verify.js --form expectations updated
-- [ ] 3.3 · Assistant renamed Nawaf / نواف, "Powered by SPARK" sub-line, honesty chip kept
-- [ ] 3.3 · Seeded welcome messages deleted; empty-state greeting centered (options for Majid)
-- [ ] 3.3 · Left rail: Tools, Chat history (illustrative), user account block pinned bottom
-- [ ] 3.3 · Tools wear real logos/brand colors; Submit-your-tool tile kept
-- [ ] 3.3 · Tool click inserts /toolname + helper card above input
-- [ ] 3.3 · Layout per ref3: input on top, tiles below; no chip row
+### ② Customer Portal (brief section 3) — verify green (--form --chat --lang, embedded, RTL)
+- [x] 3.1 · Framework-led opening cut (h1/lead/strip chip/i2 h2+sub reframed value-first); trust line added end of i2: "Runs under the Ministry's AI Governance Framework"; old motif-float hero scene removed (file ~250KB lighter)
+- [x] 3.1 · New hero journey loop (16s CSS, no WebGL): application → labels ✓ → approved → workspace live inside "Ministry boundary · Sandboxes folder" → private-internal-call packets to shared engine (Beta · Phase 2 badge, greyed dashes) → same event rows appearing in governance log. Reduced-motion = static final state
+- [x] 3.1 · Headline shipped: "A governed space to build with AI. Apply today, build tomorrow." (brief's starting point). Alternates for Majid in change report: "Your idea, running on Ministry ground..." / "Compute, models, and a green light..."
+- [x] 3.2 · Budget numeric input (inputmode=decimal, placeholder "80 USD" / AR "80 دولاراً"), BUDGET_RE validation, label "Monthly project budget (USD)", body line "Project budget (USD, monthly)"; every band/range string updated incl. cost-tool chat script (EN+AR)
+- [x] 3.2 · Mailto reversed everywhere: href = mailto:<line manager>?cc=SPARK@MoEnergy.gov.sa; envelope(), form note, flow3 card, lmmail hint, clipboard fallback + Copied strings, success note (EN+AR); verify.js --form updated and green
+- [x] 3.3 · Nawaf / نواف + "Powered by SPARK" sub-line; honesty chip kept (em-dash-free); who-label + placeholder updated
+- [x] 3.3 · Seeded messages deleted (SCRIPTS.open removed); _chatOpen = empty state; greeting shipped: "Energy has its home" / "للطاقة هنا بيت" (Majid's suggestion). Alternates in report: "Where energy comes to think" / "Home ground for energy ideas"
+- [x] 3.3 · Rail: Tools → Chat history (3 illustrative items, replay scripts) → account block pinned bottom (illustrative, sign-in at launch)
+- [x] 3.3 · Colorful gradient tool logos (.tlogo per tool) in rail + tiles; coral Submit-your-tool tile kept (flip verified)
+- [x] 3.3 · Tool click inserts "/toolkey " + helper card above input (desc + example prompt, ✕ close); send plays script; slash-command parsing in send()
+- [x] 3.3 · ref3 layout: chathead → helper slot → composer on top → toolzone grid below; no chip row; verify.js --chat rewritten for new contract
+- NOTE: FALLBACKS + cap now say the model service arrives Phase 2 (rule 2.8 honesty); pager tab label em-dash-free
 
 ### ③ Product Brief (brief section 6)
 - [ ] 6.1 · Mandates→framework→SPARK figure rebuilt (whitespace band killed, SPARK card spacing fixed)
