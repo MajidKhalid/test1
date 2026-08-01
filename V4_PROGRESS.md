@@ -36,19 +36,19 @@
 - [x] 3.3 · ref3 layout: chathead → helper slot → composer on top → toolzone grid below; no chip row; verify.js --chat rewritten for new contract
 - NOTE: FALLBACKS + cap now say the model service arrives Phase 2 (rule 2.8 honesty); pager tab label em-dash-free
 
-### ③ Product Brief (brief section 6)
-- [ ] 6.1 · Mandates→framework→SPARK figure rebuilt (whitespace band killed, SPARK card spacing fixed)
-- [ ] 6.2 · Customer group ② replaced with MoEnergy leadership (override of 30 Jul decision 1 — record in CLAUDE.md)
-- [ ] 6.3 · Model catalogue: retitle (no em dash), LLM-as-a-service message, Beta · Phase 2 badge, hub-and-spoke animation from ref1
-- [ ] 6.4 · Sovereignty: "data never leaves MoEnergy's own boundary", nested-boundary animation (MoEnergy inside KSA)
-- [ ] 6.5 · "What Cybersecurity gets from the same design" block removed
-- [ ] 6.6 · Lanes figure: Cyber approval step removed from fast lane; caption em dash scrubbed
-- [ ] 6.7 · "One honest implication, stated up front" removed
-- [ ] 6.8 · Lifecycle figure: escalation dashed arrows animate; 6a/6b grey text overflow fixed
-- [ ] 6.9 · "Stated plainly" rewritten around month-3 benefit review (institutional voice)
-- [ ] 6.10 · Section 08 rebuilt: single ask (approve V1 launch now + announcement to all IT staff + immediate start), V2 two weeks later w/ two conditions, V3 month three; timeline shows phases with concrete steps; "three decisions" cards replaced
-- [ ] 6.11 · "Objections, answered before they're asked" removed
-- [ ] 6.12 · "Deliverable index · the one-stop map" removed (clause table in 05 stays)
+### ③ Product Brief (brief section 6) — verify green (--demo --counters, 59/59 rv, 40/40 st, embedded)
+- [x] 6.1 · Figure rebuilt: viewBox 960x490 (dead band killed), SPARK card re-rhythmed (24px line steps, box fits), em dashes scrubbed inside figure/caption/state cards/punch. GOTCHA fixed: old figure had nested icon <svg> closers, first replacement left a 7.8KB fragment rendering as stray text; excised
+- [x] 6.2 · Group ② now "MoEnergy leadership" (governance, visibility, sector enablement); h1 + cards 1/3 scrubbed; override recorded for CLAUDE.md
+- [x] 6.3 · Retitled "LLMs as a service · quality output at minimal spend" + Beta · Phase 2 chip; lead = one-shared-engine/never-buy-models message + "opens with V2"; NEW hub-and-spoke SVG (engine + 4 spokes incl. "+ your use case", animated flows + packets); table kept, em dashes scrubbed; "SPARK Portal catalogue" → customer portal; service card "Approved models, on tap" badged Beta · Phase 2
+- [x] 6.4 · h1 "Sovereign by design. Data never leaves the Ministry's boundary."; lead rewritten (KSA = floor); demo SVG now nested rings (gold dashed KSA outer + green MoEnergy inner, all actors inside, internet actor moved outside both rings); svNote/narration JS strings updated (boundary language + em dashes)
+- [x] 6.5 · Cyber block removed (h1 + 4 cards); section chips kept, gating-check chip scrubbed
+- [x] 6.6 · Fast lane: "light EA & Cyber review" → "light EA review"; caption + Tier-0 line scrubbed
+- [x] 6.7 · "One honest implication" card removed
+- [x] 6.8 · Escalation arrows now class="flow" (animate like all flows); 6a/6b sub-text wrapped with tspans inside boxes; block-wide em dashes scrubbed
+- [x] 6.9 · "Stated plainly" = month-3 benefit review (PO asks for evidence; evidence → continues; none → shutdown, resources to pool), institutional voice
+- [x] 6.10 · Section 08 = "The ask: launch SPARK V1 now"; new V1/V2/V3 phase timeline SVG (#v123: concrete steps per phase, NOW/+2WK/M3 baseline diamonds; Phase B turbine home); "three decisions" → "One ask, two stated conditions" cards; CTA "One decision away."; contingency cap re-pointed at V2's GPU need (V1 needs no GPU)
+- [x] 6.11 · Objections block removed
+- [x] 6.12 · Deliverable index removed (clause table in 05 untouched)
 
 ### ④ How It Works (brief section 8)
 - [ ] 8 · Revamped: two offerings + Beta badge, hub-and-spoke engine, MoEnergy-boundary sovereignty, three faces, V1/V2/V3 plan; contradictions with new Portal opening removed
