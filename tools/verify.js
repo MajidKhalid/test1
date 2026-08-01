@@ -1,4 +1,4 @@
-// SPARK artifact verifier — run: node verify.js <file.html> [--demo] [--counters] [--form]
+// SPARK artifact verifier — run: node verify.js <file.html> [--demo] [--counters] [--form] [--chat] [--lang]
 const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs');
@@ -108,6 +108,92 @@ const fs = require('fs');
   if (flags.includes('--counters')) {
     const cnt = await page.evaluate(() => [...document.querySelectorAll('.cnt')].map(c => c.textContent));
     report.extra.counters = cnt;
+  }
+  // 5b · optional: application form (pages exposing _switchView + #af-submit)
+  if (flags.includes('--form')) {
+    const form = await page.evaluate(async () => {
+      const r = {};
+      if (!document.getElementById('af-submit')) return 'no form hooks on this page';
+      if (window._switchView) { window._switchView('apply'); await new Promise(s => setTimeout(s, 900)); }
+      document.getElementById('af-submit').click(); await new Promise(s => setTimeout(s, 200));
+      r.emptyRejected = /missing|ناقصة/.test(document.getElementById('af-note')?.textContent || '');
+      const fill = { 'af-name': 'Contract clause finder', 'af-desc': 'Finds clauses in contracts', 'af-owner': 'A. Analyst · Legal · a@moenergy.gov.sa', 'af-sponsor': 'Head of Legal', 'af-lmmail': 'line.manager@moenergy.gov.sa', 'af-how': 'Cuts review time', 'af-success': 'Review time halved in 90 days', 'af-just': 'Covers workspace compute and storage for the prototype phase', 'af-notes': '' };
+      for (const id in fill) { const e = document.getElementById(id); if (e) { e.value = fill[id]; } }
+      for (const id of ['af-budget', 'af-pillar', 'af-cap', 'af-data', 'af-pii']) { const e = document.getElementById(id); if (e) e.selectedIndex = 1; }
+      const stop = ev => { ev.preventDefault(); }; window.addEventListener('beforeunload', stop);
+      document.getElementById('af-submit').click(); await new Promise(s => setTimeout(s, 300));
+      const href = window._lastMailto || '';
+      r.mailtoOk = href.startsWith('mailto:SPARK@MoEnergy.gov.sa');
+      r.ccOk = href.includes('cc=' + encodeURIComponent('line.manager@moenergy.gov.sa'));
+      const body = decodeURIComponent(href.split('&body=')[1] || '');
+      r.budgetInBody = /Project budget/.test(body) && /Budget justification/.test(body);
+      r.lineManagerInBody = /Line manager email \(in CC\)/.test(body);
+      r.hrefLength = href.length;
+      return r;
+    });
+    report.extra.form = form;
+    try { await page.screenshot({ path: `${shotsDir}/${name}-form.png` }); } catch (e) { }
+  }
+  // 5c · optional: chat illustration (pages exposing _switchView + #chatlog)
+  if (flags.includes('--chat')) {
+    const chat = await page.evaluate(async () => {
+      const r = {};
+      const log = document.getElementById('chatlog');
+      if (!log) return 'no chat hooks on this page';
+      if (window._switchView) window._switchView('action');
+      await new Promise(s => setTimeout(s, 5200));
+      r.toolCards = document.querySelectorAll('#chatlog .tool').length;
+      const first = document.querySelector('#chatlog .tool[data-script]');
+      first?.click();
+      await new Promise(s => setTimeout(s, 1200));
+      r.typingShown = !!document.querySelector('#chatlog .typing');
+      await new Promise(s => setTimeout(s, 4200));
+      r.typingCleared = !document.querySelector('#chatlog .typing') || undefined;
+      r.bubbles = document.querySelectorAll('#chatlog .msg').length;
+      return r;
+    });
+    report.extra.chat = chat;
+    try { await page.screenshot({ path: `${shotsDir}/${name}-chat.png` }); } catch (e) { }
+    // "Submit your tool" flips to the apply view
+    report.extra.chatSubmitFlips = await page.evaluate(async () => {
+      if (!document.getElementById('chatnew') || !document.getElementById('v-apply')) return undefined;
+      window._switchView('action');
+      document.getElementById('chatnew').click(); await new Promise(s => setTimeout(s, 4500));
+      document.querySelector('#chatlog .tool.submit')?.click();
+      await new Promise(s => setTimeout(s, 700));
+      return document.getElementById('v-apply').classList.contains('on');
+    });
+  }
+  // 5d · optional: Arabic / RTL pass (pages exposing _setLang)
+  if (flags.includes('--lang')) {
+    const hasLang = await page.evaluate(() => !!window._setLang);
+    if (!hasLang) { report.extra.lang = 'no _setLang on this page'; }
+    else {
+      await page.evaluate(() => window._setLang('ar'));
+      await page.waitForTimeout(700);
+      const lang = await page.evaluate(() => {
+        const r = { dir: document.documentElement.getAttribute('dir'), lang: document.documentElement.getAttribute('lang'), svgIssues: [] };
+        document.querySelectorAll('svg[viewBox]').forEach((svg, si) => {
+          const vb = svg.viewBox.baseVal; if (!vb || (vb.width === 0 && vb.height === 0)) return;
+          [...svg.querySelectorAll(':scope text')].filter(t => t.closest('svg') === svg).forEach(t => {
+            let b; try { b = t.getBBox(); } catch (e) { return; }
+            if (b.width === 0 && b.height === 0) return;
+            let el = t, hid = false;
+            while (el && el !== svg) { const cs = getComputedStyle(el); if (parseFloat(cs.opacity) < 0.05 || el.getAttribute('opacity') === '0') { hid = true; break; } el = el.parentElement; }
+            if (hid) return;
+            const pad = 2;
+            if (b.x < vb.x - pad || b.y < vb.y - pad || b.x + b.width > vb.x + vb.width + pad || b.y + b.height > vb.y + vb.height + pad) {
+              r.svgIssues.push(`svg#${si} [ar]: text "${(t.textContent || '').trim().slice(0, 34)}" outside viewBox`);
+            }
+          });
+        });
+        return r;
+      });
+      report.extra.lang = lang;
+      try { await page.screenshot({ path: `${shotsDir}/${name}-ar-top.png` }); } catch (e) { }
+      await page.evaluate(() => window._setLang('en'));
+      await page.waitForTimeout(400);
+    }
   }
   // 6 · embedded-mode test
   const wrap = `/tmp/wrap_${name}.html`;
