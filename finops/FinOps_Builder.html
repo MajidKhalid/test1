@@ -78,18 +78,18 @@ iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:12px;b
 <div><label class="f">Month label</label><input type="text" id="c-mlabel" placeholder="July 2026"></div>
 <div><label class="f">Quarter label</label><input type="text" id="c-qlabel" placeholder="H1 2026"></div>
 <div><label class="f">To-date label</label><input type="text" id="c-tlabel" value="Contract to date"></div>
-<div><label class="f">To-date period line</label><input type="text" id="c-tsub" placeholder="1 Oct 2025 to 2 Aug 2026"></div>
+<div><label class="f">To-date period line</label><input type="text" id="c-tsub" placeholder="1 Oct 2025 to 31 Jul 2026"></div>
 <div><label class="f">Data as of</label><input type="text" id="c-asof" placeholder="2 August 2026"></div>
 <div><label class="f">Published</label><input type="text" id="c-pub" placeholder="2 August 2026"></div>
 </div>
 <label class="f">Credits note (shown in the GCP section; update from the Billing &gt; Credits page each month)</label>
 <textarea id="c-credits">The $450,000 migration credit is fully consumed (0% remaining; end date 29 October 2026). Spend now runs at negotiated contract rates. One unused trial credit remains: Gen App Builder, $1,000, expires 9 November 2026.</textarea>
 <label class="f">Sandbox narrative · Month view</label>
-<textarea id="c-narr-m">After the April restructure the sandbox runs at a sustainable and stable level, with usage spread across small experiment services under per-project limits.</textarea>
+<textarea id="c-narr-m">The sandbox is being restructured and relaunched as a governed service under the brand name SPARK, opening first to ITDT, then to the Ministry of Energy as a whole, then to the wider energy ecosystem. Cost now runs at a sustainable and stable level under per-project limits.</textarea>
 <label class="f">Sandbox narrative · Quarter view (the restructure story)</label>
-<textarea id="c-narr-q">Usage cost ran very high early in the period: the sandbox's Vertex AI (NotebookLM) initiative consumed heavily against credits, and the service was shut down on 1 April 2026. The planning team then restructured the sandbox with per-project limits. Cost is now at a sustainable and stable level, and enthusiasts keep a supported environment to build in.</textarea>
+<textarea id="c-narr-q">Usage cost ran very high early in the period: the sandbox's Vertex AI (NotebookLM) initiative consumed heavily against credits, and the service was shut down on 1 April 2026. The IT Strategy &amp; Planning Department then restructured the sandbox with per-project limits, and cost is now at a sustainable and stable level. It is being relaunched as a governed service under the brand name SPARK.</textarea>
 <label class="f">Sandbox narrative · To-date view</label>
-<textarea id="c-narr-t">Nearly all cumulative sandbox spend predates the April 2026 restructure; the environment now runs at a small, stable monthly level.</textarea>
+<textarea id="c-narr-t">Nearly all cumulative sandbox spend predates the restructure. The environment is being relaunched as a governed service under the brand name SPARK, opening first to ITDT, then to the Ministry of Energy as a whole, then to the wider energy ecosystem.</textarea>
 <div class="grid" style="margin-top:10px">
 <div><label class="f">Key highlight · Month (empty = automatic)</label><input type="text" id="c-hl-m"></div>
 <div><label class="f">Key highlight · Quarter (empty = automatic)</label><input type="text" id="c-hl-q"></div>
@@ -246,8 +246,74 @@ function dataTable(d){
   o+='<tr class="tfoot"><td>Total · '+d.count+' services</td><td>'+fm2(d.gross)+'</td><td>'+fm2(d.net)+'</td><td></td></tr>';
   return o+'</tbody></table>';
 }
+function journey(){
+  const W2=920,H2=352;
+  const card=(x,y,w,h,fill,stroke)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="12" fill="'+fill+'"'+(stroke?' stroke="'+stroke+'"':'')+'/>';
+  const pill=(x,y,w,h,fill,txt,tc,fs)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(h/2)+'" fill="'+fill+'"/><text x="'+(x+12)+'" y="'+(y+h/2+3.6)+'" font-size="'+(fs||10.5)+'" font-weight="600" fill="'+tc+'">'+esc(txt)+'</text>';
+  let o='<svg class="jy" viewBox="0 0 '+W2+' '+H2+'" role="img" aria-label="How a SPARK workspace is created, from application to live workspace">';
+  o+='<rect x="0" y="0" width="'+W2+'" height="'+H2+'" rx="16" fill="#0B1E3D"/>';
+  o+='<circle cx="820" cy="40" r="150" fill="#12305f" opacity=".55"/>';
+  /* 1 application */
+  o+='<g class="j1">'+card(24,26,180,84,"#ffffff")
+    +'<text x="44" y="52" font-size="13" font-weight="700" fill="#0E1B2E">Application</text>'
+    +'<rect x="44" y="62" width="120" height="6" rx="3" fill="#E9EDF3"/><rect x="44" y="74" width="86" height="6" rx="3" fill="#E9EDF3"/>'
+    +'<rect x="44" y="88" width="58" height="10" rx="5" fill="#0180E9"/></g>';
+  /* 2 arrow to ServiceNow */
+  o+='<g class="j2"><path class="dash" d="M212 68 H256" stroke="#6fd2d0" stroke-width="2" fill="none" stroke-dasharray="6 6"/>'
+    +'<path d="M252 63 L260 68 L252 73 Z" fill="#6fd2d0"/></g>';
+  /* 3 ServiceNow */
+  o+='<g class="j3">'+card(264,26,204,84,"#ffffff")
+    +'<text x="284" y="50" font-size="13" font-weight="700" fill="#0E1B2E">ServiceNow</text>'
+    +'<text x="284" y="68" font-size="10.5" fill="#42536B">routed automatically</text>'
+    +pill(284,78,150,20,"#E8F4FE","intake and approval","#0A3C6E",10)+'</g>';
+  /* 4 arrow + approved + line into the workspace, all on the same beat */
+  o+='<g class="j4"><path class="dash" d="M476 68 H520" stroke="#6fd2d0" stroke-width="2" fill="none" stroke-dasharray="6 6"/>'
+    +'<path d="M516 63 L524 68 L516 73 Z" fill="#6fd2d0"/>'
+    +'<circle cx="556" cy="68" r="16" fill="#1E7B4B"/>'
+    +'<path d="M548 68 l6 6 l11 -12" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+    +'<text x="556" y="102" font-size="11" font-weight="600" fill="#7BD8A4" text-anchor="middle">approved</text>'
+    +'<path class="dash" d="M540 84 C460 128 420 150 352 186" stroke="#6fd2d0" stroke-width="2" fill="none" stroke-dasharray="6 6" opacity=".9"/></g>';
+  /* boundary */
+  o+='<g class="j5"><rect x="24" y="130" width="872" height="182" rx="14" fill="rgba(1,128,233,.07)" stroke="#4a8fd6" stroke-width="1.5" stroke-dasharray="7 6"/>'
+    +'<text x="44" y="152" font-size="11" letter-spacing=".12em" fill="#8FA9C8">MINISTRY BOUNDARY · SANDBOXES FOLDER</text></g>';
+  /* workspace */
+  o+='<g class="j5">'+card(48,166,300,128,"#ffffff")
+    +'<text x="68" y="192" font-size="13" font-weight="700" fill="#0E1B2E">Your workspace · live</text>'
+    +'<text x="68" y="210" font-size="10.5" fill="#42536B">an isolated project, yours</text>'
+    +pill(68,220,206,22,"#E8F4FE","your data and tools","#0A3C6E")
+    +pill(68,250,244,22,"#EAF7EE","budget watched automatically","#16603C")+'</g>';
+  /* engine */
+  o+='<g class="j6">'+card(572,166,300,128,"#12294D","rgba(255,255,255,.16)")
+    +'<circle cx="592" cy="190" r="6" fill="#6fd2d0"/>'
+    +'<text x="608" y="194" font-size="13" font-weight="700" fill="#ffffff">Shared engine</text>'
+    +'<rect x="592" y="206" width="104" height="19" rx="9.5" fill="rgba(254,115,74,.2)" stroke="#FE734A"/>'
+    +'<text x="604" y="219.5" font-size="9.5" font-weight="700" fill="#FFC7B0">Beta · Phase 2</text>'
+    +'<rect x="592" y="234" width="66" height="19" rx="6" fill="rgba(255,255,255,.09)"/><text x="602" y="247.5" font-size="9.5" fill="#BBD2EA">Llama 3.1</text>'
+    +'<rect x="666" y="234" width="66" height="19" rx="6" fill="rgba(255,255,255,.09)"/><text x="676" y="247.5" font-size="9.5" fill="#BBD2EA">Qwen 2.5</text>'
+    +'<rect x="592" y="260" width="72" height="19" rx="6" fill="rgba(255,255,255,.09)"/><text x="602" y="273.5" font-size="9.5" fill="#BBD2EA">Mistral 7B</text>'
+    +'<text x="856" y="273.5" font-size="10" fill="#8FA9C8" text-anchor="end">on Ministry GPUs</text></g>';
+  /* internal call */
+  o+='<g class="j7"><text x="460" y="222" font-size="10" fill="#8FA9C8" text-anchor="middle">private internal call</text>'
+    +'<path class="dash" d="M348 234 H572" stroke="#6fd2d0" stroke-width="2" fill="none" stroke-dasharray="6 6"/></g>';
+  o+='<circle class="pkt" cx="352" cy="234" r="4.5" fill="#6fd2d0"/>';
+  o+='<text class="j7" x="460" y="336" font-size="10.5" fill="#8FA9C8" text-anchor="middle">from application to a live workspace, with governance seeing every step</text>';
+  return o+'</svg>';
+}
+function sparkPanel(cfg,narr){
+  return '<div class="card sp">'
+   +'<h3>The sandbox becomes <span class="smk">SPARK<i class="orb" aria-hidden="true"></i></span></h3>'
+   +'<div class="insight tight">'+esc(narr)+'</div>'
+   +'<div class="cw">'+journey()+'</div>'
+   +'<div class="phrow">'
+   +'<div class="ph p1"><b>Phase 1 · now</b><span>ITDT builds the first use cases and proves the service from the inside.</span></div>'
+   +'<div class="ph p2"><b>Phase 2</b><span>All of the Ministry of Energy: any employee can request a workspace.</span></div>'
+   +'<div class="ph p3"><b>Phase 3</b><span>The energy ecosystem: partners build inside the boundary through a Ministry sponsor.</span></div>'
+   +'</div>'
+   +'<p class="note">Designed and operated by the IT Strategy &amp; Planning Department.</p>'
+   +'</div>';
+}
 function viewSection(cls, tabLabel, periodLine, d, sb, narr, cfg, extraLead, hl){
-  const kpi=(v,l)=>'<div class="stat"><div class="v">'+v+'</div><div class="l">'+l+'</div></div>';
+  const kpi=(v,l)=>'<div class="stat"><span class="blade" aria-hidden="true"></span><div class="v">'+v+'</div><div class="l">'+l+'</div></div>';
   return '<section class="view '+cls+'">'
    +'<div class="statrow">'
    +kpi(usd(d.net),"net spend · "+esc(tabLabel))
@@ -272,12 +338,12 @@ function viewSection(cls, tabLabel, periodLine, d, sb, narr, cfg, extraLead, hl)
    +'<p class="lead">Net sandbox spend of <b>'+money(sb.net)+'</b> ('+usd(sb.gross)+' gross, '+usd(sb.savings)+' absorbed by savings and credits).</p>'
    +'<div class="card"><h3>Sandbox net spend by service</h3>'
    +'<div class="cw">'+donut(topSlices(sb),sb.net,"Sandbox net",money(sb.net))+'</div>'
-   +'<div class="insight"><b>The sandbox story:</b> '+esc(narr)+'</div>'
    +'<details><summary>View the detail: service ranking and data table</summary>'
    +'<h4>Sandbox services · gray bar = gross usage before savings</h4>'
    +'<div class="cw">'+svcChart(sb.services,8)+'</div>'
    +'<div class="cw" style="margin-top:16px">'+dataTable(sb)+'</div>'
    +'</details></div>'
+   +sparkPanel(cfg,narr)
    +'</section>';
 }
 
@@ -289,7 +355,8 @@ function assemble(cfg,P){
     {id:"pv-t",cls:"v-t",small:cfg.tlabel,big:cfg.tsub}];
   const radios=tabs.map((t,i)=>'<input type="radio" class="pv" name="pv" id="'+t.id+'"'+(i===0?' checked':'')+'>').join("");
   const swl=tabs.map(t=>'<label for="'+t.id+'"><span class="small">'+esc(t.small)+'</span><span class="big">'+esc(t.big)+'</span></label>').join("");
-  const tabCSS=tabs.map(t=>'#'+t.id+':checked~main .'+t.cls+'{display:block}\n#'+t.id+':checked~header .sw label[for='+t.id+']{background:linear-gradient(135deg,rgba(1,128,233,.4),rgba(11,143,146,.4));border-color:#63b3ff;color:#fff;box-shadow:0 6px 18px rgba(2,8,20,.4)}\n#'+t.id+':focus-visible~header .sw label[for='+t.id+']{outline:2px solid #63b3ff;outline-offset:2px}').join("\n");
+  const gtabs=tabs.map(t=>'<label for="'+t.id+'">'+esc(t.small)+'</label>').join("");
+  const tabCSS=tabs.map(t=>'#'+t.id+':checked~main .'+t.cls+'{display:block}\n#'+t.id+':checked~header .sw label[for='+t.id+']{background:linear-gradient(135deg,rgba(1,128,233,.4),rgba(11,143,146,.4));border-color:#63b3ff;color:#fff;box-shadow:0 6px 18px rgba(2,8,20,.4)}\n#'+t.id+':checked~.gbar .gtabs label[for='+t.id+']{background:linear-gradient(135deg,#0180E9,#0B8F92);border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(1,128,233,.3)}\n#'+t.id+':focus-visible~header .sw label[for='+t.id+']{outline:2px solid #63b3ff;outline-offset:2px}\n#'+t.id+':focus-visible~.gbar .gtabs label[for='+t.id+']{outline:2px solid #0180E9;outline-offset:2px}').join("\n");
 
   const mAvgLine = hasQ ? "That compares with a "+esc(cfg.qlabel)+" monthly average of "+usd(P.q.all.net/cfg.qMonths)+"." : "";
   const views =
@@ -319,6 +386,7 @@ function assemble(cfg,P){
    +'.moewrap img{height:40px;opacity:.95}\n'
    +'.hero h1{font-family:var(--font-display);font-weight:400;font-size:42px;line-height:1.1;letter-spacing:.015em;margin:18px 0 8px}\n'
    +'.hero .sub{color:#BBD2EA;font-size:15px;max-width:46em}\n'
+   +'.hero .usdnote{font-size:12.5px;color:#8FA9C8;margin-top:8px;max-width:52em}\n'
    +'.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}\n'
    +'.chip{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:4px 12px;font-size:11.5px;font-weight:600;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff}\n'
    +'.chip.ts{background:rgba(1,128,233,.25);border-color:rgba(99,179,255,.5)}\n'
@@ -350,34 +418,84 @@ function assemble(cfg,P){
    +'details[open] summary{margin-bottom:12px}\n'
    +'.card h4{font-size:13px;font-weight:700;margin:10px 0 8px;color:var(--ink2)}\n'
    +'.cw{overflow-x:auto}\n'
+   /* liquid glass sticky bar */
+   +'.gbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:9px max(4vw,14px);background:rgba(247,250,253,.62);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid rgba(8,22,49,.09);box-shadow:0 10px 34px rgba(8,22,49,.07),inset 0 1px 0 rgba(255,255,255,.65)}\n'
+   +'.gbar .gmk{display:inline-flex;align-items:baseline;gap:.4em;font-size:17px;line-height:1}\n'
+   +'.gbar .gmk b{font-family:var(--font-display);font-weight:400;letter-spacing:.055em;color:var(--ink)}\n'
+   +'.gbar .gdept{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:700;border-inline-start:1px solid rgba(8,22,49,.14);padding-inline-start:14px}\n'
+   +'.gtabs{display:flex;gap:7px;margin-inline-start:auto;flex-wrap:wrap}\n'
+   +'.gtabs label{cursor:pointer;font-size:12px;font-weight:700;padding:7px 16px;border-radius:999px;border:1px solid rgba(8,22,49,.14);color:var(--ink2);white-space:nowrap;background:rgba(255,255,255,.5);transition:background .15s,color .15s,border-color .15s}\n'
+   +'.gtabs label:hover{border-color:var(--blue);color:var(--blue)}\n'
+   /* SPARK blade, replaces the plain rule before each figure */
+   +'.stat{position:relative;padding-inline-start:22px;border:0}\n'
+   +'.blade{position:absolute;inset-inline-start:0;top:3px;width:6px;height:40px;border-radius:3px;transform:skewX(-15deg);background:linear-gradient(180deg,#0180E9 0%,#0B8F92 52%,#00AC29 100%)}\n'
+   /* floating solid, expands and collapses */
+   +'.solid{position:absolute;inset-inline-end:6%;top:8%;width:230px;opacity:.5;pointer-events:none;animation:solidBreath 13s ease-in-out infinite}\n'
+   +'@keyframes solidBreath{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.13) rotate(7deg)}}\n'
+   /* SPARK relaunch panel */
+   +'.sp .smk{display:inline-flex;align-items:baseline;gap:.22em;font-family:var(--font-display);font-weight:400;letter-spacing:.055em;font-size:19px}\n'
+   +'.sp .smk .orb{width:.27em;height:.27em}\n'
+   +'.insight.tight{padding:9px 14px;font-size:12.5px;margin:0 0 14px}\n'
+   +'.phrow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}\n'
+   +'.ph{border:1px solid var(--line);border-radius:12px;padding:11px 14px;border-top:3px solid #0180E9}\n'
+   +'.ph.p1{border-top-color:#FE734A}.ph.p2{border-top-color:#0B8F92}.ph.p3{border-top-color:#0180E9}\n'
+   +'.ph b{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);margin-bottom:4px}\n'
+   +'.ph span{font-size:12.5px;color:var(--ink2);line-height:1.5}\n'
+   /* journey figure timeline, CSS only */
+   +'.jy .j1,.jy .j2,.jy .j3,.jy .j4,.jy .j5,.jy .j6,.jy .j7,.jy .pkt{opacity:0}\n'
+   +'.jy .j1{animation:jyA 15s linear infinite}.jy .j2{animation:jyB 15s linear infinite}\n'
+   +'.jy .j3{animation:jyC 15s linear infinite}.jy .j4{animation:jyD 15s linear infinite}\n'
+   +'.jy .j5{animation:jyE 15s linear infinite}.jy .j6{animation:jyF 15s linear infinite}\n'
+   +'.jy .j7{animation:jyG 15s linear infinite}.jy .pkt{animation:jyP 15s linear infinite}\n'
+   +'.jy .dash{animation:jyDash 1.1s linear infinite}\n'
+   +'@keyframes jyA{0%,2%{opacity:0}8%,92%{opacity:1}98%,100%{opacity:0}}\n'
+   +'@keyframes jyB{0%,10%{opacity:0}15%,92%{opacity:1}98%,100%{opacity:0}}\n'
+   +'@keyframes jyC{0%,17%{opacity:0}23%,92%{opacity:1}98%,100%{opacity:0}}\n'
+   +'@keyframes jyD{0%,27%{opacity:0}33%,92%{opacity:1}98%,100%{opacity:0}}\n'
+   +'@keyframes jyE{0%,35%{opacity:0}41%,92%{opacity:1}98%,100%{opacity:0}}\n'
+   +'@keyframes jyF{0%,44%{opacity:0}50%,92%{opacity:1}98%,100%{opacity:0}}\n'
+   +'@keyframes jyG{0%,54%{opacity:0}60%,92%{opacity:1}98%,100%{opacity:0}}\n'
+   +'@keyframes jyP{0%,60%{opacity:0;transform:translateX(0)}64%{opacity:1}78%{opacity:1;transform:translateX(214px)}82%,100%{opacity:0;transform:translateX(214px)}}\n'
+   +'@keyframes jyDash{to{stroke-dashoffset:-24}}\n'
    +'.foot{background:#050c1d;color:#7fa6cc;padding:32px 5vw 28px;font-size:12px;text-align:center;line-height:2;margin-top:40px}\n'
    +'.foot .init{font-size:9.5px;letter-spacing:.18em;color:#8b96ac;text-transform:uppercase;margin-bottom:8px}\n'
    +'.foot img{height:42px;opacity:.95;margin-bottom:8px}\n'
    +'.card{animation:rise .5s ease both}\n'
    +'@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}\n'
-   +'@media (prefers-reduced-motion:reduce){.card{animation:none}}\n'
-   +'@media (max-width:900px){.statrow{grid-template-columns:1fr 1fr}.hero h1{font-size:31px}}\n'
-   +'@media (max-width:700px){.cw svg{min-width:680px}.sw label{min-width:130px;padding:9px 14px}}\n'
+   +'@media (prefers-reduced-motion:reduce){.card,.solid,.jy .dash{animation:none}.jy .j1,.jy .j2,.jy .j3,.jy .j4,.jy .j5,.jy .j6,.jy .j7{animation:none;opacity:1}.jy .pkt{animation:none;opacity:0}}\n'
+   +'@media (max-width:900px){.statrow{grid-template-columns:1fr 1fr}.hero h1{font-size:31px}.solid{display:none}.phrow{grid-template-columns:1fr}}\n'
+   +'@media (max-width:700px){.cw svg{min-width:680px}.sw label{min-width:130px;padding:9px 14px}.gbar .gdept{display:none}}\n'
    +'@media (max-width:520px){.statrow{grid-template-columns:1fr}}\n'
-   +'@media print{body{background:#fff}.hero{background:#081631!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.foot{background:#050c1d!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.card{box-shadow:none;animation:none;break-inside:avoid}.view{padding:14px 0 0}}\n'
+   +'@media print{body{background:#fff}.hero{background:#081631!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.foot{background:#050c1d!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.card{box-shadow:none;animation:none;break-inside:avoid}.view{padding:14px 0 0}.gbar{position:static;background:#fff}.solid{display:none}.jy .j1,.jy .j2,.jy .j3,.jy .j4,.jy .j5,.jy .j6,.jy .j7{animation:none;opacity:1}.jy .pkt,.jy .dash{animation:none}}\n'
    +'</style>\n</head>\n<body>\n'
    +radios+'\n'
    +'<header class="hero">'
    +'<span class="glow" style="width:420px;height:420px;inset-inline-end:-90px;top:-80px;background:radial-gradient(circle,#6fd2d0 0%,transparent 65%)"></span>'
    +'<span class="glow" style="width:300px;height:300px;inset-inline-start:-70px;bottom:-60px;background:radial-gradient(circle,#63b3ff 0%,transparent 65%)"></span>'
+   +'<svg class="solid" viewBox="0 0 200 200" aria-hidden="true">'
+   +'<defs><linearGradient id="sg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#63b3ff" stop-opacity=".55"/><stop offset="1" stop-color="#6fd2d0" stop-opacity=".18"/></linearGradient>'
+   +'<linearGradient id="sg2" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0180E9" stop-opacity=".45"/><stop offset="1" stop-color="#00ac29" stop-opacity=".16"/></linearGradient></defs>'
+   +'<polygon points="100,12 178,100 100,188 22,100" fill="url(#sg1)" stroke="rgba(111,210,208,.4)"/>'
+   +'<polygon points="100,40 152,100 100,160 48,100" fill="url(#sg2)" stroke="rgba(99,179,255,.35)"/>'
+   +'<polygon points="100,12 152,100 100,160 48,100" fill="rgba(99,179,255,.12)"/>'
+   +'<polygon points="100,40 178,100 100,188 22,100" fill="rgba(111,210,208,.1)"/></svg>'
    +'<div class="wrap" style="position:relative">'
    +'<div class="brandrow"><span class="brandmark"><span class="word">FINOPS</span><i class="orb" aria-hidden="true"></i><img class="dew" alt="Digital Energy" src="'+DEW+'"></span>'
-   +'<div class="moewrap"><div class="init">Ministry of Energy · ITDT</div><img alt="Ministry of Energy" src="'+MOE+'"></div></div>'
+   +'<div class="moewrap"><div class="init">Ministry of Energy · ITDT · IT Strategy &amp; Planning</div><img alt="Ministry of Energy" src="'+MOE+'"></div></div>'
    +'<h1>GCP FinOps Report</h1>'
    +'<p class="sub">Google Cloud spend for the Ministry of Energy, updated monthly. Pick a period below; every figure on the page follows the selection.</p>'
-   +'<div class="chips"><span class="chip ts">Data as of '+esc(cfg.asof)+'</span><span class="chip">Published '+esc(cfg.pub)+'</span><span class="chip">All figures USD</span></div>'
+   +'<p class="sub usdnote">All figures are in US dollars. The Google Cloud console meters, reports and invoices the Ministry in USD, so the amounts here are shown exactly as Google charges them, with no conversion applied.</p>'
+   +'<div class="chips"><span class="chip ts">Data as of '+esc(cfg.asof)+'</span><span class="chip">Published '+esc(cfg.pub)+'</span><span class="chip">All figures USD</span><span class="chip">IT Strategy &amp; Planning Department</span></div>'
    +'<div class="sw">'+swl+'</div>'
    +'</div></header>\n'
+   +'<div class="gbar"><span class="gmk"><b>FINOPS</b><i class="orb" aria-hidden="true"></i></span>'
+   +'<span class="gdept">GCP spend · IT Strategy &amp; Planning</span>'
+   +'<span class="gtabs">'+gtabs+'</span></div>\n'
    +'<main><div class="wrap">'+views+'</div></main>\n'
-   +'<footer class="foot"><div class="init">An initiative of</div><img alt="Ministry of Energy" src="'+MOE+'"><br>'
-   +'Ministry of Energy · Information Technology and Digital Transformation · Digital Energy portfolio<br>'
+   +'<footer class="foot"><div class="init">Prepared for the eyes of</div><img alt="Ministry of Energy" src="'+MOE+'"><br>'
+   +'Ministry of Energy · Information Technology and Digital Transformation<br>'
    +'Compiled from Google Cloud Billing console exports · Data as of '+esc(cfg.asof)+' · Published '+esc(cfg.pub)+'<br>'
-   +'Prepared and maintained by Abdulmajid Aldamigh · Planning</footer>\n</body>\n</html>';
+   +'Prepared and maintained by the IT Strategy &amp; Planning Department</footer>\n</body>\n</html>';
   html = html.replace(/—/g,"-").replace(/§/g,"Clause");
   return html;
 }
