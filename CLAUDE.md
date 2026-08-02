@@ -8,6 +8,8 @@ This repo is the **SPARK artifact set** handed over from a Claude Cowork session
 
 - `SPARK_Site/` — the product: 9 self-contained HTML files (open `SPARK_Hub.html`) + project memory. Edit these in place; never split assets out. (`SPARK_Portal.html` and `SPARK_Leadership_Hub.html` were retired and deleted 1 Aug 2026, recoverable from git history.)
 - **Global writing rule: never use the em dash "—" in anything produced for this project** (artifacts, emails, UI strings, commits, PRs). See the rule block at the top of `SPARK_Site/CLAUDE.md`.
+- **Delivery rule (Majid, 2 Aug 2026): when a deliverable is finished, always attach the output file(s) directly in the chat AND give the GitHub raw link.** Both, every time, without being asked.
+- `finops/` — the standalone Cloud FinOps dashboard stream (SharePoint-hosted, zero JS, NOT linked to the SPARK set). See the FinOps section below.
 - `comms/` — the launch announcements (three phases × AR/EN, copy-to-clipboard, `[PORTAL-LINK]` placeholder).
 - `spark-identity/` — the official identity package (logos, fonts, tokens, BRAND.md, Solids v2 components). Source of truth for the customer portal and anything built from now on.
 - `tools/verify.js` — Playwright verifier (`--demo --counters --form --chat --lang`). **Every HTML change must pass it before you declare done.** If Playwright's own Chromium is unavailable, set `CHROMIUM_PATH` to a system Chromium.
@@ -29,6 +31,15 @@ npm run verify -- SPARK_Site/<file>.html         # after every change
 4. `SPARK_Site/CLAUDE.md` updated if a decision was made or a fact changed.
 
 Known trap already fixed once: a broad `.figbox svg { width:100% }` rule blows up nested icon SVGs — keep such rules scoped to direct children.
+
+## FinOps dashboard stream (`finops/`, standalone)
+
+- Recurring artifact for IT leadership, hosted on SharePoint: one self-contained HTML file, zero JavaScript, timestamped, updated monthly. Not part of the SPARK Hub; it only borrows the DE identity (fonts, orb, palette).
+- v1.1 (Q2 2026, all platforms) shipped 2 Aug 2026 with adversarial-review fixes. Superseded in direction by the client review the same day; keep the file as the Q2 archive.
+- **v2 direction (client review via Majid, 2 Aug 2026):** keep it simple, short and sweet; **GCP spend ONLY** (drop Azure, Oracle, O365, SaaS budget sections); exactly **two sections: GCP spend and Sandbox spend**. Sandbox quarterly narrative: usage cost ran very high, the planning team restructured the sandbox, cost is now at a sustainable and stable level.
+- **Period switch replaces the hero chip row** (Majid wants it prominent): Month and Contract-to-date always; **Quarter appears only in quarter-end months**. Implement as CSS-only radio tabs (zero JS holds, SharePoint-safe).
+- "To date" means the contractual period (1 Jun 2025 onward), not all-time.
+- First v2 build = July 2026 month + H1 2026 + contract-to-date. **Blocked on data:** Majid runs `finops/GCP_Data_Pull_Runbook.md` and drops the CSVs in chat.
 
 ## What is NOT here
 
