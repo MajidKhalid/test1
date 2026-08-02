@@ -50,6 +50,101 @@ html[lang=ar] h1.h{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-
 html[lang=ar] .tile h3{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;font-weight:700;font-size:20px;line-height:1.35}
 html[lang=ar] .kick,html[lang=ar] .tile .n,html[lang=ar] .rail .sec,html[lang=ar] .rail .tg{letter-spacing:0}
 @media(max-width:900px){.tiles{grid-template-columns:1fr}.rail{width:200px}:root{--rail:200px}h1.h{font-size:36px}}
+/* ============ SPARK v4 · Phase B visual kit ("Digital Energy, made physical") ============
+   CSS-only. No WebGL. Solids adapted from the floating-artifacts v2 "Solids" handoff with
+   gradient faces (fixed per-shape colours, BRAND.md section 4) instead of PNG textures to keep
+   pages self-contained without multi-hundred-KB payloads. Governed by --de-motion-speed;
+   fully frozen under prefers-reduced-motion. */
+:root{--de-motion-speed:1}
+
+/* ---- glass top bar (9.2) ---- */
+.gnav{position:fixed;top:10px;inset-inline-start:calc(var(--nav-w,0px) + 16px);inset-inline-end:16px;z-index:70;
+  display:flex;align-items:center;gap:14px;padding:8px 10px 8px 18px;border-radius:999px;
+  background:rgba(255,255,255,.6);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.65);box-shadow:0 -1px 0 rgba(255,255,255,.7) inset,0 8px 26px rgba(8,22,49,.14)}
+.gnav .gtitle{font-size:12.5px;font-weight:700;letter-spacing:.06em;color:#0e1b2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gnav .gorb{width:14px;height:14px;border-radius:50%;flex:none;background:
+ radial-gradient(circle at 30% 72%,#63b3ff 0%,rgba(99,179,255,0) 58%),
+ radial-gradient(circle at 72% 28%,#00ac29 0%,rgba(0,172,41,0) 58%),
+ radial-gradient(circle at 55% 55%,#dfc28c 0%,rgba(223,194,140,0) 62%),
+ radial-gradient(circle at 42% 40%,#6fd2d0 0%,rgba(111,210,208,0) 68%),#0b8f92;
+ box-shadow:0 0 8px rgba(111,210,208,.45)}
+.gnav .gspace{flex:1}
+.gnav .langbtn{margin:0}
+@media (max-width:860px){.gnav{inset-inline-start:64px;top:8px}}
+html.embedded .gnav{inset-inline-start:calc(var(--nav-w,190px) + 10px);top:6px}
+
+/* ---- liquid-glass cards (9.3) ---- */
+.glass, .gcard{background:rgba(255,255,255,.72)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.6)!important;
+  box-shadow:0 -1px 0 rgba(255,255,255,.75) inset,0 10px 30px rgba(8,22,49,.10)!important}
+.glassdark{background:rgba(10,26,58,.55)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.14)!important;
+  box-shadow:0 -1px 0 rgba(255,255,255,.10) inset,0 12px 32px rgba(2,8,20,.45)!important}
+
+/* ---- tilt-on-hover (9.3) · JS adds/updates --tx/--ty; ≤3 .tiltcard per page ---- */
+.tiltcard{transform:perspective(900px) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg));
+  transition:transform .35s cubic-bezier(.2,.7,.3,1.2);will-change:transform}
+
+/* ---- glow field + drifting motifs (9.1) ---- */
+.de-field{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.de-glow{position:absolute;border-radius:50%;filter:blur(46px);opacity:.30}
+.de-glow.gteal{background:radial-gradient(circle,#6fd2d0 0%,transparent 65%)}
+.de-glow.gblue{background:radial-gradient(circle,#63b3ff 0%,transparent 65%)}
+.de-glow.ggold{background:radial-gradient(circle,#dfc28c 0%,transparent 65%)}
+@keyframes de-drift{0%,100%{transform:translate3d(0,0,0) rotate(0)}25%{transform:translate3d(7px,-11px,0) rotate(1.2deg)}50%{transform:translate3d(-5px,-17px,0) rotate(-1deg)}75%{transform:translate3d(-9px,-6px,0) rotate(.8deg)}}
+.de-float{animation:de-drift calc(18s/var(--de-motion-speed)) ease-in-out infinite;will-change:transform}
+.de-float.slow{animation-duration:calc(28s/var(--de-motion-speed))}
+@keyframes de-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+.de-breathe{animation:de-breathe calc(7s/var(--de-motion-speed)) ease-in-out infinite}
+
+/* ---- v2 solids, gradient-faced (9.1) · one centerpiece per view max ---- */
+@keyframes de-turn{from{transform:rotateX(-16deg) rotateY(0)}to{transform:rotateX(-16deg) rotateY(360deg)}}
+@keyframes de-hover{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-14px,0)}}
+@keyframes de-shadow{0%,100%{transform:scale(1);opacity:.45}50%{transform:scale(.82);opacity:.26}}
+.de-solid{display:inline-block;animation:de-hover calc(11s/var(--de-motion-speed)) ease-in-out infinite;will-change:transform}
+.de-solid .spin{display:block;position:relative;width:100%;height:100%;transform-style:preserve-3d;animation:de-turn calc(26s/var(--de-motion-speed)) linear infinite}
+.de-cubeface{position:absolute;inset:0;border:1px solid rgba(0,128,232,.4);
+  background:linear-gradient(145deg,rgba(99,179,255,.9),rgba(0,128,232,.82) 55%,rgba(17,56,121,.9));backface-visibility:visible}
+.de-shadowdisc{display:block;margin:0 auto;border-radius:50%;background:radial-gradient(closest-side,rgba(4,10,24,.4),rgba(4,10,24,0));
+  filter:blur(6px);animation:de-shadow calc(11s/var(--de-motion-speed)) ease-in-out infinite}
+/* orbital gyro sphere (teal) */
+@keyframes de-gyro{from{transform:rotateX(-14deg) rotateY(0)}to{transform:rotateX(-14deg) rotateY(360deg)}}
+.de-gyro{display:block;position:relative;transform-style:preserve-3d;animation:de-gyro calc(22s/var(--de-motion-speed)) linear infinite}
+.de-gyro i{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(11,143,146,.9)}
+.de-gyro i:nth-child(2){transform:rotateY(45deg);border-color:rgba(11,143,146,.5)}
+.de-gyro i:nth-child(3){transform:rotateY(90deg)}
+.de-gyro i:nth-child(4){transform:rotateY(135deg);border-color:rgba(11,143,146,.5)}
+.de-gyro i:nth-child(5){transform:rotateX(90deg);border-color:rgba(0,100,106,.85)}
+.de-gyro .core{position:absolute;inset:26%;border-radius:50%;border:none;
+  background:radial-gradient(circle at 32% 30%,#6fd2d0 0%,#0b8f92 45%,#00464b 100%)}
+/* blade light-sweep divider */
+@keyframes de-sweep{0%{transform:translateY(-130%)}100%{transform:translateY(230%)}}
+.de-sweepwrap{position:relative;overflow:hidden}
+.de-sweepwrap::after{content:'';position:absolute;inset-inline:0;height:46%;top:0;
+  background:linear-gradient(180deg,transparent,rgba(255,255,255,.35),transparent);
+  animation:de-sweep calc(6s/var(--de-motion-speed)) ease-in-out infinite}
+
+/* ---- quality floor (9.6) ---- */
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid #0080e8;outline-offset:2px}
+@media (max-width:420px){
+  .de-field,.de-solid,.de-gyro,.de-glow{display:none!important}
+  .gnav{inset-inline-start:64px;inset-inline-end:8px;top:6px}
+}
+@media (prefers-reduced-motion:reduce){
+  .de-float,.de-breathe,.de-solid,.de-solid .spin,.de-gyro,.de-sweepwrap::after{animation:none!important}
+  .tiltcard{transform:none!important;transition:none}
+}
+
+/* hub-specific phase B */
+.topbar{background:rgba(255,255,255,.6);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.65);box-shadow:0 6px 20px rgba(8,22,49,.07)}
+.home{position:relative}
+.homewrap{position:relative;z-index:1}
+.home-orn{position:absolute;inset-inline-end:6%;top:70px;pointer-events:none;z-index:0}
+@media (max-width:900px){.home-orn{display:none}}
+.tile.tiltcard{transition:transform .35s cubic-bezier(.2,.7,.3,1.2),box-shadow .2s,border-color .2s}
+.tile.tiltcard:hover{transform:perspective(900px) rotateX(var(--ty,0deg)) rotateY(var(--tx,0deg))}
 </style></head><body>
 
 <nav class="rail">
@@ -72,13 +167,13 @@ html[lang=ar] .kick,html[lang=ar] .tile .n,html[lang=ar] .rail .sec,html[lang=ar
 <div class="stage">
   <div class="topbar"><span class="crumb" id="crumb">Home</span><button class="langbtn" id="langbtn" type="button">العربية</button><a class="open" id="openFull" href="#" target="_blank" style="display:none" data-ar="افتح هذه الصفحة في تبويب مستقل ↗">Open this page in its own tab ↗</a></div>
 
-  <div class="home on" id="home"><div class="homewrap">
+  <div class="home on" id="home"><div class="de-field" data-plx aria-hidden="true"><span class="de-glow gteal" data-depth=".08" style="width:380px;height:380px;inset-inline-end:-60px;top:-70px"></span><span class="de-glow gblue" data-depth=".12" style="width:320px;height:320px;inset-inline-start:-80px;bottom:-40px"></span></div><span class="home-orn de-float slow" aria-hidden="true"><span class="de-solid" style="width:96px;height:96px"><span class="spin"><i class="de-cubeface" style="transform:rotateY(0) translateZ(48px)"></i><i class="de-cubeface" style="transform:rotateY(90deg) translateZ(48px)"></i><i class="de-cubeface" style="transform:rotateY(180deg) translateZ(48px)"></i><i class="de-cubeface" style="transform:rotateY(270deg) translateZ(48px)"></i><i class="de-cubeface" style="transform:rotateX(90deg) translateZ(48px)"></i><i class="de-cubeface" style="transform:rotateX(-90deg) translateZ(48px)"></i></span></span></span><div class="homewrap">
     <div class="kick" data-ar="الطاقة الرقمية · طاقتنا رقمية · سبارك">Digital Energy · <span style="font-family:'IBM Plex Sans Arabic'">طاقتنا رقمية</span> · SPARK</div>
     <h1 class="h" data-ar="منتج واحد.<br>ثلاثة أوجه. موقع واحد.">One product.<br>Three faces. One site.</h1>
     <p class="sub" data-ar="تخدم سبارك ثلاثة أوجه: <b>المبتكر</b> الذي يبني، و<b>المستخدم النهائي</b> الذي يستفيد، و<b>القيادة</b> التي تشرف على كل شيء مباشرة. وتحت ذلك كله طبقة تشغيل واحدة تدير نفسها بنفسها. كل شيء يعيش هنا.">SPARK serves three faces: the <b>innovator</b> who builds, the <b>end user</b> who benefits, and the <b>leadership</b> that oversees it all live. One operating layer runs itself underneath. Everything lives here.</p>
     <div class="tiles">
-      <div class="tile" data-v="brief"><div class="n" data-ar="٠١ · الحيثيات">01 · THE CASE</div><h3 data-ar="موجز المنتج">Product brief</h3><p data-ar="حل واحد: الإطار. وسبارك هي ذلك الإطار منفذاً. صفحتان: الحيثيات ثم الإثبات. الواقع، والإطار، والخدمة، والسيادة؛ خارطة البنود، ودورة الحياة، والقيمة، وطلب الإطلاق. جاهز للقرار.">One solution: the Framework. SPARK is that framework, implemented. Two pages: the case, then the proof. Reality, framework, service, sovereignty; clause map, lifecycle, value, the launch ask. Decision-ready.</p><div class="go" data-ar="افتح ←">Open →</div></div>
-      <div class="tile" data-v="faces"><div class="n" data-ar="٠٢ · الأوجه الثلاثة">02 · THE THREE FACES</div><h3 data-ar="الأوجه الثلاثة لسبارك">The three faces of SPARK</h3><p data-ar="صفحة واحدة بثلاثة فصول: المبتكر الذي يطلب مساحة عمل، والمستخدم النهائي الذي يستفيد من حالات الاستخدام المنشورة، وواجهة القيادة التي ترى كل شيء يعمل مباشرة. دون حاجة إلى اجتماعات.">One page, three chapters: the innovator who requests a space, the end user who benefits from published use cases, and the leadership view that watches it all run live. No meetings required.</p><div class="go" data-ar="افتح ←">Open →</div></div>
+      <div class="tile tiltcard" data-v="brief"><div class="n" data-ar="٠١ · الحيثيات">01 · THE CASE</div><h3 data-ar="موجز المنتج">Product brief</h3><p data-ar="حل واحد: الإطار. وسبارك هي ذلك الإطار منفذاً. صفحتان: الحيثيات ثم الإثبات. الواقع، والإطار، والخدمة، والسيادة؛ خارطة البنود، ودورة الحياة، والقيمة، وطلب الإطلاق. جاهز للقرار.">One solution: the Framework. SPARK is that framework, implemented. Two pages: the case, then the proof. Reality, framework, service, sovereignty; clause map, lifecycle, value, the launch ask. Decision-ready.</p><div class="go" data-ar="افتح ←">Open →</div></div>
+      <div class="tile tiltcard" data-v="faces"><div class="n" data-ar="٠٢ · الأوجه الثلاثة">02 · THE THREE FACES</div><h3 data-ar="الأوجه الثلاثة لسبارك">The three faces of SPARK</h3><p data-ar="صفحة واحدة بثلاثة فصول: المبتكر الذي يطلب مساحة عمل، والمستخدم النهائي الذي يستفيد من حالات الاستخدام المنشورة، وواجهة القيادة التي ترى كل شيء يعمل مباشرة. دون حاجة إلى اجتماعات.">One page, three chapters: the innovator who requests a space, the end user who benefits from published use cases, and the leadership view that watches it all run live. No meetings required.</p><div class="go" data-ar="افتح ←">Open →</div></div>
       <div class="tile" data-v="auto"><div class="n" data-ar="٠٣ · طبقة التشغيل">03 · THE OPERATING LAYER</div><h3 data-ar="استراتيجية البيانات والأتمتة">Data &amp; automation strategy</h3><p data-ar="كل ما تتولى صيانته، وعقود التغذية بالبيانات، ومسار الآفاق الثلاثة نحو الموجز الذي يكتب نفسه بنفسه. جهدك يتقلص إلى مراجعة من ١٥ دقيقة.">Everything you maintain, the feed contracts, and the three-horizon path to the digest that writes itself. Your input reduced to a 15-minute review.</p><div class="go" data-ar="افتح ←">Open →</div></div>
       <div class="tile" data-v="reg"><div class="n" data-ar="٠٤ · للعملاء">04 · FOR CUSTOMERS</div><h3 data-ar="سجّل استخداماً للذكاء الاصطناعي">Register an AI use</h3><p data-ar="الذكاء الاصطناعي خارج سبارك (حلول الموردين، وأدوات الإدارات، والتجارب الأولية) يصرح عنه خلال خمس دقائق. كل طلب يصبح قيداً في السجل. المسجل محمي؛ ونافذة التحول مفتوحة.">Non-SPARK AI (vendor SaaS, department tools, pilots) declared in five minutes. Every submission becomes a register row. Registered = protected; the transition window is open.</p><div class="go" data-ar="افتح ←">Open →</div></div>
       <div class="tile" data-v="customer"><div class="n" data-ar="٠٥ · للعملاء">05 · FOR CUSTOMERS</div><h3 data-ar="بوابة العملاء · صفحة الإطلاق">Customer portal · the launch page</h3><p data-ar="الصفحة التي يحيل إليها الإعلان الرسمي، مرحلة بمرحلة: التعريف بسبارك، ونموذج التقديم، وسبارك في العمل: محادثة توضيحية مع أدوات دفعة الإطلاق. بالعربية والإنجليزية.">The page the official announcement links to, phase by phase: introducing SPARK, the application form, and SPARK in action, a simulated chat with the launch-cohort tools. English and Arabic.</p><div class="go" data-ar="افتح ←">Open →</div></div>
@@ -138,6 +233,49 @@ btn.addEventListener('click',function(){setLang(document.documentElement.getAttr
 window._setLang=setLang;
 var saved='en';try{saved=localStorage.getItem('spark-lang')||'en'}catch(e){}
 if(saved==='ar')setLang('ar');
+})();
+</script>
+<script>
+/* SPARK v4 · Phase B motion driver: restrained card tilt + pointer parallax on .de-field layers.
+   No WebGL. Frozen under prefers-reduced-motion. */
+(function(){
+if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+/* tilt (≤3 .tiltcard per page) */
+[].slice.call(document.querySelectorAll('.tiltcard')).slice(0,3).forEach(function(c){
+  c.addEventListener('pointermove',function(e){
+    var r=c.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+    c.style.setProperty('--tx',(x*5).toFixed(2)+'deg');
+    c.style.setProperty('--ty',(-y*4).toFixed(2)+'deg');
+  });
+  c.addEventListener('pointerleave',function(){
+    c.style.setProperty('--tx','0deg');c.style.setProperty('--ty','0deg');
+  });
+});
+/* pointer parallax on decorated fields */
+[].slice.call(document.querySelectorAll('.de-field[data-plx]')).forEach(function(field){
+  var host=field.parentElement,els=[].slice.call(field.querySelectorAll('[data-depth]'));
+  if(!els.length)return;
+  var tx=0,ty=0,cx=0,cy=0,raf=null,rect=null;
+  function measure(){rect=host.getBoundingClientRect()}
+  measure();window.addEventListener('resize',measure);
+  host.addEventListener('pointermove',function(e){
+    if(!rect)measure();
+    tx=((e.clientX-rect.left)/rect.width-.5)*2;
+    ty=((e.clientY-rect.top)/Math.max(rect.height,1)-.5)*2;
+    kick();
+  },{passive:true});
+  host.addEventListener('pointerleave',function(){tx=0;ty=0;kick()},{passive:true});
+  function kick(){if(!raf)raf=requestAnimationFrame(tick)}
+  function tick(){
+    raf=null;cx+=(tx-cx)*.06;cy+=(ty-cy)*.06;
+    els.forEach(function(el){
+      var d=+el.getAttribute('data-depth')||.1;
+      el.style.translate=(cx*d*24).toFixed(1)+'px '+(cy*d*18).toFixed(1)+'px';
+    });
+    if(Math.abs(tx-cx)>.004||Math.abs(ty-cy)>.004)kick();
+  }
+})
 })();
 </script>
 </body></html>

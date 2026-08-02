@@ -65,20 +65,20 @@
 - [x] 2.9 · Announcements: 30→0 em dashes, plain-language pass EN+AR, Phase 1 aligned with the V1-now ask (V1/V2 rendered as النسخة الأولى/الثانية), [PORTAL-LINK] + clipboard mechanics intact
 - Sweep incidents: Admin Guide agent ran a transient repo-wide git stash/pop (restored cleanly; independent re-verification of all 10 files passed afterward). Portal .scene svg + all diagram SVGs pinned direction:ltr for deterministic RTL bounds
 
-## Phase B — visual layer (brief section 9; only after Phase A verifies green)
-- [ ] 9.1 · Motion foundation (floating-artifact kit, pointer-tilt/scroll-parallax) on every surviving page
-- [ ] 9.2 · Glass top bar w/ EN/AR switcher + page title, standalone + embedded
-- [ ] 9.3 · Liquid-glass cards + restrained 3D tilt-on-hover
-- [ ] 9.4 · Brief section 08 horizontal timeline w/ SVG wind turbines rotating per milestone
-- [ ] 9.5 · Typography stays Lafet + IBM Plex (no Inter)
-- [ ] 9.6 · Quality floor: text-first paint, 375px stack, focus visible, contrast on glass, "Clause NN" rule
+## Phase B — visual layer (DONE: shared kit + Brief by orchestrator, 7 pages via agents, all green)
+- [x] 9.1 · Kit distilled from the v2 Solids handoff (CSS-only, gradient-faced solids to stay self-contained; committed to spark-identity/components/kit.css+js); glow fields + pointer parallax + one ornament max per page (gyro or cube; Portal has none, the journey is its centerpiece; Command Centre kept minimal by design)
+- [x] 9.2 · Glass nav pill (.gnav w/ orb + title + langbtn moved in) on the five sidebar pages; sticky-header pages (Portal, Register) + Hub topbar glassified instead, switcher position consistent top-end everywhere
+- [x] 9.3 · Restrained .glass application + .tiltcard ≤3/page driven by kit.js
+- [x] 9.4 · Brief section 08 = horizontal scroll-snap V1/V2/V3 panels; SVG turbines (blue→teal→green blades) rotate 360° sequentially via a small scroll driver; GSAP not needed
+- [x] 9.5 · Lafet + IBM Plex only (no Inter anywhere)
+- [x] 9.6 · Decoration aria-hidden/behind text; heavy décor hidden <420px; focus-visible; reduced-motion freeze; --de-motion-speed; KIT FIX post-agents: 420px gnav no longer overlaps the hamburger (inset-inline-start:64px); § scrubbed from kit comments; Command Centre gained page-local mobile collapse fixes (pre-existing overflow)
 
-## Section 10 — verification & ship
-- [ ] Per-page verify green (incl. updated --form expectations) + screenshot eyeball
-- [ ] Scroll-animation checks standalone + Hub iframe
-- [ ] RTL pass every page; mobile 375px pass; zero em dashes grep
-- [ ] SPARK_Site/CLAUDE.md updated with every override (list in brief section 10)
-- [ ] SPARK_Site_v4.zip + claude_SPARK_Site_v4_change_report.md (v3 report format)
+## Section 10 — verification & ship (DONE)
+- [x] All 10 files verified green by the orchestrator after Phase B (flags incl. reversed --form + new --chat contracts) + screenshots eyeballed EN/AR
+- [x] Scroll animations checked standalone + embedded (verify harness runs both)
+- [x] RTL pass all bilingual pages; 375px pass (gnav/hamburger fix confirmed geometrically); em dash census 0; § census 0
+- [x] SPARK_Site/CLAUDE.md updated with every override (committed 40f0184)
+- [x] SPARK_Site_v4.zip built (9 files, 2.3MB) + claude_SPARK_Site_v4_change_report.md at repo root; PR #3 (draft) open against the v3 handoff branch
 
 ## In-flight notes
 

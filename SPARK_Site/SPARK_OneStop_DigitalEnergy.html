@@ -143,7 +143,7 @@ html.embedded .nav{padding:16px 12px}
 html.embedded .nav .dg,html.embedded .nav .foot{display:none}
 /* ============ SPARK v4 · Phase B visual kit ("Digital Energy, made physical") ============
    CSS-only. No WebGL. Solids adapted from the floating-artifacts v2 "Solids" handoff with
-   gradient faces (fixed per-shape colours, BRAND.md §4) instead of PNG textures to keep
+   gradient faces (fixed per-shape colours, BRAND.md section 4) instead of PNG textures to keep
    pages self-contained without multi-hundred-KB payloads. Governed by --de-motion-speed;
    fully frozen under prefers-reduced-motion. */
 :root{--de-motion-speed:1}
@@ -221,7 +221,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible,input:focus-visibl
   outline:2px solid #0080e8;outline-offset:2px}
 @media (max-width:420px){
   .de-field,.de-solid,.de-gyro,.de-glow{display:none!important}
-  .gnav{inset-inline:8px;top:6px}
+  .gnav{inset-inline-start:64px;inset-inline-end:8px;top:6px}
 }
 @media (prefers-reduced-motion:reduce){
   .de-float,.de-breathe,.de-solid,.de-solid .spin,.de-gyro,.de-sweepwrap::after{animation:none!important}

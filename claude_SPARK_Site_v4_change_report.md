@@ -1,6 +1,6 @@
 # SPARK_Site v4 · change report
 
-> One full revision pass on the artifact set per the v4 brief (1 Aug 2026). Deliverable: `SPARK_Site_v4.zip` (the `SPARK_Site/` folder, nine self-contained HTML files) plus the aligned `comms/SPARK_Launch_Announcements.html`. Every page verified green with `tools/verify.js` (updated contracts) and eyeballed; zero user-visible em dashes across the set; RTL pass on every bilingual page; embedded-mode pass inside the Hub iframe. The v3 change report was not in this repo, so this report uses the project's documentation format.
+> One full revision pass on the artifact set per the v4 brief (1 Aug 2026), Phases A and B complete. Deliverable: `SPARK_Site_v4.zip` at the repo root (nine self-contained HTML files, 2.3 MB) plus the aligned `comms/SPARK_Launch_Announcements.html`. Final state: every page verified green with `tools/verify.js` (updated contracts) and eyeballed in EN and AR; zero user-visible em dashes and zero section-sign characters across the set; RTL pass on every bilingual page; embedded-mode pass inside the Hub iframe; 375 px mobile pass (including a post-agent kit fix so the glass nav never covers the sidebar hamburger). The v3 change report was not in this repo, so this report uses the project's documentation format.
 
 ## 1 · Decisions shipped with options for Majid
 
@@ -69,6 +69,7 @@ Executed with a CSS-only kit distilled from the floating-artifacts v2 "Solids" d
 - Glass top bar on sidebar pages (orb, page title, the EN/AR switcher moved in); sticky-header pages (Portal, Register) and the Hub glassify their existing bars instead, so the switcher sits in the same top position everywhere.
 - Hero glow fields with pointer parallax; at most one 3D ornament per page (gyro sphere or cube); liquid-glass treatment on a restrained set of cards; tilt-on-hover capped at three cards per page; blade light-sweep divider retained.
 - The Brief's section 08 turbine timeline is the 9.4 centerpiece (scroll-snap plus a small JS progress driver; GSAP was not needed).
+- Per page: Hub (glass topbar, cube ornament, two tilt tiles), Portal (glassified header, hero glows only since the journey loop is the centerpiece, glass on the Live V1 offer card), Register (glassified header, small gyro, glass on the why-register cards), How It Works (glass nav, cube on the dark cover, glassdark Q-cards), Automation Strategy (glass nav, gyro), Command Centre (glass nav, one glow, deliberately no ornament or tilt on data cards, plus page-local fixes for a pre-existing 375 px overflow), Three Faces (glass nav, gyro, glass offer cards).
 - Quality floor: decoration is aria-hidden and never blocks text paint; heavy décor hidden at small widths; focus-visible outlines; reduced-motion freezes everything; `--de-motion-speed` governs all loops.
 
 ## 8 · Verification
