@@ -9,6 +9,7 @@ This repo is the **SPARK artifact set** handed over from a Claude Cowork session
 - `SPARK_Site/` — the product: 9 self-contained HTML files (open `SPARK_Hub.html`) + project memory. Edit these in place; never split assets out. (`SPARK_Portal.html` and `SPARK_Leadership_Hub.html` were retired and deleted 1 Aug 2026, recoverable from git history.)
 - **Global writing rule: never use the em dash "—" in anything produced for this project** (artifacts, emails, UI strings, commits, PRs). See the rule block at the top of `SPARK_Site/CLAUDE.md`.
 - **Delivery rule (Majid, 2 Aug 2026): when a deliverable is finished, always attach the output file(s) directly in the chat AND give the GitHub raw link.** Both, every time, without being asked.
+- **Versioning rule (Majid, 3 Aug 2026): every prompt that changes a deliverable bumps its version, starting at v1.** The version is stamped in the artifact itself (hero chip + footer line) and in the delivered filename (`FinOps_Dashboard_v1.html`, then v2, v3...). The stable `FinOps_Dashboard.html` name is kept as well, since SharePoint publishing overwrites the same file.
 - `finops/` — the standalone Cloud FinOps dashboard stream (SharePoint-hosted, zero JS, NOT linked to the SPARK set). See the FinOps section below.
 - `comms/` — the launch announcements (three phases × AR/EN, copy-to-clipboard, `[PORTAL-LINK]` placeholder).
 - `spark-identity/` — the official identity package (logos, fonts, tokens, BRAND.md, Solids v2 components). Source of truth for the customer portal and anything built from now on.
