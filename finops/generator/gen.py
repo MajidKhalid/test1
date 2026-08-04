@@ -7,7 +7,7 @@ PAL = ['#0180E9', '#E85A30', '#00A3A8', '#7C5CBF']
 OTHER = '#8B96AC'
 CX, CY, R, SW = 180, 150, 128, 38
 GAP_DEG = math.degrees(2.4 / R)          # 2.4px of arc at the stroke centre
-LABEL_MIN = 0.15                          # below this a slice gets no on-slice percent
+LABEL_MIN = 0.03                          # below this a slice gets no on-slice percent
 
 SHORT = {
     'F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)': 'F5 BIG-IP Security',
@@ -76,8 +76,11 @@ def donut(parts, centre_label=None, centre_value=None):
                    % (x0, y0, R, R, large, x1, y1, col, SW, esc(name), num(net, 2), round(share * 100)))
         if share >= LABEL_MIN:
             mx, my = pt((a0 + a1) / 2)
-            out.append('<text fill="#fff" font-size="15" font-weight="700" text-anchor="middle" '
-                       'x="%.1f" y="%.1f">%d%%</text>' % (mx, my + 5.5, round(share * 100)))
+            # a narrow slice gets a smaller figure so it stays inside the band
+            fs = 15 if share >= .12 else (12.5 if share >= .06 else 10.5)
+            out.append('<text fill="#fff" font-size="%s" font-weight="700" text-anchor="middle" '
+                       'x="%.1f" y="%.1f">%s</text>'
+                       % (fs, mx, my + fs * .37, _pct(share * 100)))
     return out
 
 def chg_cell(chg, y):

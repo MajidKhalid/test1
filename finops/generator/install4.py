@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""v18: the business application migration block is gone and its platform spend
-sits inside Business departments on the donut."""
+"""v19: the donut labels smaller slices, so Business departments carries its own
+percentage on the chart."""
 import re, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen, blocks
@@ -79,11 +79,11 @@ s = s.replace(cur, '<span class="chip"><span class="en">All figures in '
 
 # ---- version stamp: footer only -----------------------------------------
 n = s.count('Version v12') + s.count('الإصدار v12')
-s = s.replace('Version v12', 'Version v18').replace('الإصدار v12', 'الإصدار v18')
+s = s.replace('Version v12', 'Version v19').replace('الإصدار v12', 'الإصدار v19')
 # the Arabic footer line never carried a version
 a = '<span class="ar">مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>'
 assert s.count(a) == 1
-s = s.replace(a, '<span class="ar">الإصدار v18 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
+s = s.replace(a, '<span class="ar">الإصدار v19 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
 s = s.replace('3 August 2026', '4 August 2026').replace('3 أغسطس 2026', '4 أغسطس 2026')
 print('version stamps bumped:', n + 1)
 
