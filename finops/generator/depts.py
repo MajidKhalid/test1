@@ -160,7 +160,9 @@ def split(rows, service_rows=()):
     if move:
         tot[CYBER] -= move
         tot[ITSVC] += move
-    parts = [(k, round(tot[k], 2)) for k in ORDER if round(tot[k], 2) > 0]
+    # every department keeps its legend row, including the ones at zero, so the
+    # reader can see that a department carried nothing rather than wonder
+    parts = [(k, max(round(tot[k], 2), 0.0)) for k in ORDER]
     parts.sort(key=lambda t: -t[1])          # largest first, colours stay keyed to the bucket
     return parts, unknown
 
@@ -200,7 +202,7 @@ def from_services(service_rows, residual_mix):
     if residual > 0:
         for b, share in residual_mix.items():
             tot[b] += residual * share
-    parts = [(k, round(tot[k], 2)) for k in ORDER if round(tot[k], 2) > 0]
+    parts = [(k, max(round(tot[k], 2), 0.0)) for k in ORDER]
     parts.sort(key=lambda t: -t[1])
     return parts, round(exact, 2), max(residual, 0.0)
 

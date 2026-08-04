@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""v16: four owning departments, the credit card moved above the period switch,
-the version chip dropped and the currency chip carrying the Riyal mark."""
+"""v17: the credit card wears the hero's own dark glass, the period strip spans
+the same width, and every department keeps its legend row even at zero."""
 import re, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen, blocks
@@ -87,11 +87,11 @@ s = s.replace(cur, '<span class="chip"><span class="en">All figures in '
 
 # ---- version stamp: footer only -----------------------------------------
 n = s.count('Version v12') + s.count('الإصدار v12')
-s = s.replace('Version v12', 'Version v16').replace('الإصدار v12', 'الإصدار v16')
+s = s.replace('Version v12', 'Version v17').replace('الإصدار v12', 'الإصدار v17')
 # the Arabic footer line never carried a version
 a = '<span class="ar">مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>'
 assert s.count(a) == 1
-s = s.replace(a, '<span class="ar">الإصدار v16 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
+s = s.replace(a, '<span class="ar">الإصدار v17 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
 s = s.replace('3 August 2026', '4 August 2026').replace('3 أغسطس 2026', '4 أغسطس 2026')
 print('version stamps bumped:', n + 1)
 
@@ -117,6 +117,32 @@ assert card is not None
 desc = '<div style="font:400 11.5px/1.45 \'IBM Plex Sans Arabic\',\'Segoe UI\',sans-serif;color:#454f65;max-width:470px;">'
 assert card.count(desc) == 1
 card = card.replace(desc, desc.replace('<div ', '<div class="mfig-desc" '))
+
+# The card was drawn as a light panel for a light page. It now sits on the navy
+# hero, so its inline colours are remapped to the hero's own dark glass. Inline
+# styles would beat a stylesheet rule, so the values are rewritten in place.
+surfaces = [
+  ('background:#ffffff;border:1px solid #d6dce6;',
+   'background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));'
+   'border:1px solid rgba(255,255,255,.17);backdrop-filter:blur(16px) saturate(140%);'
+   '-webkit-backdrop-filter:blur(16px) saturate(140%);'),
+  ('border-top:1px solid #d6dce6;background:#ffffff;',
+   'border-top:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);'),
+  ('background:#f5f7fa;border-inline-start:1px solid #d6dce6;',
+   'background:rgba(255,255,255,.055);border-inline-start:1px solid rgba(255,255,255,.14);'),
+]
+for a, b in surfaces:
+    assert card.count(a) == 1, (a, card.count(a))
+    card = card.replace(a, b)
+ink = [('#081631', '#EEF4FF'),                  # headline ink
+       ('#454f65', 'rgba(228,238,255,.78)'),    # body
+       ('#616d86', 'rgba(228,238,255,.7)'),     # muted labels
+       ('#00646a', '#5FD3C8'),                  # teal eyebrow and the live PO
+       ('#8b96ac', 'rgba(228,238,255,.6)'),     # spent dots and strike-through
+       ('#0b8f92', '#3FC4BC'),                  # the eyebrow dashes
+       ('#d6dce6', 'rgba(255,255,255,.14)')]    # dividers
+for a, b in ink:
+    card = card.replace(a, b)
 anchor2 = '<div aria-label="Reporting period" class="sw" role="radiogroup">'
 assert s.count(anchor2) == 1
 s = s.replace(anchor2, '<div class="mfig-hero">' + card + '</div>' + anchor2)
@@ -124,11 +150,27 @@ print('credit card moved into the hero')
 
 layout_css = """
 /* ---- v16: the credit card sits above the period switch ---- */
-.mfig-hero{margin:18px 0 16px;position:relative;z-index:2}
-.mfig-hero .mfig-card{margin:0!important;box-shadow:0 26px 60px -34px rgba(0,0,0,.6)!important}
+.mfig-hero{margin:18px 0 14px;position:relative;z-index:2}
+.mfig-hero .mfig-card{margin:0!important;box-shadow:0 30px 70px -40px rgba(0,0,0,.85)!important}
+/* v17: on the navy hero the meter and its caption go dark too */
+.mfig-hero .mfig-meter .meter{background:rgba(255,255,255,.17)}
+.mfig-hero .meter-cap{color:rgba(228,238,255,.74)}
+/* the period strip spans the same width as the card above it */
+.hero .sw{width:100%!important}
+/* print: backdrop-filter does not render and background graphics may be off, so
+   the glass falls back to solid navy panels that carry the light ink */
+@media print{
+  .mfig-hero .mfig-card{background:#0d2044!important;backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;box-shadow:none!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .mfig-side{background:#152a52!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .mfig-foot{background:#0d2044!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .mfig-hero .mfig-meter .meter{background:#2b3f63!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 /* credit sources on the leading edge, the main figure after it */
 .mfig-row{flex-direction:row-reverse!important}
-.mfig-side{border-inline-start:0!important;border-inline-end:1px solid #d6dce6!important;
+.mfig-side{border-inline-start:0!important;border-inline-end:1px solid rgba(255,255,255,.14)!important;
   width:292px!important;flex:0 0 292px!important}
 /* the description reads after the bar it describes */
 .mfig-desc{order:2;max-width:660px!important}
@@ -136,7 +178,8 @@ layout_css = """
 @media(max-width:820px){
   .mfig-row{flex-direction:column!important}
   .mfig-side{width:auto!important;flex:1 1 auto!important;
-    border-inline-end:0!important;border-bottom:1px solid #d6dce6!important}
+    border-inline-end:0!important;border-bottom:1px solid rgba(255,255,255,.14)!important;
+    border-top-color:rgba(255,255,255,.14)!important}
 }
 """
 s = s.replace('/* ---- v13: the migration stat strip ---- */', layout_css + '/* ---- v13: the migration stat strip ---- */')
