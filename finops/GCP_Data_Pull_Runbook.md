@@ -24,7 +24,7 @@ Path for every file: **Billing > Reports**. Set the date range (top right), set 
 
 File 5 is the evidence for the sandbox story (high usage, then restructure, then stable). File 6 powers the credit runway and the expiry warning.
 
-**File 2 is not optional any more.** From v13 the "spend per general department" chart is built from the by-project export, not from labels, so a period without its own by-project CSV cannot carry a department view and prints a short note instead. Today the report holds one for July 2026, H1 2026 and the contract to date. To fill the gaps, pull file 2 once per missing period: Jan, Feb, Mar, Apr, May and Jun 2026 as months, and 1 Jan to 31 Mar and 1 Apr to 30 Jun as quarters. Same panel, same settings, only the date range and the Group by change.
+**File 2 matters more than it used to.** The "spend per general department" chart is built from the by-project export rather than from labels. July 2026, H1 2026 and the contract to date have one, so their split is exact and every project is listed. The other eight periods derive their split from their own by-service export instead (see the department mapping below), which pins 76% to 100% of each period exactly and apportions only the shared infrastructure residual. Pulling file 2 for Jan, Feb, Mar, Apr, May and Jun 2026 as months, plus 1 Jan to 31 Mar and 1 Apr to 30 Jun as quarters, makes all eleven periods exact. Same panel, same settings, only the date range and the Group by change.
 
 ## Quarter-end months only (Mar, Jun, Sep, Dec)
 
@@ -61,6 +61,19 @@ The department chart reads the billing project each charge sits in and maps it t
 Every project also carries a type (Cybersecurity, Infrastructure or Application) in `depts.LABELS`, and the report lists all of them under the department chart's View details so the split can be checked line by line.
 
 The shared bucket is both infrastructure and a cybersecurity solution, so the report states the split. The F5 BIG-IP and FortiGate marketplace appliances are billed as virtual machines inside the shared network platform, so they land in the shared bucket by project. Their figure comes from the by-service export (`depts.appliances`) and is carved out of the hub row: July SAR 83,477 of SAR 178,175 shared (47%), H1 SAR 436,778 of SAR 611,374 (71%), to date SAR 522,457 of SAR 800,642 (65%). No other shared project is large enough to hold them, which is what pins them to the hub.
+
+### Periods with no by-project export
+
+Those periods are derived from their own by-service export. Five service lines map to exactly one department, each verified to the cent against the by-project export in all three periods that have one:
+
+| Service line | Department | Why |
+|---|---|---|
+| Chronicle, Security Command Center, Fortinet Security SaaS | Cybersecurity | together they equal the account-level charge bucket exactly |
+| Cloud Pub/Sub | Cybersecurity | equals `moe-secops-484408` exactly |
+| Vertex AI Search | Other | equals `moe-notebooklm` exactly |
+| F5 BIG-IP, FortiGate | Shared services | the marketplace appliances inside the shared network platform |
+
+Whatever those lines do not cover is shared infrastructure (compute, network, storage, logging) and is apportioned on the H1 2026 residual mix, which is itself read from the H1 by-project export. Because the exact parts are additive and the apportionment ratio is constant, the six months and the two quarters add back to the published H1 department split exactly. Each card states the percentage it read directly versus apportioned.
 
 The account-level bucket carries no project ID, so it cannot be mapped by project. It is assigned whole to Cybersecurity because it reconciles to the cent with the security services in the by-service export for the same period: July `$79,462.25` = Chronicle + Security Command Center; H1 and to-date add Fortinet Security SaaS. Re-run that check each month before publishing; if the two stop matching, the bucket has picked up something that is not security and the assignment has to be revisited.
 

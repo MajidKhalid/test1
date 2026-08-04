@@ -142,6 +142,63 @@ def split(rows):
     return parts, unknown
 
 
+# Service lines that map to exactly one bucket, verified to the cent against the
+# by-project export in all three periods that have one (July, H1, contract to date).
+SERVICE_MAP = {
+    'Chronicle':               CYBER,   # the account-level security bucket
+    'Security Command Center':  CYBER,
+    'Fortinet Security SaaS':   CYBER,
+    'Cloud Pub/Sub':            CYBER,   # = MOE-SECOPS, to the cent
+    'Vertex AI Search':         OTHER,   # = moe-notebooklm, to the cent
+}
+
+
+def from_services(service_rows, residual_mix):
+    """A department split for a period with no by-project export.
+
+    Everything that a service line pins to one department is taken from this
+    period's own numbers. Only the shared infrastructure residual (compute,
+    network, storage, logging) is apportioned, on the mix of the period that
+    does have a by-project export and contains this one. Returns
+    ([(bucket, net)], exact_total, residual_total).
+    """
+    tot = {k: 0.0 for k in ORDER}
+    net = 0.0
+    exact = 0.0
+    for r in service_rows:
+        net += r['net']
+        b = SERVICE_MAP.get(r['name'])
+        if b is None and r['name'].startswith(APPLIANCE_PREFIXES):
+            b = SHARED
+        if b is not None:
+            tot[b] += r['net']
+            exact += r['net']
+    residual = round(net - exact, 2)
+    if residual > 0:
+        for b, share in residual_mix.items():
+            tot[b] += residual * share
+    parts = [(k, round(tot[k], 2)) for k in ORDER if round(tot[k], 2) > 0]
+    parts.sort(key=lambda t: -t[1])
+    return parts, round(exact, 2), max(residual, 0.0)
+
+
+def residual_mix(proj_rows, service_rows):
+    """How the infrastructure residual actually divided, in a period that has
+    a by-project export. Used as the apportionment basis for the periods inside it."""
+    parts, _ = split(proj_rows)
+    got = dict(parts)
+    exact = {k: 0.0 for k in ORDER}
+    for r in service_rows:
+        b = SERVICE_MAP.get(r['name'])
+        if b is None and r['name'].startswith(APPLIANCE_PREFIXES):
+            b = SHARED
+        if b is not None:
+            exact[b] += r['net']
+    resid = {k: max(got.get(k, 0.0) - exact[k], 0.0) for k in ORDER}
+    total = sum(resid.values())
+    return {k: v / total for k, v in resid.items() if v > 0} if total else {}
+
+
 def appliances(service_rows):
     """Net spend on the marketplace security appliances, from the by-service export.
 

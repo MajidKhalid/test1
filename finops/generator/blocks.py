@@ -18,6 +18,13 @@ PROJ_ROWS = {k: depts.read(glob.glob(os.path.join(B, 'July', 'by project', '*%s*
 
 # the periods whose window actually contains the platform build-out
 MIG_PERIODS = ('jul', 'td')
+
+# how the shared infrastructure residual actually divided across H1 2026, the
+# half-year that contains every period without a by-project export of its own
+def _h1_service_rows():
+    f = glob.glob(os.path.join(B, 'July', 'by service', '*2026-01-01*.csv'))[0]
+    return gen.read(f)
+RESID_MIX = depts.residual_mix(PROJ_ROWS['h1'], _h1_service_rows())
 MIG_NAMES = {
   'prj-moenergy-migration-host-hq': ('Migration landing zone (HQ)', 'منطقة هبوط الترحيل (المقر)'),
   'prj-moenergy-prd-data-dbs':      ('Database platform (production)', 'منصة قواعد البيانات (الإنتاج)'),
@@ -130,21 +137,16 @@ DEPT_METHOD = ('<p class="note">' + tw(
 
 def dept_card(key, gnet, period_en, period_ar, gcp_rows):
     rows = PROJ_ROWS.get(key)
+    derived = None
     if rows is None:
-        # honest placeholder: the split is a data pull away, not a modelling exercise
-        return ('<div class="card"><h3>' + DEPT_HEAD + '</h3><p class="note" style="margin-top:2px">' + tw(
-          'A department view for %s needs the by-project export for the same date range. The current data set '
-          'carries it for July 2026, H1 2026 and the contract to date, where the split is read from the '
-          'billing project each charge sits in rather than from labels: GCP stamps every billing row with the '
-          'labels that existed when the usage was metered, so a label applied today never reaches a past row.'
-          % period_en,
-          'يتطلب عرض الإنفاق حسب الإدارة العامة خلال %s سحب تقرير حسب المشروع للفترة نفسها. وتتوفر هذه '
-          'البيانات حالياً ليوليو 2026 والنصف الأول 2026 ومدة العقد حتى تاريخه، حيث يُقرأ التوزيع من مشروع '
-          'الفوترة الذي يقع تحته كل بند لا من الوسوم: إذ تسجّل GCP كل سطر فوترة بالوسوم القائمة وقت قياس '
-          'الاستهلاك، فلا يصل وسم يُضاف اليوم إلى سطر سابق.' % period_ar) + '</p></div>')
-
-    parts_raw, unknown = depts.split(rows)
-    assert not unknown, unknown
+        # No by-project export for this period. Take everything a service line pins
+        # to one department from this period's own numbers, and apportion only the
+        # infrastructure residual on the basis of the half-year that contains it.
+        parts_raw, exact, resid = depts.from_services(gcp_rows, RESID_MIX)
+        derived = (exact, resid)
+    else:
+        parts_raw, unknown = depts.split(rows)
+        assert not unknown, unknown
     tot = sum(v for _, v in parts_raw) or 1
     parts = [(depts.NAMES[b][0], v, v/tot, depts.PAL[b]) for b, v in parts_raw]
     svg = gen.donut_chart(parts, tw('TOTAL NET SPEND', 'إجمالي صافي الإنفاق'), m0(gnet))
@@ -156,9 +158,37 @@ def dept_card(key, gnet, period_en, period_ar, gcp_rows):
                    '<span class="dl-share">%s</span></li>'
                    % (depts.PAL[b], tw(gen.esc(en), gen.esc(ar)), m0(v), gen._pct(v/tot*100)))
     leg.append('</ul>')
+    if derived is None:
+        tail = DEPT_METHOD + dept_detail(key, gcp_rows)
+    else:
+        tail = derived_method(period_en, period_ar, gnet, *derived)
     return ('<div class="card"><h3>' + DEPT_HEAD + '</h3>'
-      + '<div class="dwrap">' + svg + '\n'.join(leg) + '</div>' + DEPT_METHOD
-      + dept_detail(key, gcp_rows) + shared_highlight(key, dict(parts_raw), gcp_rows) + '</div>')
+      + '<div class="dwrap">' + svg + '\n'.join(leg) + '</div>' + tail
+      + shared_highlight(dict(parts_raw), gcp_rows) + '</div>')
+
+
+def derived_method(period_en, period_ar, gnet, exact, resid):
+    ep = round(exact / gnet * 100) if gnet else 0
+    rp = 100 - ep
+    if rp <= 0:
+        en = ('Every charge in %s sits on a service that belongs to one general department, so this split is '
+              'read straight from the billing data with nothing apportioned.' % period_en)
+        ar = ('يقع كل بند في %s على خدمة تخص إدارة عامة واحدة، ولذلك يُقرأ هذا التوزيع مباشرة من بيانات '
+              'الفوترة دون أي توزيع تقديري.' % period_ar)
+    else:
+        en = ('%d%% of %s is read straight from the billing data: the security services, the F5 BIG-IP and '
+              'FortiGate appliances and the AI search platform each belong to one general department, and '
+              'those identities were checked to the cent against the by-project export. The remaining %d%% is '
+              'shared infrastructure (compute, network, storage, logging) and is apportioned on the verified '
+              'H1 2026 split, so the six months add back to the half-year exactly. A by-project export for '
+              'this date range would make the whole figure exact.' % (ep, period_en, rp))
+        ar = ('تُقرأ نسبة %d%% من %s مباشرة من بيانات الفوترة: فخدمات الأمن وأجهزة F5 BIG-IP وFortiGate ومنصة '
+              'البحث بالذكاء الاصطناعي تخص كل منها إدارة عامة واحدة، وقد جرى التحقق من ذلك حتى الهللة مقابل '
+              'التقرير حسب المشروع. أما النسبة المتبقية وقدرها %d%% فهي بنية تحتية مشتركة (الحوسبة والشبكة '
+              'والتخزين والسجلات) وتُوزَّع وفق توزيع النصف الأول 2026 المتحقق منه، بحيث تعود الأشهر الستة إلى '
+              'إجمالي النصف تماماً. ويكفي سحب تقرير حسب المشروع لهذه الفترة ليصبح الرقم كاملاً دقيقاً.'
+              % (ep, period_ar, rp))
+    return '<p class="note">' + tw(en, ar) + '</p>'
 
 
 def dept_detail(key, gcp_rows):
@@ -188,14 +218,24 @@ def blocks_rows(key):
     return PROJ_ROWS[key]
 
 
-def shared_highlight(key, totals, gcp_rows):
+def shared_highlight(totals, gcp_rows):
     """Majid asked whether the shared bucket is infrastructure or a cyber solution.
-    It is both, and the split is exact."""
+    It is both, and the appliance figure is exact in every period."""
     sh = totals.get(depts.SHARED)
     if not sh: return ''
     sec = depts.appliances(gcp_rows)
     infra = round(sh - sec, 2)
     if sec <= 0: return ''
+    if infra < 1:
+        en = ('Shared services of %s are the landing zone and network platform every general department runs '
+              'on. For this period all of it is a cybersecurity solution: the F5 BIG-IP and FortiGate '
+              'appliances billed as virtual machines inside the shared network platform. Credits covered the '
+              'infrastructure underneath them.' % m0(sh))
+        ar = ('تمثل الخدمات المشتركة البالغة %s منطقة الهبوط ومنصة الشبكة التي تعتمد عليها كل إدارة عامة. '
+              'وفي هذه الفترة كانت بالكامل حلول أمن سيبراني: أجهزة F5 BIG-IP وFortiGate التي تُفوتر كأجهزة '
+              'افتراضية داخل منصة الشبكة المشتركة. أما البنية التحتية تحتها فقد غطتها الأرصدة.' % m0(sh))
+        return ('<div class="insight"><b>' + tw('Shared services:', 'الخدمات المشتركة:') + '</b> '
+                + tw(en, ar) + '</div>')
     en = ('Shared services of %s are the landing zone and network platform every general department runs on. '
           '%s of that (%s) is a cybersecurity solution: the F5 BIG-IP and FortiGate appliances billed as '
           'virtual machines inside the shared network platform. The remaining %s is infrastructure.'
