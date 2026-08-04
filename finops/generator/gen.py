@@ -183,6 +183,7 @@ def bars(rows, top=6):
     return '\n'.join(out)
 
 def _pct(p):
+    if 0 < p < 0.1: return '&lt;0.1%'      # a real slice, too small to round to
     return ('%.1f%%' % p) if 0 < p < 1 else ('%d%%' % round(p))
 
 def _chg_html(chg):

@@ -50,31 +50,17 @@ For scale, the Jan to Jun 2026 pull done this way reported $1,174,633 of usage a
 
 The department chart reads the billing project each charge sits in and maps it to a general department. The map lives in `finops/generator/depts.py` and is a plain project-ID to department table, so a correction is a one-line edit and a regeneration.
 
-| Bucket | What lands there |
+| Department | What it owns |
 |---|---|
-| Cybersecurity Department | `[Charges not specific to a project]`, `moe-secops-484408`, `prd-security-kms`, `dev-security-kms` |
-| Shared services across departments | `prd-hub`, `dmz-host`, `dmz-srv`, `prd-host`, `dev-host`, `test-host`, `bootstrap`, `billexp`, `migration-host-hq` |
-| Support Services GD | `prd-data-dbs`, `dev-data-dbs`, `prd-bs-devops`, `dev-bs-devops`, `prd-infra-mngeng`, `prd-bc-centlogs`, `dev-centlogs`, `prd-bc-website` |
-| IT and Digital Transformation | `iw-sb-development`, `iw-it-dtgd-ad-ne`, `iw-spark-admin` |
+| Cybersecurity Department | the security monitoring platform (`[Charges not specific to a project]`, less its Fortinet line) and security operations (`moe-secops-484408`) |
+| IT Services GD | the platforms and appliances it operates: F5 BIG-IP, FortiGate, the Fortinet platform, `prd-security-kms`, `dev-security-kms`, `prd-hub`, `dmz-host`, `dmz-srv`, `prd-host`, `dev-host`, `test-host`, `bootstrap`, `billexp`, `migration-host-hq`, `prd-data-dbs`, `dev-data-dbs`, `prd-bs-devops`, `dev-bs-devops`, `prd-infra-mngeng`, `prd-bc-centlogs`, `dev-centlogs`, `iw-sb-development`, `iw-it-dtgd-ad-ne`, `iw-spark-admin` |
+| Business departments | applications a business department owns, today `prd-bc-website`. Split per department once the ownership map exists |
 | Other | `moe-notebooklm` |
 
-Every project also carries a type (Cybersecurity, Infrastructure or Application) in `depts.LABELS`, and the report lists all of them under the department chart's View details so the split can be checked line by line.
+Every line also carries a type (Cybersecurity, Infrastructure or Application) in `depts.LABELS`, so the report can say that a security appliance is owned by IT Services GD without pretending it is not a security solution. The report lists all of them under the department chart's View details.
 
-The shared bucket is both infrastructure and a cybersecurity solution, so the report states the split. The F5 BIG-IP and FortiGate marketplace appliances are billed as virtual machines inside the shared network platform, so they land in the shared bucket by project. Their figure comes from the by-service export (`depts.appliances`) and is carved out of the hub row: July SAR 83,477 of SAR 178,175 shared (47%), H1 SAR 436,778 of SAR 611,374 (71%), to date SAR 522,457 of SAR 800,642 (65%). No other shared project is large enough to hold them, which is what pins them to the hub.
+The account-level bucket is split by service, not left whole: Chronicle and Security Command Center are the Cybersecurity monitoring platform, and Fortinet Security SaaS is an appliance platform IT Services GD operates (`ACCOUNT_ITSVC_SERVICES`). The F5 BIG-IP and FortiGate appliances bill as virtual machines inside `prd-hub`, so they are IT Services GD spend by project; `depts.appliances()` carves them out for the type column. July SAR 83,477 of the SAR 248,305 IT Services GD carries (34%).
 
-### Periods with no by-project export
+**The monthly check that keeps this honest:** the account-level bucket reconciles to the cent with the security services in the by-service export for the same period. July `$79,462.25` = Chronicle + Security Command Center; H1 and to-date add Fortinet Security SaaS. Re-run that check before publishing; if the two stop matching, the bucket has picked up something that is not security and the split has to be revisited.
 
-Those periods are derived from their own by-service export. Five service lines map to exactly one department, each verified to the cent against the by-project export in all three periods that have one:
-
-| Service line | Department | Why |
-|---|---|---|
-| Chronicle, Security Command Center, Fortinet Security SaaS | Cybersecurity | together they equal the account-level charge bucket exactly |
-| Cloud Pub/Sub | Cybersecurity | equals `moe-secops-484408` exactly |
-| Vertex AI Search | Other | equals `moe-notebooklm` exactly |
-| F5 BIG-IP, FortiGate | Shared services | the marketplace appliances inside the shared network platform |
-
-Whatever those lines do not cover is shared infrastructure (compute, network, storage, logging) and is apportioned on the H1 2026 residual mix, which is itself read from the H1 by-project export. Because the exact parts are additive and the apportionment ratio is constant, the six months and the two quarters add back to the published H1 department split exactly. Each card states the percentage it read directly versus apportioned.
-
-The account-level bucket carries no project ID, so it cannot be mapped by project. It is assigned whole to Cybersecurity because it reconciles to the cent with the security services in the by-service export for the same period: July `$79,462.25` = Chronicle + Security Command Center; H1 and to-date add Fortinet Security SaaS. Re-run that check each month before publishing; if the two stop matching, the bucket has picked up something that is not security and the assignment has to be revisited.
-
-Note that F5 BIG-IP and FortiGate run as marketplace appliances inside the shared network hub, so they are counted under shared services rather than Cybersecurity. A new project that is not in the table stops the build with the project name, rather than being silently dropped.
+A project that is not in the table stops the build with the project name, rather than being silently dropped.

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""v15: the department chart is on every period, derived per period from its own
-service lines with only the infrastructure residual apportioned."""
+"""v16: four owning departments, the credit card moved above the period switch,
+the version chip dropped and the currency chip carrying the Riyal mark."""
 import re, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen, blocks
@@ -73,15 +73,73 @@ anchor = '/* ---- v12 compaction: same content, less scrolling ---- */'
 assert s.count(anchor) == 1
 s = s.replace(anchor, css + anchor)
 
-# ---- version stamp -------------------------------------------------------
+# ---- the hero chip row: drop the version, put the mark on the currency ----
+chip = ('<span class="chip"><span class="en">Version v12</span>'
+        '<span class="ar">الإصدار v12</span></span>')
+assert s.count(chip) == 1
+s = s.replace(chip, '')
+cur = ('<span class="chip"><span class="en">All figures SAR</span>'
+       '<span class="ar">جميع المبالغ بالريال السعودي</span></span>')
+assert s.count(cur) == 1
+s = s.replace(cur, '<span class="chip"><span class="en">All figures in '
+                   '<span class="rs" aria-hidden="true"></span></span>'
+                   '<span class="ar">جميع المبالغ بـ<span class="rs" aria-hidden="true"></span></span></span>')
+
+# ---- version stamp: footer only -----------------------------------------
 n = s.count('Version v12') + s.count('الإصدار v12')
-s = s.replace('Version v12', 'Version v15').replace('الإصدار v12', 'الإصدار v15')
+s = s.replace('Version v12', 'Version v16').replace('الإصدار v12', 'الإصدار v16')
 # the Arabic footer line never carried a version
 a = '<span class="ar">مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>'
 assert s.count(a) == 1
-s = s.replace(a, '<span class="ar">الإصدار v15 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
+s = s.replace(a, '<span class="ar">الإصدار v16 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
 s = s.replace('3 August 2026', '4 August 2026').replace('3 أغسطس 2026', '4 أغسطس 2026')
 print('version stamps bumped:', n + 1)
+
+# the scripted print line said "All figures SAR"; the CSS fallback never did,
+# and the currency is stated by the chip now
+old = "`Reporting period: ${periodLabel[resolved]} \u00b7 All figures SAR`"
+assert s.count(old) == 1, s.count(old)
+s = s.replace(old, "`Reporting period: ${periodLabel[resolved]}`")
+
+# ---- the credit card moves above the period switch -----------------------
+# It is contract position as at the data date, the same in every view, so it does
+# not belong under a period selector. One copy goes into the hero; the three
+# per-view copies go away.
+card = None
+while 'class="mfig-card"' in s:
+    a = s.index('class="mfig-card"'); a = s.rindex('<', 0, a)
+    b = span(s, a)
+    if card is None:
+        card = s[a:b]
+    s = s[:a] + s[b:]
+assert card is not None
+# the description paragraph moves below the consumption bar, so give it a class
+desc = '<div style="font:400 11.5px/1.45 \'IBM Plex Sans Arabic\',\'Segoe UI\',sans-serif;color:#454f65;max-width:470px;">'
+assert card.count(desc) == 1
+card = card.replace(desc, desc.replace('<div ', '<div class="mfig-desc" '))
+anchor2 = '<div aria-label="Reporting period" class="sw" role="radiogroup">'
+assert s.count(anchor2) == 1
+s = s.replace(anchor2, '<div class="mfig-hero">' + card + '</div>' + anchor2)
+print('credit card moved into the hero')
+
+layout_css = """
+/* ---- v16: the credit card sits above the period switch ---- */
+.mfig-hero{margin:18px 0 16px;position:relative;z-index:2}
+.mfig-hero .mfig-card{margin:0!important;box-shadow:0 26px 60px -34px rgba(0,0,0,.6)!important}
+/* credit sources on the leading edge, the main figure after it */
+.mfig-row{flex-direction:row-reverse!important}
+.mfig-side{border-inline-start:0!important;border-inline-end:1px solid #d6dce6!important;
+  width:292px!important;flex:0 0 292px!important}
+/* the description reads after the bar it describes */
+.mfig-desc{order:2;max-width:660px!important}
+.mfig-meter{order:1;margin-top:8px!important;max-width:none!important}
+@media(max-width:820px){
+  .mfig-row{flex-direction:column!important}
+  .mfig-side{width:auto!important;flex:1 1 auto!important;
+    border-inline-end:0!important;border-bottom:1px solid #d6dce6!important}
+}
+"""
+s = s.replace('/* ---- v13: the migration stat strip ---- */', layout_css + '/* ---- v13: the migration stat strip ---- */')
 
 open(DASH, 'w', encoding='utf-8').write(s)
 print('%.2f MB -> %.2f MB' % (before/1e6, len(s)/1e6))

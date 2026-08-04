@@ -24,7 +24,8 @@ MIG_PERIODS = ('jul', 'td')
 def _h1_service_rows():
     f = glob.glob(os.path.join(B, 'July', 'by service', '*2026-01-01*.csv'))[0]
     return gen.read(f)
-RESID_MIX = depts.residual_mix(PROJ_ROWS['h1'], _h1_service_rows())
+H1_SERVICES = _h1_service_rows()
+RESID_MIX = depts.residual_mix(PROJ_ROWS['h1'], H1_SERVICES)
 MIG_NAMES = {
   'prj-moenergy-migration-host-hq': ('Migration landing zone (HQ)', 'منطقة هبوط الترحيل (المقر)'),
   'prj-moenergy-prd-data-dbs':      ('Database platform (production)', 'منصة قواعد البيانات (الإنتاج)'),
@@ -126,14 +127,17 @@ def sandbox_highlight(snet, sgross, gnet, period_en, period_ar):
 DEPT_HEAD = tw('Spend per general department', 'الإنفاق حسب الإدارة العامة')
 
 DEPT_METHOD = ('<p class="note">' + tw(
-    'Departments are read from the billing project each charge sits in. The account-level security charges '
-    'reconcile to the cent with Chronicle, Security Command Center and Fortinet Security SaaS, so they are '
-    'assigned whole to Cybersecurity. Infrastructure application projects sit with Support Services GD, and '
-    'the landing zone and network platform every department runs on is shown as shared.',
-    'تُنسب الإدارات وفق مشروع الفوترة الذي يقع تحته كل بند. وتتطابق رسوم الأمن على مستوى الحساب تماماً مع '
-    'خدمات Chronicle وSecurity Command Center وFortinet Security SaaS، ولذلك تُنسب بالكامل إلى الأمن '
-    'السيبراني. وتقع مشاريع تطبيقات البنية التحتية ضمن الإدارة العامة لخدمات الدعم، بينما تظهر منطقة '
-    'الهبوط ومنصة الشبكة التي تعتمد عليها جميع الإدارات كخدمات مشتركة.') + '</p>')
+    'Every charge is assigned to the department that owns the application it pays for, read from the billing '
+    'project it sits in. Cybersecurity owns the security monitoring platform (Chronicle and Security Command '
+    'Center) and security operations. IT Services GD owns the platforms and appliances it operates, including '
+    'F5 BIG-IP, FortiGate, the Fortinet platform, key management, the landing zone, the databases, the '
+    'delivery pipelines and central logging. Business departments own their own applications, and that bucket '
+    'is split per department once the ownership map exists.',
+    'يُنسب كل بند إلى الإدارة المالكة للتطبيق الذي يخصه، وفق مشروع الفوترة الذي يقع تحته. فالأمن السيبراني '
+    'يملك منصة مراقبة الأمن (Chronicle وSecurity Command Center) وعمليات الأمن. أما الإدارة العامة لخدمات '
+    'تقنية المعلومات فتملك المنصات والأجهزة التي تشغّلها، ومنها F5 BIG-IP وFortiGate ومنصة Fortinet وإدارة '
+    'المفاتيح ومنطقة الهبوط وقواعد البيانات وخطوط التسليم والسجلات المركزية. وتملك الإدارات المعنية بالأعمال '
+    'تطبيقاتها الخاصة، وسيُقسَّم هذا البند حسب كل إدارة عند اكتمال خريطة الملكية.') + '</p>')
 
 def dept_card(key, gnet, period_en, period_ar, gcp_rows):
     rows = PROJ_ROWS.get(key)
@@ -145,7 +149,7 @@ def dept_card(key, gnet, period_en, period_ar, gcp_rows):
         parts_raw, exact, resid = depts.from_services(gcp_rows, RESID_MIX)
         derived = (exact, resid)
     else:
-        parts_raw, unknown = depts.split(rows)
+        parts_raw, unknown = depts.split(rows, gcp_rows)
         assert not unknown, unknown
     tot = sum(v for _, v in parts_raw) or 1
     parts = [(depts.NAMES[b][0], v, v/tot, depts.PAL[b]) for b, v in parts_raw]
@@ -164,7 +168,7 @@ def dept_card(key, gnet, period_en, period_ar, gcp_rows):
         tail = derived_method(period_en, period_ar, gnet, *derived)
     return ('<div class="card"><h3>' + DEPT_HEAD + '</h3>'
       + '<div class="dwrap">' + svg + '\n'.join(leg) + '</div>' + tail
-      + shared_highlight(dict(parts_raw), gcp_rows) + '</div>')
+      + owner_highlight(dict(parts_raw), gcp_rows) + '</div>')
 
 
 def derived_method(period_en, period_ar, gnet, exact, resid):
@@ -179,9 +183,9 @@ def derived_method(period_en, period_ar, gnet, exact, resid):
         en = ('%d%% of %s is read straight from the billing data: the security services, the F5 BIG-IP and '
               'FortiGate appliances and the AI search platform each belong to one general department, and '
               'those identities were checked to the cent against the by-project export. The remaining %d%% is '
-              'shared infrastructure (compute, network, storage, logging) and is apportioned on the verified '
-              'H1 2026 split, so the six months add back to the half-year exactly. A by-project export for '
-              'this date range would make the whole figure exact.' % (ep, period_en, rp))
+              'platform infrastructure (compute, network, storage, logging) and is apportioned on the '
+              'verified H1 2026 ownership split, so the six months add back to the half-year exactly. A '
+              'by-project export for this date range would make the whole figure exact.' % (ep, period_en, rp))
         ar = ('تُقرأ نسبة %d%% من %s مباشرة من بيانات الفوترة: فخدمات الأمن وأجهزة F5 BIG-IP وFortiGate ومنصة '
               'البحث بالذكاء الاصطناعي تخص كل منها إدارة عامة واحدة، وقد جرى التحقق من ذلك حتى الهللة مقابل '
               'التقرير حسب المشروع. أما النسبة المتبقية وقدرها %d%% فهي بنية تحتية مشتركة (الحوسبة والشبكة '
@@ -194,7 +198,8 @@ def derived_method(period_en, period_ar, gnet, exact, resid):
 def dept_detail(key, gcp_rows):
     """Every project, its department and what kind of solution it is, so the split
     can be validated line by line."""
-    det_rows = depts.detail_rows(blocks_rows(key), depts.appliances(gcp_rows))
+    det_rows = depts.detail_rows(blocks_rows(key), depts.appliances(gcp_rows),
+                                 depts.account_itsvc(gcp_rows))
     body = []
     for b, en, ar, kind, net in det_rows:
         den, dar = depts.NAMES[b]
@@ -218,34 +223,31 @@ def blocks_rows(key):
     return PROJ_ROWS[key]
 
 
-def shared_highlight(totals, gcp_rows):
-    """Majid asked whether the shared bucket is infrastructure or a cyber solution.
-    It is both, and the appliance figure is exact in every period."""
-    sh = totals.get(depts.SHARED)
-    if not sh: return ''
-    sec = depts.appliances(gcp_rows)
-    infra = round(sh - sec, 2)
+def owner_highlight(totals, gcp_rows):
+    """Majid asked that the chart name who owns what. The security appliances are
+    the case that needs saying out loud: they are a security solution, operated by
+    IT Services GD, and their figure is exact in every period."""
+    it = totals.get(depts.ITSVC)
+    if not it: return ''
+    sec = round(depts.appliances(gcp_rows) + depts.account_itsvc(gcp_rows), 2)
     if sec <= 0: return ''
-    if infra < 1:
-        en = ('Shared services of %s are the landing zone and network platform every general department runs '
-              'on. For this period all of it is a cybersecurity solution: the F5 BIG-IP and FortiGate '
-              'appliances billed as virtual machines inside the shared network platform. Credits covered the '
-              'infrastructure underneath them.' % m0(sh))
-        ar = ('تمثل الخدمات المشتركة البالغة %s منطقة الهبوط ومنصة الشبكة التي تعتمد عليها كل إدارة عامة. '
-              'وفي هذه الفترة كانت بالكامل حلول أمن سيبراني: أجهزة F5 BIG-IP وFortiGate التي تُفوتر كأجهزة '
-              'افتراضية داخل منصة الشبكة المشتركة. أما البنية التحتية تحتها فقد غطتها الأرصدة.' % m0(sh))
-        return ('<div class="insight"><b>' + tw('Shared services:', 'الخدمات المشتركة:') + '</b> '
-                + tw(en, ar) + '</div>')
-    en = ('Shared services of %s are the landing zone and network platform every general department runs on. '
-          '%s of that (%s) is a cybersecurity solution: the F5 BIG-IP and FortiGate appliances billed as '
-          'virtual machines inside the shared network platform. The remaining %s is infrastructure.'
-          % (m0(sh), m0(sec), gen._pct(sec/sh*100), m0(infra)))
-    ar = ('تمثل الخدمات المشتركة البالغة %s منطقة الهبوط ومنصة الشبكة التي تعتمد عليها كل إدارة عامة. '
-          'ومن ذلك %s (%s) حلول أمن سيبراني: أجهزة F5 BIG-IP وFortiGate التي تُفوتر كأجهزة افتراضية داخل '
-          'منصة الشبكة المشتركة. أما المتبقي وقدره %s فهو بنية تحتية.'
-          % (m0(sh), m0(sec), gen._pct(sec/sh*100), m0(infra)))
-    return '<div class="insight"><b>' + tw('Shared services:', 'الخدمات المشتركة:') + '</b> ' + tw(en, ar) + '</div>'
-
+    rest = round(it - sec, 2)
+    share = gen._pct(sec / it * 100)
+    if rest < 1:
+        en = ('Of the %s IT Services GD carries, all of it is security tooling it operates: the F5 BIG-IP '
+              'and FortiGate appliances and the Fortinet platform. Credits covered the platform underneath '
+              'them for this period.' % m0(it))
+        ar = ('من أصل %s تحملها الإدارة العامة لخدمات تقنية المعلومات، جميعها أدوات أمن تشغّلها: أجهزة '
+              'F5 BIG-IP وFortiGate ومنصة Fortinet. أما المنصة تحتها فقد غطتها الأرصدة في هذه الفترة.'
+              % m0(it))
+    else:
+        en = ('Of the %s IT Services GD carries, %s (%s) is security tooling it operates: the F5 BIG-IP and '
+              'FortiGate appliances and the Fortinet platform. The remaining %s is the landing zone, the '
+              'databases, the delivery pipelines and central logging.' % (m0(it), m0(sec), share, m0(rest)))
+        ar = ('من أصل %s تحملها الإدارة العامة لخدمات تقنية المعلومات، هناك %s (%s) أدوات أمن تشغّلها: '
+              'أجهزة F5 BIG-IP وFortiGate ومنصة Fortinet. أما المتبقي وقدره %s فهو منطقة الهبوط وقواعد '
+              'البيانات وخطوط التسليم والسجلات المركزية.' % (m0(it), m0(sec), share, m0(rest)))
+    return '<div class="insight"><b>' + tw('Who owns what:', 'من يملك ماذا:') + '</b> ' + tw(en, ar) + '</div>'
 
 def pbars(items):
     """items: (en, ar, net, chg). Same bar form as the service charts, with twins."""
