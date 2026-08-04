@@ -24,6 +24,8 @@ Path for every file: **Billing > Reports**. Set the date range (top right), set 
 
 File 5 is the evidence for the sandbox story (high usage, then restructure, then stable). File 6 powers the credit runway and the expiry warning.
 
+**File 2 is not optional any more.** From v13 the "spend per general department" chart is built from the by-project export, not from labels, so a period without its own by-project CSV cannot carry a department view and prints a short note instead. Today the report holds one for July 2026, H1 2026 and the contract to date. To fill the gaps, pull file 2 once per missing period: Jan, Feb, Mar, Apr, May and Jun 2026 as months, and 1 Jan to 31 Mar and 1 Apr to 30 Jun as quarters. Same panel, same settings, only the date range and the Group by change.
+
 ## Quarter-end months only (Mar, Jun, Sep, Dec)
 
 Repeat files 1 and 2 with the quarter as the date range (e.g. 1 Apr to 30 Jun). For a half-year view like H1 2026, same thing with 1 Jan to 30 Jun.
@@ -43,3 +45,18 @@ There is no warning in the file. The way to spot it: open the CSV and look at th
 **Safest method:** pull the current month first, check that column, then change only the date range for each further period and download again. Do not touch the panel between downloads.
 
 For scale, the Jan to Jun 2026 pull done this way reported $1,174,633 of usage as if it were the net cost. The correct net for the same six months is $614,875. The exports were understating the discount by $559,758.
+
+## The department mapping
+
+The department chart reads the billing project each charge sits in and maps it to a general department. The map lives in `finops/generator/depts.py` and is a plain project-ID to department table, so a correction is a one-line edit and a regeneration.
+
+| Bucket | What lands there |
+|---|---|
+| Cybersecurity Department | `[Charges not specific to a project]`, `moe-secops-484408`, `prd-security-kms`, `dev-security-kms` |
+| Shared services across departments | `prd-hub`, `dmz-host`, `dmz-srv`, `prd-host`, `dev-host`, `test-host`, `bootstrap`, `billexp`, `migration-host-hq` |
+| Support Services GD | `prd-data-dbs`, `dev-data-dbs`, `prd-bs-devops`, `dev-bs-devops`, `prd-infra-mngeng`, `prd-bc-centlogs`, `dev-centlogs`, `prd-bc-website` |
+| IT and Digital Transformation | `iw-sb-development`, `iw-it-dtgd-ad-ne`, `iw-spark-admin`, `moe-notebooklm` |
+
+The account-level bucket carries no project ID, so it cannot be mapped by project. It is assigned whole to Cybersecurity because it reconciles to the cent with the security services in the by-service export for the same period: July `$79,462.25` = Chronicle + Security Command Center; H1 and to-date add Fortinet Security SaaS. Re-run that check each month before publishing; if the two stop matching, the bucket has picked up something that is not security and the assignment has to be revisited.
+
+Note that F5 BIG-IP and FortiGate run as marketplace appliances inside the shared network hub, so they are counted under shared services rather than Cybersecurity. A new project that is not in the table stops the build with the project name, rather than being silently dropped.
