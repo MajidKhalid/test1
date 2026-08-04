@@ -53,8 +53,8 @@ The department chart reads the billing project each charge sits in and maps it t
 | Department | What it owns |
 |---|---|
 | Cybersecurity Department | the security monitoring platform (`[Charges not specific to a project]`, less its Fortinet line) and security operations (`moe-secops-484408`) |
-| IT Services GD | the platforms and appliances it operates: F5 BIG-IP, FortiGate, the Fortinet platform, `prd-security-kms`, `dev-security-kms`, `prd-hub`, `dmz-host`, `dmz-srv`, `prd-host`, `dev-host`, `test-host`, `bootstrap`, `billexp`, `migration-host-hq`, `prd-data-dbs`, `dev-data-dbs`, `prd-bs-devops`, `dev-bs-devops`, `prd-infra-mngeng`, `prd-bc-centlogs`, `dev-centlogs`, `iw-sb-development`, `iw-it-dtgd-ad-ne`, `iw-spark-admin` |
-| Business departments | applications a business department owns, today `prd-bc-website`. Split per department once the ownership map exists |
+| IT Services GD | the platforms and appliances it operates: F5 BIG-IP, FortiGate, the Fortinet platform, `prd-security-kms`, `dev-security-kms`, `prd-hub`, `dmz-host`, `dmz-srv`, `prd-host`, `dev-host`, `bootstrap`, `billexp`, `prd-bc-centlogs`, `dev-centlogs`, `iw-sb-development`, `iw-it-dtgd-ad-ne`, `iw-spark-admin` |
+| Business departments | their own applications (`prd-bc-website`) plus the platform the business applications moving to GCP land on: `migration-host-hq`, `prd-data-dbs`, `dev-data-dbs`, `prd-bs-devops`, `dev-bs-devops`, `prd-infra-mngeng`, `test-host`. Split per department once the ownership map exists |
 | Other | `moe-notebooklm` |
 
 Every line also carries a type (Cybersecurity, Infrastructure or Application) in `depts.LABELS`, so the report can say that a security appliance is owned by IT Services GD without pretending it is not a security solution. The report lists all of them under the department chart's View details.

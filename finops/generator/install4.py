@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""v17: the credit card wears the hero's own dark glass, the period strip spans
-the same width, and every department keeps its legend row even at zero."""
+"""v18: the business application migration block is gone and its platform spend
+sits inside Business departments on the donut."""
 import re, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen, blocks
@@ -60,15 +60,7 @@ for cls, specs, single in [('v-m', months, False), ('v-q', quarters, False), ('v
     print('%s rebuilt: %d' % (cls, len(specs)))
 
 # ---- the migration stat strip -------------------------------------------
-css = '''
-/* ---- v13: the migration stat strip ---- */
-.mstat{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 12px}
-.mstat>div{flex:1 1 160px;background:#F4F7FC;border:1px solid #E3E9F2;border-radius:10px;padding:9px 12px}
-.mstat b{display:block;font-family:var(--font-display),'Lafet',sans-serif;font-size:19px;font-weight:400;
-  line-height:1.15;color:#0E1B2E;white-space:nowrap}
-.mstat>div>span{display:block;font-size:10.5px;font-weight:600;color:#5E748E;margin-top:4px;line-height:1.4}
-html.is-ar .mstat>div{text-align:right}
-'''
+css = ''
 anchor = '/* ---- v12 compaction: same content, less scrolling ---- */'
 assert s.count(anchor) == 1
 s = s.replace(anchor, css + anchor)
@@ -87,11 +79,11 @@ s = s.replace(cur, '<span class="chip"><span class="en">All figures in '
 
 # ---- version stamp: footer only -----------------------------------------
 n = s.count('Version v12') + s.count('الإصدار v12')
-s = s.replace('Version v12', 'Version v17').replace('الإصدار v12', 'الإصدار v17')
+s = s.replace('Version v12', 'Version v18').replace('الإصدار v12', 'الإصدار v18')
 # the Arabic footer line never carried a version
 a = '<span class="ar">مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>'
 assert s.count(a) == 1
-s = s.replace(a, '<span class="ar">الإصدار v17 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
+s = s.replace(a, '<span class="ar">الإصدار v18 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
 s = s.replace('3 August 2026', '4 August 2026').replace('3 أغسطس 2026', '4 أغسطس 2026')
 print('version stamps bumped:', n + 1)
 
@@ -182,7 +174,7 @@ layout_css = """
     border-top-color:rgba(255,255,255,.14)!important}
 }
 """
-s = s.replace('/* ---- v13: the migration stat strip ---- */', layout_css + '/* ---- v13: the migration stat strip ---- */')
+s = s.replace('/* ---- v12 compaction: same content, less scrolling ---- */', layout_css + '/* ---- v12 compaction: same content, less scrolling ---- */')
 
 open(DASH, 'w', encoding='utf-8').write(s)
 print('%.2f MB -> %.2f MB' % (before/1e6, len(s)/1e6))

@@ -8,8 +8,11 @@ Four departments, each owning named applications rather than a shared pool:
   IT Services GD            every platform and appliance IT Services operates,
                             including F5, FortiGate and Fortinet, key management,
                             the landing zone, databases, pipelines and logging
-  Business departments      applications a business department owns; this bucket
-                            is split per department once the ownership map exists
+  Business departments      their own applications, plus the migration landing
+                            zone, the databases, the delivery pipelines and the
+                            management engine that the business applications
+                            moving to GCP land on; split per department once the
+                            ownership map exists
   Other                     everything else, today the NotebookLM AI pilot
 
 The account-level bucket [Charges not specific to a project] carries no project ID
@@ -45,22 +48,23 @@ MAP = {
     'prj-moenergy-dmz-srv':           ITSVC,
     'prj-moenergy-prd-host':          ITSVC,
     'prj-moenergy-dev-host':          ITSVC,
-    'prj-moenergy-test-host':         ITSVC,
     'prj-moenergy-bootstrap':         ITSVC,
     'prj-moenergy-billexp':           ITSVC,
-    'prj-moenergy-migration-host-hq': ITSVC,
-    'prj-moenergy-prd-data-dbs':      ITSVC,
-    'prj-moenergy-dev-data-dbs':      ITSVC,
-    'prj-moenergy-prd-bs-devops':     ITSVC,
-    'prj-moenergy-dev-bs-devops':     ITSVC,
-    'prj-moenergy-prd-infra-mngeng':  ITSVC,
     'prj-moenergy-prd-bc-centlogs':   ITSVC,
     'prj-moenergy-dev-centlogs':      ITSVC,
     'prj-moenergy-iw-sb-development': ITSVC,
     'prj-moenergy-iw-it-dtgd-ad-ne':  ITSVC,
     'prj-moenergy-iw-spark-admin':    ITSVC,
-    # Business: applications a business department owns
+    # Business departments: their own applications, plus the platform the
+    # business applications migrating to GCP land on (Majid, 4 Aug 2026)
     'prj-moenergy-prd-bc-website':    BUSINESS,
+    'prj-moenergy-migration-host-hq': BUSINESS,
+    'prj-moenergy-prd-data-dbs':      BUSINESS,
+    'prj-moenergy-dev-data-dbs':      BUSINESS,
+    'prj-moenergy-prd-bs-devops':     BUSINESS,
+    'prj-moenergy-dev-bs-devops':     BUSINESS,
+    'prj-moenergy-prd-infra-mngeng':  BUSINESS,
+    'prj-moenergy-test-host':         BUSINESS,
     # Other (Majid, 4 Aug 2026)
     'moe-notebooklm':                 OTHER,
 }
@@ -111,11 +115,13 @@ NAMES = {
 }
 PAL = {CYBER: '#113879', ITSVC: '#0180E9', BUSINESS: '#00A3A8', OTHER: '#8B96AC'}
 
-# projects that stood up, or grew sharply, as business applications began moving to GCP
+# the platform the migrating business applications land on. It used to have its
+# own block in section 02; from v18 it is simply part of Business departments.
 MIGRATION = ['prj-moenergy-migration-host-hq', 'prj-moenergy-prd-data-dbs',
              'prj-moenergy-dev-data-dbs', 'prj-moenergy-prd-bs-devops',
              'prj-moenergy-dev-bs-devops', 'prj-moenergy-prd-infra-mngeng',
              'prj-moenergy-test-host']
+assert all(MAP[p] == BUSINESS for p in MIGRATION)
 
 
 def read(path):

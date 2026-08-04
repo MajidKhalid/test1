@@ -16,8 +16,6 @@ BYPROJ = {'jul': '2026-07-01', 'h1': '2026-01-01', 'td': '2025-10-01'}
 PROJ_ROWS = {k: depts.read(glob.glob(os.path.join(B, 'July', 'by project', '*%s*.csv' % p))[0])
              for k, p in BYPROJ.items()}
 
-# the periods whose window actually contains the platform build-out
-MIG_PERIODS = ('jul', 'td')
 
 # how the shared infrastructure residual actually divided across H1 2026, the
 # half-year that contains every period without a by-project export of its own
@@ -26,15 +24,6 @@ def _h1_service_rows():
     return gen.read(f)
 H1_SERVICES = _h1_service_rows()
 RESID_MIX = depts.residual_mix(PROJ_ROWS['h1'], H1_SERVICES)
-MIG_NAMES = {
-  'prj-moenergy-migration-host-hq': ('Migration landing zone (HQ)', 'منطقة هبوط الترحيل (المقر)'),
-  'prj-moenergy-prd-data-dbs':      ('Database platform (production)', 'منصة قواعد البيانات (الإنتاج)'),
-  'prj-moenergy-dev-data-dbs':      ('Database platform (development)', 'منصة قواعد البيانات (التطوير)'),
-  'prj-moenergy-prd-bs-devops':     ('DevOps pipeline (production)', 'خط DevOps (الإنتاج)'),
-  'prj-moenergy-dev-bs-devops':     ('DevOps pipeline (development)', 'خط DevOps (التطوير)'),
-  'prj-moenergy-prd-infra-mngeng':  ('Infrastructure management engine', 'محرك إدارة البنية التحتية'),
-  'prj-moenergy-test-host':         ('Test landing zone', 'منطقة هبوط الاختبار'),
-}
 
 def csvs(month, kind):
     return sorted(glob.glob(os.path.join(B, month, kind, '*.csv')))[0]
@@ -131,13 +120,16 @@ DEPT_METHOD = ('<p class="note">' + tw(
     'project it sits in. Cybersecurity owns the security monitoring platform (Chronicle and Security Command '
     'Center) and security operations. IT Services GD owns the platforms and appliances it operates, including '
     'F5 BIG-IP, FortiGate, the Fortinet platform, key management, the landing zone, the databases, the '
-    'delivery pipelines and central logging. Business departments own their own applications, and that bucket '
-    'is split per department once the ownership map exists.',
+    'delivery pipelines and central logging. Business departments own their own applications plus the '
+    'platform the business applications moving to GCP land on: the migration landing zone, the databases, '
+    'the delivery pipelines and the management engine. That bucket is split per department once the '
+    'ownership map exists.',
     'يُنسب كل بند إلى الإدارة المالكة للتطبيق الذي يخصه، وفق مشروع الفوترة الذي يقع تحته. فالأمن السيبراني '
     'يملك منصة مراقبة الأمن (Chronicle وSecurity Command Center) وعمليات الأمن. أما الإدارة العامة لخدمات '
     'تقنية المعلومات فتملك المنصات والأجهزة التي تشغّلها، ومنها F5 BIG-IP وFortiGate ومنصة Fortinet وإدارة '
-    'المفاتيح ومنطقة الهبوط وقواعد البيانات وخطوط التسليم والسجلات المركزية. وتملك الإدارات المعنية بالأعمال '
-    'تطبيقاتها الخاصة، وسيُقسَّم هذا البند حسب كل إدارة عند اكتمال خريطة الملكية.') + '</p>')
+    'المفاتيح ومنطقة الهبوط والسجلات المركزية. وتملك الإدارات المعنية بالأعمال تطبيقاتها الخاصة إضافة إلى '
+    'المنصة التي تهبط عليها تطبيقات الأعمال المنتقلة إلى GCP: منطقة هبوط الترحيل وقواعد البيانات وخطوط '
+    'التسليم ومحرك الإدارة. وسيُقسَّم هذا البند حسب كل إدارة عند اكتمال خريطة الملكية.') + '</p>')
 
 def dept_card(key, gnet, period_en, period_ar, gcp_rows):
     rows = PROJ_ROWS.get(key)
@@ -249,89 +241,6 @@ def owner_highlight(totals, gcp_rows):
               'البيانات وخطوط التسليم والسجلات المركزية.' % (m0(it), m0(sec), share, m0(rest)))
     return '<div class="insight"><b>' + tw('Who owns what:', 'من يملك ماذا:') + '</b> ' + tw(en, ar) + '</div>'
 
-def pbars(items):
-    """items: (en, ar, net, chg). Same bar form as the service charts, with twins."""
-    peak = max([abs(v) for _, _, v, _ in items] + [1])
-    tot = sum(v for _, _, v, _ in items) or 1
-    out = ['<div class="bars">']
-    for i, (en, ar, v, chg) in enumerate(items):
-        col = gen.PAL[i] if i < len(gen.PAL) else '#5B7AA8'
-        out.append('<div class="bar-row"><div class="bar-head">'
-                   '<span class="bar-name">%s</span><span class="bar-val">%s</span>'
-                   '<span class="bar-share">%s</span><span class="bar-chg">%s</span></div>'
-                   '<div class="bar-track"><i style="width:%.1f%%;background:%s"></i></div></div>'
-                   % (tw(gen.esc(en), gen.esc(ar)), m0(v), gen._pct(v/tot*100), gen._chg_html(chg),
-                      max(abs(v)/peak*100, 0.6), col))
-    out.append('</div>')
-    return '\n'.join(out)
-
-
-def migration_card(key, gnet, period_en, period_ar):
-    """Business applications started moving to GCP in July. Show it where the
-    period's window actually contains the build-out."""
-    if key not in MIG_PERIODS: return ''
-    by = {r['pid']: r for r in PROJ_ROWS[key]}
-    items, grp, prev, derivable, fresh = [], 0.0, 0.0, True, []
-    for pid in depts.MIGRATION:
-        r = by.get(pid)
-        if r is None or r['net'] <= 0: continue
-        en, ar = MIG_NAMES[pid]
-        items.append((en, ar, r['net'], r['chg']))
-        grp += r['net']
-        if r['chg'] == 'New':
-            fresh.append(en)
-        else:
-            try: prev += r['net'] / (1 + float(r['chg'].replace('%', '')) / 100)
-            except ValueError: derivable = False
-    if not items: return ''
-    items.sort(key=lambda t: -t[2])
-    share = gen._pct(grp / gnet * 100) if gnet else '0%'
-
-    if key == 'jul':
-        growth = ''
-        if derivable and prev > 0:
-            growth = (' and up %d%% on the previous month' % round((grp - prev) / prev * 100),
-                      ' بارتفاع %d%% عن الشهر السابق' % round((grp - prev) / prev * 100))
-        en = ('Business applications have started moving to GCP. In %s the migration and application platform '
-              'carried %s of net spend, %s of the GCP total%s. Four of these projects opened for the first '
-              'time this month: the migration landing zone, both DevOps pipelines and the infrastructure '
-              'management engine.'
-              % (period_en, m0(grp), share, growth[0] if growth else ''))
-        ar = ('بدأ ترحيل تطبيقات الأعمال إلى GCP. فخلال %s استحوذت منصة الترحيل والتطبيقات على %s من صافي '
-              'الإنفاق، أي %s من إجمالي الإنفاق على GCP%s. وقد فُتحت أربعة من هذه المشاريع لأول مرة هذا '
-              'الشهر: منطقة هبوط الترحيل، وخطا DevOps، ومحرك إدارة البنية التحتية.'
-              % (period_ar, m0(grp), share, growth[1] if growth else ''))
-    else:
-        jul = sum(r['net'] for r in PROJ_ROWS['jul'] if r['pid'] in depts.MIGRATION)
-        en = ('Business applications have started moving to GCP. Across %s the migration and application '
-              'platform carried %s of net spend, %s of the GCP total, and %d%% of that landed in July 2026 '
-              'alone: the migration landing zone, both DevOps pipelines and the infrastructure management '
-              'engine all opened that month.'
-              % (period_en, m0(grp), share, round(jul / grp * 100)))
-        ar = ('بدأ ترحيل تطبيقات الأعمال إلى GCP. فخلال %s استحوذت منصة الترحيل والتطبيقات على %s من صافي '
-              'الإنفاق، أي %s من إجمالي الإنفاق على GCP، وتركّز %d%% منها في يوليو 2026 وحده: ففي ذلك الشهر '
-              'فُتحت منطقة هبوط الترحيل وخطا DevOps ومحرك إدارة البنية التحتية.'
-              % (period_ar, m0(grp), share, round(jul / grp * 100)))
-
-    stats = ('<div class="mstat">'
-      '<div><b>%s</b><span>%s</span></div>'
-      '<div><b>%s</b><span>%s</span></div>'
-      '<div><b>%d</b><span>%s</span></div></div>'
-      % (m0(grp), tw('Net spend on the migration and application platform',
-                     'صافي الإنفاق على منصة الترحيل والتطبيقات'),
-         share, tw('Share of net GCP spend', 'النسبة من صافي الإنفاق على GCP'),
-         len(items), tw('Platform projects carrying spend', 'مشاريع المنصة التي تحمل إنفاقاً')))
-
-    return ('<h3 class="subhead">' + tw('Business application migration', 'ترحيل تطبيقات الأعمال') + '</h3>'
-      '<div class="card"><p class="lead" style="margin:0 0 10px">' + tw(en, ar) + '</p>'
-      + stats + pbars(items) + '<p class="note">' + tw(
-        'These are the platform projects the applications land on: the landing zone, the databases, the '
-        'delivery pipelines and the management engine. Application workloads that move onto them will show '
-        'up under the general department that owns the application.',
-        'هذه هي مشاريع المنصة التي تهبط عليها التطبيقات: منطقة الهبوط وقواعد البيانات وخطوط التسليم ومحرك '
-        'الإدارة. أما أحمال التطبيقات التي تنتقل إليها فستظهر تحت الإدارة العامة المالكة للتطبيق.')
-      + '</p></div>')
-
 def build(gcp_rows, sb_rows, key, period_en, period_ar):
     gnet = sum(r['net'] for r in gcp_rows); ggross = sum(r['gross'] for r in gcp_rows)
     snet = sum(r['net'] for r in sb_rows);  sgross = sum(r['gross'] for r in sb_rows)
@@ -369,8 +278,6 @@ def build(gcp_rows, sb_rows, key, period_en, period_ar):
       + '<h3 class="subhead">' + tw('Overall spend by service','إجمالي الإنفاق حسب الخدمة') + '</h3>'
       + '<div class="card">' + gen.bars(gcp_rows) + NOTE + det(gcp_rows)
       + highlight(gcp_rows, period_en, period_ar) + '</div>'
-      # 2c · business application migration, where the window contains it
-      + migration_card(key, gnet, period_en, period_ar)
       # bridge
       + '<p class="section-link">' + tw(
           'One of those projects is the sandbox environment. Of the %s net spend for %s, %s (%s) sat there, '
