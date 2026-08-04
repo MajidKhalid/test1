@@ -122,15 +122,13 @@ DEPT_METHOD = ('<p class="note">' + tw(
     'Departments are read from the billing project each charge sits in. The account-level security charges '
     'reconcile to the cent with Chronicle, Security Command Center and Fortinet Security SaaS, so they are '
     'assigned whole to Cybersecurity. Infrastructure application projects sit with Support Services GD, and '
-    'the landing zone and network platform every department runs on is shown as shared. The F5 BIG-IP and '
-    'FortiGate appliances run inside that shared hub and are counted there.',
+    'the landing zone and network platform every department runs on is shown as shared.',
     'تُنسب الإدارات وفق مشروع الفوترة الذي يقع تحته كل بند. وتتطابق رسوم الأمن على مستوى الحساب تماماً مع '
     'خدمات Chronicle وSecurity Command Center وFortinet Security SaaS، ولذلك تُنسب بالكامل إلى الأمن '
     'السيبراني. وتقع مشاريع تطبيقات البنية التحتية ضمن الإدارة العامة لخدمات الدعم، بينما تظهر منطقة '
-    'الهبوط ومنصة الشبكة التي تعتمد عليها جميع الإدارات كخدمات مشتركة. أما أجهزة F5 BIG-IP وFortiGate '
-    'فتعمل داخل تلك المنصة المشتركة وتُحتسب ضمنها.') + '</p>')
+    'الهبوط ومنصة الشبكة التي تعتمد عليها جميع الإدارات كخدمات مشتركة.') + '</p>')
 
-def dept_card(key, gnet, period_en, period_ar):
+def dept_card(key, gnet, period_en, period_ar, gcp_rows):
     rows = PROJ_ROWS.get(key)
     if rows is None:
         # honest placeholder: the split is a data pull away, not a modelling exercise
@@ -149,7 +147,7 @@ def dept_card(key, gnet, period_en, period_ar):
     assert not unknown, unknown
     tot = sum(v for _, v in parts_raw) or 1
     parts = [(depts.NAMES[b][0], v, v/tot, depts.PAL[b]) for b, v in parts_raw]
-    svg = gen.donut_chart(parts, 'TOTAL NET SPEND', m0(gnet))
+    svg = gen.donut_chart(parts, tw('TOTAL NET SPEND', 'إجمالي صافي الإنفاق'), m0(gnet))
     leg = ['<ul class="dleg">']
     for b, v in parts_raw:
         en, ar = depts.NAMES[b]
@@ -159,7 +157,54 @@ def dept_card(key, gnet, period_en, period_ar):
                    % (depts.PAL[b], tw(gen.esc(en), gen.esc(ar)), m0(v), gen._pct(v/tot*100)))
     leg.append('</ul>')
     return ('<div class="card"><h3>' + DEPT_HEAD + '</h3>'
-      + '<div class="dwrap">' + svg + '\n'.join(leg) + '</div>' + DEPT_METHOD + '</div>')
+      + '<div class="dwrap">' + svg + '\n'.join(leg) + '</div>' + DEPT_METHOD
+      + dept_detail(key, gcp_rows) + shared_highlight(key, dict(parts_raw), gcp_rows) + '</div>')
+
+
+def dept_detail(key, gcp_rows):
+    """Every project, its department and what kind of solution it is, so the split
+    can be validated line by line."""
+    det_rows = depts.detail_rows(blocks_rows(key), depts.appliances(gcp_rows))
+    body = []
+    for b, en, ar, kind, net in det_rows:
+        den, dar = depts.NAMES[b]
+        ken, kar = depts.KIND_NAMES[kind]
+        body.append('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>'
+                    % (tw(gen.esc(en), gen.esc(ar)), tw(gen.esc(den), gen.esc(dar)),
+                       tw(ken, kar), gen.num(net, 2)))
+    return ('<details><summary>' + tw('View details', 'عرض التفاصيل') +
+      '<span aria-hidden="true" class="detail-icon">&#8599;</span></summary><h4>' +
+      tw('Every project, its general department and what it is',
+         'كل مشروع وإدارته العامة وطبيعته') +
+      '</h4><div class="cw" style="margin-top:16px"><table><thead><tr><th>' +
+      tw('Project', 'المشروع') + '</th><th>' +
+      tw('General department', 'الإدارة العامة') + '</th><th>' +
+      tw('Type', 'النوع') + '</th><th>' +
+      tw('Net spend <span class="rs"></span>', 'صافي الإنفاق <span class="rs"></span>') +
+      '</th></tr></thead><tbody>' + '\n'.join(body) + '</tbody></table></div></details>')
+
+
+def blocks_rows(key):
+    return PROJ_ROWS[key]
+
+
+def shared_highlight(key, totals, gcp_rows):
+    """Majid asked whether the shared bucket is infrastructure or a cyber solution.
+    It is both, and the split is exact."""
+    sh = totals.get(depts.SHARED)
+    if not sh: return ''
+    sec = depts.appliances(gcp_rows)
+    infra = round(sh - sec, 2)
+    if sec <= 0: return ''
+    en = ('Shared services of %s are the landing zone and network platform every general department runs on. '
+          '%s of that (%s) is a cybersecurity solution: the F5 BIG-IP and FortiGate appliances billed as '
+          'virtual machines inside the shared network platform. The remaining %s is infrastructure.'
+          % (m0(sh), m0(sec), gen._pct(sec/sh*100), m0(infra)))
+    ar = ('تمثل الخدمات المشتركة البالغة %s منطقة الهبوط ومنصة الشبكة التي تعتمد عليها كل إدارة عامة. '
+          'ومن ذلك %s (%s) حلول أمن سيبراني: أجهزة F5 BIG-IP وFortiGate التي تُفوتر كأجهزة افتراضية داخل '
+          'منصة الشبكة المشتركة. أما المتبقي وقدره %s فهو بنية تحتية.'
+          % (m0(sh), m0(sec), gen._pct(sec/sh*100), m0(infra)))
+    return '<div class="insight"><b>' + tw('Shared services:', 'الخدمات المشتركة:') + '</b> ' + tw(en, ar) + '</div>'
 
 
 def pbars(items):
@@ -277,7 +322,7 @@ def build(gcp_rows, sb_rows, key, period_en, period_ar):
           'خلال %s بلغ إجمالي الاستهلاك قبل الخصومات %s، بينما بلغ صافي الإنفاق %s بعد خصومات إجمالية قدرها %s.'
           % (period_ar, m0(ggross), m0(gnet), m0(ggross-gnet))) + '</p>'
       # 2a · per department
-      + dept_card(key, gnet, period_en, period_ar)
+      + dept_card(key, gnet, period_en, period_ar, gcp_rows)
       # 2b · overall spend by service
       + '<h3 class="subhead">' + tw('Overall spend by service','إجمالي الإنفاق حسب الخدمة') + '</h3>'
       + '<div class="card">' + gen.bars(gcp_rows) + NOTE + det(gcp_rows)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""v13: the department chart carries real billing data, and the business
-application migration gets its own block."""
+"""v14: moe-notebooklm moves to Other, the shared bucket is split into infra and
+cyber, and every project is listed for validation."""
 import re, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen, blocks
@@ -75,11 +75,11 @@ s = s.replace(anchor, css + anchor)
 
 # ---- version stamp -------------------------------------------------------
 n = s.count('Version v12') + s.count('الإصدار v12')
-s = s.replace('Version v12', 'Version v13').replace('الإصدار v12', 'الإصدار v13')
+s = s.replace('Version v12', 'Version v14').replace('الإصدار v12', 'الإصدار v14')
 # the Arabic footer line never carried a version
 a = '<span class="ar">مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>'
 assert s.count(a) == 1
-s = s.replace(a, '<span class="ar">الإصدار v13 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
+s = s.replace(a, '<span class="ar">الإصدار v14 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
 s = s.replace('3 August 2026', '4 August 2026').replace('3 أغسطس 2026', '4 أغسطس 2026')
 print('version stamps bumped:', n + 1)
 

@@ -55,7 +55,12 @@ The department chart reads the billing project each charge sits in and maps it t
 | Cybersecurity Department | `[Charges not specific to a project]`, `moe-secops-484408`, `prd-security-kms`, `dev-security-kms` |
 | Shared services across departments | `prd-hub`, `dmz-host`, `dmz-srv`, `prd-host`, `dev-host`, `test-host`, `bootstrap`, `billexp`, `migration-host-hq` |
 | Support Services GD | `prd-data-dbs`, `dev-data-dbs`, `prd-bs-devops`, `dev-bs-devops`, `prd-infra-mngeng`, `prd-bc-centlogs`, `dev-centlogs`, `prd-bc-website` |
-| IT and Digital Transformation | `iw-sb-development`, `iw-it-dtgd-ad-ne`, `iw-spark-admin`, `moe-notebooklm` |
+| IT and Digital Transformation | `iw-sb-development`, `iw-it-dtgd-ad-ne`, `iw-spark-admin` |
+| Other | `moe-notebooklm` |
+
+Every project also carries a type (Cybersecurity, Infrastructure or Application) in `depts.LABELS`, and the report lists all of them under the department chart's View details so the split can be checked line by line.
+
+The shared bucket is both infrastructure and a cybersecurity solution, so the report states the split. The F5 BIG-IP and FortiGate marketplace appliances are billed as virtual machines inside the shared network platform, so they land in the shared bucket by project. Their figure comes from the by-service export (`depts.appliances`) and is carved out of the hub row: July SAR 83,477 of SAR 178,175 shared (47%), H1 SAR 436,778 of SAR 611,374 (71%), to date SAR 522,457 of SAR 800,642 (65%). No other shared project is large enough to hold them, which is what pins them to the hub.
 
 The account-level bucket carries no project ID, so it cannot be mapped by project. It is assigned whole to Cybersecurity because it reconciles to the cent with the security services in the by-service export for the same period: July `$79,462.25` = Chronicle + Security Command Center; H1 and to-date add Fortinet Security SaaS. Re-run that check each month before publishing; if the two stop matching, the bucket has picked up something that is not security and the assignment has to be revisited.
 

@@ -11,7 +11,17 @@ Plus ITDT, which owns the sandbox and SPARK projects.
 """
 import csv, os, re
 
-CYBER, SHARED, SUPPORT, ITDT = 'cyber', 'shared', 'support', 'itdt'
+CYBER, SHARED, SUPPORT, ITDT, OTHER = 'cyber', 'shared', 'support', 'itdt', 'other'
+
+# what the project is, for the type column and the shared-services highlight
+INFRA, SEC, APP = 'infra', 'sec', 'app'
+KIND_NAMES = {INFRA: ('Infrastructure', 'بنية تحتية'),
+              SEC:   ('Cybersecurity', 'أمن سيبراني'),
+              APP:   ('Application', 'تطبيق')}
+
+# the marketplace security appliances run as VMs inside the shared network platform,
+# so they sit in the shared bucket by project while being a cybersecurity solution
+APPLIANCE_PREFIXES = ('F5 BIG-IP', 'FortiGate')
 
 # project id (lowercased, stripped) -> bucket
 MAP = {
@@ -39,21 +49,56 @@ MAP = {
     'prj-moenergy-prd-bc-centlogs':  SUPPORT,
     'prj-moenergy-dev-centlogs':     SUPPORT,
     'prj-moenergy-prd-bc-website':   SUPPORT,
-    # ITDT: the sandbox, SPARK and the AI pilots
+    # ITDT: the sandbox and SPARK
     'prj-moenergy-iw-sb-development': ITDT,
     'prj-moenergy-iw-it-dtgd-ad-ne':  ITDT,
     'prj-moenergy-iw-spark-admin':    ITDT,
-    'moe-notebooklm':                 ITDT,
+    # other (Majid, 4 Aug 2026)
+    'moe-notebooklm':                 OTHER,
 }
 
-ORDER = [CYBER, SHARED, SUPPORT, ITDT]
+# project id -> (English label, Arabic label, kind)
+LABELS = {
+    '':                               ('Account-level security charges', 'رسوم أمن على مستوى الحساب', SEC),
+    'moe-secops-484408':              ('Security operations', 'عمليات الأمن السيبراني', SEC),
+    'prj-moenergy-prd-security-kms':  ('Key management (production)', 'إدارة المفاتيح (الإنتاج)', SEC),
+    'prj-moenergy-dev-security-kms':  ('Key management (development)', 'إدارة المفاتيح (التطوير)', SEC),
+    'prj-moenergy-prd-hub':           ('Shared network hub and landing zone', 'منصة الشبكة المشتركة ومنطقة الهبوط', INFRA),
+    'prj-moenergy-dmz-host':          ('DMZ network host', 'مضيف شبكة المنطقة منزوعة السلاح', INFRA),
+    'prj-moenergy-dmz-srv':           ('DMZ servers', 'خوادم المنطقة منزوعة السلاح', INFRA),
+    'prj-moenergy-prd-host':          ('Landing zone host (production)', 'مضيف منطقة الهبوط (الإنتاج)', INFRA),
+    'prj-moenergy-dev-host':          ('Landing zone host (development)', 'مضيف منطقة الهبوط (التطوير)', INFRA),
+    'prj-moenergy-test-host':         ('Landing zone host (test)', 'مضيف منطقة الهبوط (الاختبار)', INFRA),
+    'prj-moenergy-bootstrap':         ('Landing zone bootstrap', 'تأسيس منطقة الهبوط', INFRA),
+    'prj-moenergy-billexp':           ('Billing export', 'تصدير بيانات الفوترة', INFRA),
+    'prj-moenergy-migration-host-hq': ('Migration landing zone (HQ)', 'منطقة هبوط الترحيل (المقر)', INFRA),
+    'prj-moenergy-prd-data-dbs':      ('Database platform (production)', 'منصة قواعد البيانات (الإنتاج)', INFRA),
+    'prj-moenergy-dev-data-dbs':      ('Database platform (development)', 'منصة قواعد البيانات (التطوير)', INFRA),
+    'prj-moenergy-prd-bs-devops':     ('DevOps pipeline (production)', 'خط DevOps (الإنتاج)', INFRA),
+    'prj-moenergy-dev-bs-devops':     ('DevOps pipeline (development)', 'خط DevOps (التطوير)', INFRA),
+    'prj-moenergy-prd-infra-mngeng':  ('Infrastructure management engine', 'محرك إدارة البنية التحتية', INFRA),
+    'prj-moenergy-prd-bc-centlogs':   ('Central logging (production)', 'السجلات المركزية (الإنتاج)', INFRA),
+    'prj-moenergy-dev-centlogs':      ('Central logging (development)', 'السجلات المركزية (التطوير)', INFRA),
+    'prj-moenergy-prd-bc-website':    ('Ministry website', 'الموقع الإلكتروني للوزارة', APP),
+    'prj-moenergy-iw-sb-development': ('AI sandbox', 'بيئة تجارب الذكاء الاصطناعي', INFRA),
+    'prj-moenergy-iw-it-dtgd-ad-ne':  ('Notification Center workspace', 'مساحة عمل مركز الإشعارات', INFRA),
+    'prj-moenergy-iw-spark-admin':    ('SPARK administration', 'إدارة منصة شرارة', INFRA),
+    'moe-notebooklm':                 ('NotebookLM AI pilot', 'تجربة NotebookLM للذكاء الاصطناعي', APP),
+}
+# the security appliances are carved out of the hub row so the type column stays honest
+HUB = 'prj-moenergy-prd-hub'
+APPLIANCE_LABEL = ('Security appliances inside the hub (F5 BIG-IP, FortiGate)',
+                   'أجهزة الأمن داخل المنصة المشتركة (F5 BIG-IP وFortiGate)', SEC)
+
+ORDER = [CYBER, SHARED, SUPPORT, ITDT, OTHER]
 NAMES = {
     CYBER:   ('Cybersecurity Department', 'إدارة الأمن السيبراني'),
     SHARED:  ('Shared services across departments', 'خدمات مشتركة بين الإدارات'),
     SUPPORT: ('Support Services GD', 'الإدارة العامة لخدمات الدعم'),
     ITDT:    ('IT and Digital Transformation', 'تقنية المعلومات والتحول الرقمي'),
+    OTHER:   ('Other', 'أخرى'),
 }
-PAL = {CYBER: '#113879', SHARED: '#0180E9', SUPPORT: '#00A3A8', ITDT: '#E85A30'}
+PAL = {CYBER: '#113879', SHARED: '#0180E9', SUPPORT: '#00A3A8', ITDT: '#E85A30', OTHER: '#8B96AC'}
 
 # projects that stood up, or grew sharply, as business applications began moving to GCP
 MIGRATION = ['prj-moenergy-migration-host-hq', 'prj-moenergy-prd-data-dbs',
@@ -95,3 +140,33 @@ def split(rows):
     parts = [(k, round(tot[k], 2)) for k in ORDER if round(tot[k], 2) > 0]
     parts.sort(key=lambda t: -t[1])          # largest first, colours stay keyed to the bucket
     return parts, unknown
+
+
+def appliances(service_rows):
+    """Net spend on the marketplace security appliances, from the by-service export.
+
+    They are billed as VMs inside the shared network platform, so by project they
+    land in the shared bucket while being a cybersecurity solution. No other shared
+    project is large enough to hold them, which is what pins them to the hub.
+    """
+    return round(sum(r['net'] for r in service_rows
+                     if r['name'].startswith(APPLIANCE_PREFIXES)), 2)
+
+
+def detail_rows(rows, appliance_net=0.0):
+    """[(bucket, label_en, label_ar, kind, net)] sorted by department then size,
+    with the hub split into its platform and its security appliances."""
+    out = []
+    for r in rows:
+        b = MAP.get(r['pid'])
+        if b is None or r['net'] <= 0:
+            continue
+        en, ar, kind = LABELS[r['pid']]
+        if r['pid'] == HUB and appliance_net > 0:
+            out.append((b, APPLIANCE_LABEL[0], APPLIANCE_LABEL[1], APPLIANCE_LABEL[2], appliance_net))
+            out.append((b, en, ar, kind, round(r['net'] - appliance_net, 2)))
+        else:
+            out.append((b, en, ar, kind, r['net']))
+    rank = {k: i for i, k in enumerate(ORDER)}
+    out.sort(key=lambda t: (rank[t[0]], -t[4]))
+    return out
