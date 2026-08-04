@@ -33,3 +33,13 @@ Repeat files 1 and 2 with the quarter as the date range (e.g. 1 Apr to 30 Jun). 
 - Pull on the 3rd of the month or later: GCP cost data lags 24 to 48 hours, so a pull on the 1st misses the last days.
 - Drop the files straight into the chat (or into `docs/source/finops/YYYY-MM/` in the repo). The dashboard is rebuilt from them and re-issued with the new "Data as of" and "Published" stamps.
 - No BigQuery export is needed for this. If ITDT ever enables billing export to BigQuery, the pull can be automated; until then this manual export is the whole job.
+
+## The one export setting that must not change
+
+Every figure the dashboard states as **net spend** comes from the `Subtotal ($)` column. That column only carries the negotiated savings, savings programs and other savings if the credits and discounts options are switched on in the panel on the right of the Reports page. With them off, the CSV still exports cleanly, the service list and the `List cost ($)` column are correct, and `Subtotal ($)` silently equals `List cost ($)`.
+
+There is no warning in the file. The way to spot it: open the CSV and look at the `Negotiated savings ($)` column. If every row reads `0.00`, the export was run with the options off and the net figures are unusable.
+
+**Safest method:** pull the current month first, check that column, then change only the date range for each further period and download again. Do not touch the panel between downloads.
+
+For scale, the Jan to Jun 2026 pull done this way reported $1,174,633 of usage as if it were the net cost. The correct net for the same six months is $614,875. The exports were understating the discount by $559,758.
