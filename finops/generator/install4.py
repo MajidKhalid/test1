@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""v19: the donut labels smaller slices, so Business departments carries its own
-percentage on the chart."""
+"""v20: the two-up summary bar survives a narrow preview pane. SharePoint's file
+preview reports well under 1100px on a scaled display, which tripped the old
+stacking breakpoint and left the blade stranded on the left."""
 import re, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen, blocks
@@ -79,11 +80,11 @@ s = s.replace(cur, '<span class="chip"><span class="en">All figures in '
 
 # ---- version stamp: footer only -----------------------------------------
 n = s.count('Version v12') + s.count('الإصدار v12')
-s = s.replace('Version v12', 'Version v19').replace('الإصدار v12', 'الإصدار v19')
+s = s.replace('Version v12', 'Version v20').replace('الإصدار v12', 'الإصدار v20')
 # the Arabic footer line never carried a version
 a = '<span class="ar">مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>'
 assert s.count(a) == 1
-s = s.replace(a, '<span class="ar">الإصدار v19 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
+s = s.replace(a, '<span class="ar">الإصدار v20 · مجمّع من تقارير الفوترة في GCP · البيانات حتى </span>')
 s = s.replace('3 August 2026', '4 August 2026').replace('3 أغسطس 2026', '4 أغسطس 2026')
 print('version stamps bumped:', n + 1)
 
@@ -149,6 +150,25 @@ layout_css = """
 .mfig-hero .meter-cap{color:rgba(228,238,255,.74)}
 /* the period strip spans the same width as the card above it */
 .hero .sw{width:100%!important}
+
+/* ---- v20: keep the summary bar two-up in a narrow preview pane ----
+   The original breakpoint stacked it below 1100px. SharePoint's preview iframe
+   reports well under that on a scaled display, so the two halves stacked and the
+   56px divider was left at the start edge. Two columns now hold down to 640px,
+   which is the width at which the pair genuinely stops fitting. Selectors are
+   specific enough to beat the compaction block whatever the source order. */
+@media (min-width:641px){
+  .summary-bar{grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr)!important;gap:0!important}
+  .summary-bar>.summary-divider{width:56px!important;height:auto!important;align-self:stretch!important}
+  .summary-bar>.summary-divider>.summary-blade{width:8px!important;height:76px!important;
+    transform:skewX(-15deg)!important}
+}
+@media (max-width:640px){
+  .summary-bar{grid-template-columns:1fr!important;gap:14px!important}
+  .summary-bar>.summary-divider{width:auto!important;height:30px!important}
+  .summary-bar>.summary-divider>.summary-blade{width:8px!important;height:34px!important;
+    transform:rotate(90deg) skewX(-15deg)!important}
+}
 /* print: backdrop-filter does not render and background graphics may be off, so
    the glass falls back to solid navy panels that carry the light ink */
 @media print{
