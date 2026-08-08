@@ -11,6 +11,7 @@ This repo is the **SPARK artifact set** handed over from a Claude Cowork session
 - **Delivery rule (Majid, 2 Aug 2026): when a deliverable is finished, always attach the output file(s) directly in the chat AND give the GitHub raw link.** Both, every time, without being asked.
 - **Versioning rule (Majid, 3 Aug 2026): every prompt that changes a deliverable bumps its version, starting at v1.** The version is stamped in the artifact itself (hero chip + footer line) and in the delivered filename (`FinOps_Dashboard_v1.html`, then v2, v3...). The stable `FinOps_Dashboard.html` name is kept as well, since SharePoint publishing overwrites the same file.
 - `finops/` — the standalone Cloud FinOps dashboard stream (SharePoint-hosted, zero JS, NOT linked to the SPARK set). See the FinOps section below.
+- `demo/`: the sanitised, shareable copy of the FinOps template (`Retail_Sales_Dashboard_v1.html`), for people outside the Ministry who want the format for their own subject. Built by `demo/generator/build.py`; see the demo section below.
 - `comms/` — the launch announcements (three phases × AR/EN, copy-to-clipboard, `[PORTAL-LINK]` placeholder).
 - `spark-identity/` — the official identity package (logos, fonts, tokens, BRAND.md, Solids v2 components). Source of truth for the customer portal and anything built from now on.
 - `tools/verify.js` — Playwright verifier (`--demo --counters --form --chat --lang`). **Every HTML change must pass it before you declare done.** If Playwright's own Chromium is unavailable, set `CHROMIUM_PATH` to a system Chromium.
@@ -139,6 +140,40 @@ Known trap already fixed once: a broad `.figbox svg { width:100% }` rule blows u
   - Worth remembering when the next narrow-viewport report arrives: **the hero floating objects are hidden below 1280px by design** (their positions are solved against a 1440x370 hero), so a preview pane will not show them and that is not a bug.
 - **Export trap (4 Aug 2026, cost a round trip):** a Reports CSV pulled with the credits and discounts options switched off still exports cleanly, with the correct service list and correct `List cost ($)`, but `Subtotal ($)` silently equals `List cost ($)`. Nothing in the file flags it. **Check the `Negotiated savings ($)` column: all zeros means the net figures are unusable.** Majid's Jan to Jun 2026 pull came back this way, reporting $1,174,633 of usage as net when the true net for those six months is $614,875, a $559,758 gap. The discounts cannot be back-derived: the per-service rate is not stable (Chronicle 61.1% across H1 against 69.9% in July; Compute Engine 53.7% against 11.9%; Security Command Center 52.6% against 0%), so apportioning a period total across its months would smear one-off credits into months that never carried them. The fix is a re-export of the same date ranges with the panel untouched after a known-good pull. The parser that reads these CSVs is `scratchpad/finops/period.py`, validated against the published July view ($145,813 net, $318,283 gross, top four services and their shares, to the cent).
 - **Credits fact (2 Aug 2026, console):** the $450K migration credit is FULLY CONSUMED (0% remaining, end date 29 Oct 2026); spend now runs at negotiated rates. Only the unused $1K Gen App Builder trial remains (expires 9 Nov 2026). The builder's credits-note field must be refreshed monthly from Billing > Credits.
+
+## The shareable demo (`demo/`, 8 Aug 2026)
+
+Majid was asked for the report by someone outside the Ministry, for a different data-analysis
+use case, and wanted a version carrying no logos and no real data. `demo/Retail_Sales_Dashboard_v1.html`
+is that version: same template, fictional retailer, invented figures.
+
+- **The whole thing is generated, not hand-edited.** `demo/generator/build.py` reads the published
+  `finops/FinOps_Dashboard.html`, rebuilds all eleven period blocks from `data.py` (fixed seed, so a
+  rebuild reproduces the same numbers), and rewrites the hero, the card, the footer, the scripts and
+  the CSS comments. Every replacement asserts its own hit count, so a change to the source that
+  breaks an anchor fails the build instead of silently shipping.
+- **What leaves the file:** all five embedded logo images (731 KB), the licensed Lafet OTF, the
+  gradient-orb recipe and the `de-*` class names, every real figure, every service, project,
+  department and credit value, the Riyal mark and the conversion wording, and the organisation's
+  names everywhere including CSS comments and JavaScript strings. **A sweep of about 30 banned terms
+  runs over the base64-stripped text and fails the build if any survives**; the woff2 payload contains
+  the literal "GCP", which is why the sweep must strip base64 first.
+- **What stays, because it is the part worth copying:** one self-contained file, zero-JS operation,
+  the bilingual EN/AR twins with the RTL flip, the eleven-period control, the donut plus legend, the
+  ranked bars, the collapsed detail tables, the print path and the responsive behaviour.
+- **The mapping that made the retail story fit the template one-to-one:** gross minus discounts equals
+  net is retail's own language; the two headline figures become total net sales and the e-commerce
+  channel inside it; the department donut becomes the channel split, with the e-commerce slice equal
+  to the second headline figure by construction; the credit card becomes progress against the annual
+  sales plan (tranches closed and live, struck-through where closed); the project validation table
+  becomes the selling-entity table. Every one of those reconciles to the period total.
+- **Honesty markers are deliberate and should stay if the file is forwarded again:** a "Sample data"
+  chip, a line in the opening paragraph, a line in the chart notes and a line in the footer.
+- The three embedded fonts are IBM Plex Sans Arabic under the SIL OFL, so they may travel; Lafet may
+  not, which is why it was cut rather than subset.
+- QA (`demo/generator/qa.js`): zero external requests, zero JS errors, period control and language
+  switch verified with scripts on and off, RTL matching the source template, no English visible in the
+  Arabic view, 1440 down to 390 with no horizontal scroll, print media opening the detail tables.
 
 ## What is NOT here
 
