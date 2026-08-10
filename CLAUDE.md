@@ -141,6 +141,30 @@ Known trap already fixed once: a broad `.figbox svg { width:100% }` rule blows u
 - **Export trap (4 Aug 2026, cost a round trip):** a Reports CSV pulled with the credits and discounts options switched off still exports cleanly, with the correct service list and correct `List cost ($)`, but `Subtotal ($)` silently equals `List cost ($)`. Nothing in the file flags it. **Check the `Negotiated savings ($)` column: all zeros means the net figures are unusable.** Majid's Jan to Jun 2026 pull came back this way, reporting $1,174,633 of usage as net when the true net for those six months is $614,875, a $559,758 gap. The discounts cannot be back-derived: the per-service rate is not stable (Chronicle 61.1% across H1 against 69.9% in July; Compute Engine 53.7% against 11.9%; Security Command Center 52.6% against 0%), so apportioning a period total across its months would smear one-off credits into months that never carried them. The fix is a re-export of the same date ranges with the panel untouched after a known-good pull. The parser that reads these CSVs is `scratchpad/finops/period.py`, validated against the published July view ($145,813 net, $318,283 gross, top four services and their shares, to the cent).
 - **Credits fact (2 Aug 2026, console):** the $450K migration credit is FULLY CONSUMED (0% remaining, end date 29 Oct 2026); spend now runs at negotiated rates. Only the unused $1K Gen App Builder trial remains (expires 9 Nov 2026). The builder's credits-note field must be refreshed monthly from Billing > Credits.
 
+## Credit consumed against reported spend (10 Aug 2026, `finops/Credit_vs_Spend_Reconciliation.md`)
+
+Majid asked why the hero card's SAR 4,031,121 of consumed credit does not equal the SAR 3,128,009 of
+to-date net spend. **They measure different things and the gap is SAR 903,112.53, exactly USD 240,830.00.**
+- **The card is a contract position** (invoiced against the POs since contract start 1 Jun 2025, covering
+  everything the PO pays for). **Section 01 is a usage measurement** (metered in account `-002` from
+  1 Oct 2025, after discounts and credits). Four months of contract sit outside the account entirely.
+- **Three findings read straight from the exports:** every one of the 21 CSVs prints **`Tax 0.00`**, so the
+  report is a pre-tax view and 15% VAT (SAR 469,201 on the reported spend, 52% of the gap) can never appear
+  in it; a text sweep of all 21 finds **no support line anywhere**, while the card's own panel labels the
+  second order "PO 2 · inc. enhanced support"; and the **USD 450,000 migration credit is already inside the
+  reported figure** (it is the SAR 1,687,500 struck row and it sits in `Other savings`, SAR 1,762,352 to
+  date), so credits push the opposite way and cannot explain the gap.
+- **Model A (PO drawn VAT-inclusive) fits, Model B does not.** A implies Jun to Sep 2025 ran at USD 11,396
+  a month against the USD 24,482 actual for Oct to Dec; B needs those four earliest months to have run at
+  nearly twice the later rate. So: about half the gap is VAT, about a quarter enhanced support (modelled at
+  Google's published tiers, roughly USD 55,035), the rest pre-October usage.
+- **The gap being round to the dollar is the clue to chase**: metered usage does not land on USD 240,830.00,
+  a fixed-price line does. One invoice PDF decides between the models; the reseller drawdown statement and a
+  Jun to Sep 2025 export from account `-001` close it exactly.
+- **Presentational fix recommended, not yet applied:** two clarifier lines (contract position including
+  support and tax from 1 Jun 2025 / metered usage after credits from 1 Oct 2025), because any reader who
+  sees the two figures on one page will subtract them.
+
 ## The shareable demo (`demo/`, 8 Aug 2026)
 
 Majid was asked for the report by someone outside the Ministry, for a different data-analysis
