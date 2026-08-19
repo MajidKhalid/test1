@@ -117,17 +117,18 @@ const fs = require('fs');
       if (window._switchView) { window._switchView('apply'); await new Promise(s => setTimeout(s, 900)); }
       document.getElementById('af-submit').click(); await new Promise(s => setTimeout(s, 200));
       r.emptyRejected = /missing|ناقصة/.test(document.getElementById('af-note')?.textContent || '');
-      const fill = { 'af-name': 'Contract clause finder', 'af-desc': 'Finds clauses in contracts', 'af-owner': 'A. Analyst · Legal · a@moenergy.gov.sa', 'af-sponsor': 'Head of Legal', 'af-lmmail': 'line.manager@moenergy.gov.sa', 'af-how': 'Cuts review time', 'af-success': 'Review time halved in 90 days', 'af-just': 'Covers workspace compute and storage for the prototype phase', 'af-budget': '80', 'af-notes': '' };
+      const fill = { 'af-name': 'Contract clause finder', 'af-desc': 'Finds clauses in contracts', 'af-owner': 'A. Analyst · Legal · a@moenergy.gov.sa', 'af-sponsor': 'Head of Legal', 'af-lmmail': 'line.manager@moenergy.gov.sa', 'af-budget': '80', 'af-how': 'Cuts review time', 'af-success': 'Review time halved in 90 days', 'af-just': 'Covers workspace compute and storage for the prototype phase', 'af-notes': '' };
       for (const id in fill) { const e = document.getElementById(id); if (e) { e.value = fill[id]; } }
       for (const id of ['af-pillar', 'af-cap', 'af-data', 'af-pii']) { const e = document.getElementById(id); if (e) e.selectedIndex = 1; }
       const stop = ev => { ev.preventDefault(); }; window.addEventListener('beforeunload', stop);
       document.getElementById('af-submit').click(); await new Promise(s => setTimeout(s, 300));
       const href = window._lastMailto || '';
+      // v4: mailto direction reversed — To = line manager, SPARK team in CC
       r.mailtoOk = href.startsWith('mailto:line.manager@moenergy.gov.sa');
-      r.ccOk = href.includes('cc=SPARK%40MoEnergy.gov.sa');
+      r.ccOk = href.includes('cc=SPARK@MoEnergy.gov.sa');
       const body = decodeURIComponent(href.split('&body=')[1] || '');
-      r.budgetInBody = /Project budget \(USD/.test(body) && /Budget justification/.test(body);
-      r.lineManagerInBody = /Line manager email \(recipient\)/.test(body);
+      r.budgetInBody = /Project budget \(USD, monthly\): 80/.test(body) && /Budget justification/.test(body);
+      r.lineManagerInBody = /Line manager \(To\): line\.manager@moenergy\.gov\.sa/.test(body) && /SPARK team \(Cc\): SPARK@MoEnergy\.gov\.sa/.test(body);
       r.hrefLength = href.length;
       return r;
     });
@@ -136,25 +137,26 @@ const fs = require('fs');
   }
   // 5c · optional: chat illustration (pages exposing _switchView + #chatlog)
   if (flags.includes('--chat')) {
+    // v4 chat contract: empty first load, tool tiles in #toolzone under the composer,
+    // tool click inserts /toolname + helper card, script plays on send
     const chat = await page.evaluate(async () => {
       const r = {};
       const log = document.getElementById('chatlog');
       if (!log) return 'no chat hooks on this page';
       if (window._switchView) window._switchView('action');
-      await new Promise(s => setTimeout(s, 900));
-      const empty = document.getElementById('chatempty');
-      r.emptyState = !!empty && empty.offsetParent !== null;
-      r.toolCards = document.querySelectorAll('#undertools .tool').length;
-      const first = document.querySelector('#undertools .tool[data-tool]');
+      await new Promise(s => setTimeout(s, 1200));
+      r.emptyFirstLoad = log.children.length === 0 && !!document.getElementById('chatempty');
+      r.toolCards = document.querySelectorAll('#toolzone .tool').length;
+      const first = document.querySelector('#toolzone .tool[data-script]');
       first?.click();
       await new Promise(s => setTimeout(s, 300));
-      const inp = document.getElementById('chatin');
-      r.slashFilled = !!inp && inp.value.startsWith('/');
-      r.hintShown = !!document.querySelector('#toolhint.on');
+      const input = document.getElementById('chatin');
+      r.slashInserted = (input?.value || '').startsWith('/');
+      r.helperShown = !document.getElementById('toolhelp')?.hidden;
       document.getElementById('chatsend')?.click();
-      await new Promise(s => setTimeout(s, 900));
+      await new Promise(s => setTimeout(s, 1200));
       r.typingShown = !!document.querySelector('#chatlog .typing');
-      await new Promise(s => setTimeout(s, 5200));
+      await new Promise(s => setTimeout(s, 4800));
       r.typingCleared = !document.querySelector('#chatlog .typing') || undefined;
       r.bubbles = document.querySelectorAll('#chatlog .msg').length;
       return r;
@@ -165,8 +167,8 @@ const fs = require('fs');
     report.extra.chatSubmitFlips = await page.evaluate(async () => {
       if (!document.getElementById('chatnew') || !document.getElementById('v-apply')) return undefined;
       window._switchView('action');
-      document.getElementById('chatnew').click(); await new Promise(s => setTimeout(s, 400));
-      document.querySelector('#undertools .tool.submit')?.click();
+      document.getElementById('chatnew').click(); await new Promise(s => setTimeout(s, 600));
+      document.querySelector('#toolzone .tool.submit')?.click();
       await new Promise(s => setTimeout(s, 700));
       return document.getElementById('v-apply').classList.contains('on');
     });

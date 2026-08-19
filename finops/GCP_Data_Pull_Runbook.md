@@ -1,0 +1,66 @@
+# GCP data pull runbook for the FinOps dashboard
+
+Monthly checklist. About 10 minutes in the Cloud Console once you have the right role.
+Everything comes from one place: **console.cloud.google.com > menu > Billing**, with billing account `0131EC-6DEF7A-3CB945` selected.
+
+**Access note:** viewing the Reports page needs the **Billing Account Viewer** role (view only, it grants no spending power). Linking projects (billing.user, which you already have) is not enough on its own. If the Reports page is empty or missing, ask the billing admin for Billing Account Viewer, or forward this page and let them do the pull.
+
+## Why CSV and not screenshots
+
+CSV exports carry the exact numbers, so nothing gets re-typed and nothing gets misread. Screenshots are only for the one page with no export (Credits) and as a visual cross-check of the headline totals. Excel is fine too if the console offers it; CSV is the default.
+
+## The monthly pull (every month)
+
+Path for every file: **Billing > Reports**. Set the date range (top right), set **Group by**, keep the credits and discounts checkboxes ON in the panel on the right, then use the **Download CSV** icon above the chart.
+
+| # | File to save | Date range | Group by | Filter |
+|---|---|---|---|---|
+| 1 | `cost-by-service_YYYY-MM.csv` | the month (e.g. 1 to 31 Jul 2026) | Service | none |
+| 2 | `cost-by-project_YYYY-MM.csv` | the month | Project | none |
+| 3 | `cost-by-service_to-date.csv` | 1 Jun 2025 to today | Service | none |
+| 4 | `cost-by-project_to-date.csv` | 1 Jun 2025 to today | Project | none |
+| 5 | `sandbox-trend.csv` | 1 Jun 2025 to today | Month | Projects = `prj-moenergy-iw-sb-development` |
+| 6 | credits screenshot(s) | n/a | n/a | **Billing > Credits** page: every credit's name, remaining amount, and expiry date visible |
+
+File 5 is the evidence for the sandbox story (high usage, then restructure, then stable). File 6 powers the credit runway and the expiry warning.
+
+**File 2 matters more than it used to.** The "spend per general department" chart is built from the by-project export rather than from labels. July 2026, H1 2026 and the contract to date have one, so their split is exact and every project is listed. The other eight periods derive their split from their own by-service export instead (see the department mapping below), which pins 76% to 100% of each period exactly and apportions only the shared infrastructure residual. Pulling file 2 for Jan, Feb, Mar, Apr, May and Jun 2026 as months, plus 1 Jan to 31 Mar and 1 Apr to 30 Jun as quarters, makes all eleven periods exact. Same panel, same settings, only the date range and the Group by change.
+
+## Quarter-end months only (Mar, Jun, Sep, Dec)
+
+Repeat files 1 and 2 with the quarter as the date range (e.g. 1 Apr to 30 Jun). For a half-year view like H1 2026, same thing with 1 Jan to 30 Jun.
+
+## Rules of thumb
+
+- Pull on the 3rd of the month or later: GCP cost data lags 24 to 48 hours, so a pull on the 1st misses the last days.
+- Drop the files straight into the chat (or into `docs/source/finops/YYYY-MM/` in the repo). The dashboard is rebuilt from them and re-issued with the new "Data as of" and "Published" stamps.
+- No BigQuery export is needed for this. If ITDT ever enables billing export to BigQuery, the pull can be automated; until then this manual export is the whole job.
+
+## The one export setting that must not change
+
+Every figure the dashboard states as **net spend** comes from the `Subtotal ($)` column. That column only carries the negotiated savings, savings programs and other savings if the credits and discounts options are switched on in the panel on the right of the Reports page. With them off, the CSV still exports cleanly, the service list and the `List cost ($)` column are correct, and `Subtotal ($)` silently equals `List cost ($)`.
+
+There is no warning in the file. The way to spot it: open the CSV and look at the `Negotiated savings ($)` column. If every row reads `0.00`, the export was run with the options off and the net figures are unusable.
+
+**Safest method:** pull the current month first, check that column, then change only the date range for each further period and download again. Do not touch the panel between downloads.
+
+For scale, the Jan to Jun 2026 pull done this way reported $1,174,633 of usage as if it were the net cost. The correct net for the same six months is $614,875. The exports were understating the discount by $559,758.
+
+## The department mapping
+
+The department chart reads the billing project each charge sits in and maps it to a general department. The map lives in `finops/generator/depts.py` and is a plain project-ID to department table, so a correction is a one-line edit and a regeneration.
+
+| Department | What it owns |
+|---|---|
+| Cybersecurity Department | the security monitoring platform (`[Charges not specific to a project]`, less its Fortinet line) and security operations (`moe-secops-484408`) |
+| IT Services GD | the platforms and appliances it operates: F5 BIG-IP, FortiGate, the Fortinet platform, `prd-security-kms`, `dev-security-kms`, `prd-hub`, `dmz-host`, `dmz-srv`, `prd-host`, `dev-host`, `bootstrap`, `billexp`, `prd-bc-centlogs`, `dev-centlogs`, `iw-sb-development`, `iw-it-dtgd-ad-ne`, `iw-spark-admin` |
+| Business departments | their own applications (`prd-bc-website`) plus the platform the business applications moving to GCP land on: `migration-host-hq`, `prd-data-dbs`, `dev-data-dbs`, `prd-bs-devops`, `dev-bs-devops`, `prd-infra-mngeng`, `test-host`. Split per department once the ownership map exists |
+| Other | `moe-notebooklm` |
+
+Every line also carries a type (Cybersecurity, Infrastructure or Application) in `depts.LABELS`, so the report can say that a security appliance is owned by IT Services GD without pretending it is not a security solution. The report lists all of them under the department chart's View details.
+
+The account-level bucket is split by service, not left whole: Chronicle and Security Command Center are the Cybersecurity monitoring platform, and Fortinet Security SaaS is an appliance platform IT Services GD operates (`ACCOUNT_ITSVC_SERVICES`). The F5 BIG-IP and FortiGate appliances bill as virtual machines inside `prd-hub`, so they are IT Services GD spend by project; `depts.appliances()` carves them out for the type column. July SAR 83,477 of the SAR 248,305 IT Services GD carries (34%).
+
+**The monthly check that keeps this honest:** the account-level bucket reconciles to the cent with the security services in the by-service export for the same period. July `$79,462.25` = Chronicle + Security Command Center; H1 and to-date add Fortinet Security SaaS. Re-run that check before publishing; if the two stop matching, the bucket has picked up something that is not security and the split has to be revisited.
+
+A project that is not in the table stops the build with the project name, rather than being silently dropped.
