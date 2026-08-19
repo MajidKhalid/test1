@@ -89,6 +89,44 @@ Finished polished deliverables, not drafts · user writes informally, expects fo
 3. **"The one uncapped live project" is EXCLUDED from artifacts** (ops-side matter; artifacts describe target state). The Compute-Engine spend-cap gap remains documented as a capability fact per Task 8 — no live project is singled out as an exception anywhere.
 4. **"Collect the use cases"** kept OUT of artifacts — PO process task; the collection machinery (portal form, register intake, amnesty) already exists in the set.
 
+## The Nawaf harness page (`SPARK_Nawaf_Harness.html`, v1, 19 Aug 2026)
+
+Majid's brief: Nawaf was a chat illustration, and it should now show the **harness**, the full
+interface around the model, with the use cases still in the middle. One self-contained file,
+`SPARK_Site/SPARK_Nawaf_Harness.html`, 342 KB, zero external requests.
+
+- **The layout is a three-column app shell, deliberately one screen** (1,423px at 1440 wide):
+  left rail = the six connected tools with a Read or Write permission chip on each, the session
+  card (workspace, data class, region, budget meter) and the model card; centre = the six use
+  cases, which swap to the conversation when one runs, with the composer under them; right rail =
+  Trace, Sources and Guardrails tabs plus the "why a harness" note. That shape is the argument:
+  a chat window answers, a harness decides what the answer is allowed to touch.
+- **The composer follows the DeepSeek pattern, not the OpenAI one:** Answer, Deep think and
+  Search sit as peer chips inside the composer card rather than behind a plus menu, because the
+  mode is a property of the turn and hiding it makes the reasoning trace feel like a surprise.
+- **Reads run, writes stop.** The workspace use case is gated: the trace reaches "Stop at the
+  gate", the approval card opens in the Guardrails pane, and Approve writes REQ-4471 into the
+  trace while Decline writes "Nothing written, the draft is kept". Both close the pending gate
+  step, green for approved and orange for declined.
+- **Nawaf is drawn in SVG, not photographed.** The portrait Majid attached did not arrive as a
+  file this session, so the figure is a stand-in rigged for motion: pupils lerp toward the cursor
+  at 0.12 with the head parallaxing behind them, lids blink on a 2.6s plus random 4.2s timer, and
+  a three-frame mouth path cycles at 190ms while an answer streams. **The photo swap is one line**,
+  documented in a comment above the SVG: put the base64 on `.avatarwrap` as a background image and
+  add class `photo`, and the drawn face hides while the rig keeps running.
+- **The language-twin trap bit again.** `.shiftcard span{display:block}` and `.gline span{...}`
+  outrank a bare `.ar{display:none}`, so the hero cards printed English and Arabic at once. Fixed
+  with a guard block that must stay **last in the sheet**: `html:not([lang=ar]) .ar` and
+  `html[lang=ar] .en` hidden with `!important`. Same failure mode as the FinOps `.mstat` strip.
+- **Stacked, the order is act then read**: below 900px the centre column takes `order:1`, the
+  right rail 2 and the left rail 3, so running a use case on a phone puts the trace just below it
+  rather than three cards down.
+- QA (`scratchpad/nawaf/qa*.js`): zero JS errors, zero external requests, all six scripts run with
+  their trace steps and sources, gaze tracking confirmed moving, tabs, approve and decline paths,
+  typed composer send, EN and AR with no leak either way, 1440 down to 390 with no horizontal
+  scroll, reduced motion freezing the rig without error, and the page still rendering with
+  scripts blocked.
+
 ## Open threads
 0a. **Majid reviews the Arabic copy** on both new portals before the announcement goes out (formal register drafted; PO sign-off pending).
 0b. **Hosting decision for the customer portal**: settled path = Ministry intranet ("SPARK Playbook" under Digital Energy). Majid floated SharePoint — conflicts with the settled NO-M365 decision and modern SharePoint blocks the page's JS; pages are host-agnostic static files either way. Decide before the Phase-1 announcement.
