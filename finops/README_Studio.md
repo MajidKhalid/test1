@@ -6,7 +6,27 @@ It replaces `FinOps_Builder.html` and continues the version line: the July 2026 
 
 Everything runs in the browser. Nothing dropped into the page leaves the machine. The page it generates has zero JavaScript and makes no external requests, so it opens on SharePoint, from a file share, or as an email attachment, and prints to PDF with every detail table open.
 
-## How it feels to use (Studio v1.1)
+## The credit balance is added up, not typed (Studio v1.2)
+
+The remaining credit balance follows the model in the "GCP, Remaining Credit" slide and is recomputed every month from the spend:
+
+| Line | Where it comes from |
+|---|---|
+| Total starting credit | the purchase orders (PO 1, PO 2 inc. Enhanced Support), $ column of the ledger, net of 15% VAT |
+| minus Enhanced Support | a drawdown that never appears as usage |
+| minus direct drawdowns from the back end | one-time payments not visible in the billing dashboard (Log Optimization and Customer Success) |
+| minus total consumption based on the GCP dashboard, contract start to date | the net figure of the contract-to-date export you drop in step 2 |
+| = Remaining balance | computed |
+| Commitments (SecOps, Security Command Center) | contracted totals; what has been used is read from the to-date export by billing service name (Chronicle, Security Command Center); remaining = total minus used |
+| = Remaining commitment, = Uncommitted balance | computed |
+
+Fortinet is a one-time payment too, but it appears in the billing dashboard as Fortinet Security SaaS, so it is already inside consumption and is not entered twice. The Google incentives (the NotebookLM credit) sit inside the usage figures as savings and are listed as a source only. Ledger values are converted at the peg in the Edition box (3.75). The report's credit card carries the same arithmetic in an expandable "How the balance is computed" table, English and Arabic, so leadership can see how the figure was reached.
+
+## How it feels to use (Studio v1.2)
+
+Six steps, one at a time, on a light page: **Month** (a dropdown; dates, labels, to-date ranges and the quarter rule fill themselves), **Files** (one drop zone for everything, then a table that shows each slot as Loaded, Required or Optional with Replace and Remove), **Credits** (the ledger rows above, with the balance computed live in the panel beside them), **Ownership** (a picker for anything unmapped), **Statement** (token chips and a live preview) and **Generate** (the readiness list and the buttons). A progress strip shows the state of every step, a fixed bar shows the blocker count, and "Preview as published" shows exactly what will be generated.
+
+## What v1.1 added
 
 - **One drop zone.** Drop every CSV for the month at once. The Studio reads each file's header (GCP by service, GCP by project, Azure by service, by subscription, by location) and its date range (from the file name) and files it into the right slot. Each loaded file gets a chip with a selector to re-route or remove it. A month file whose dates do not match the edition is flagged, not refused.
 - **One field drives the edition.** Set the reporting month and the data-as-of date, the edition label, the to-date ranges and the quarter rule fill themselves, English and Arabic. Edit any of them after.

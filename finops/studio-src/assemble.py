@@ -16,6 +16,13 @@ periods={}
 for k,p in gcp['gcp']['periods'].items():
     nk=KEYMAP[k]; q=dict(p); q['key']=nk; q['files']={}; q['sample']=False; q['source']='FinOps_Dashboard_v20.html (July 2026 edition)'
     for drop in ('month','insights','notes'): q.pop(drop,None)
+    # totals at two decimals from the service rows (the published headline was rounded to the riyal)
+    if q.get('services'):
+        net=r2(sum(x['net'] for x in q['services'])); gross=r2(sum(x['gross'] for x in q['services']))
+        q['totals']={'net':net,'gross':gross,'discounts':r2(gross-net)}
+    if q.get('sandboxServices'):
+        sn=r2(sum(x['net'] for x in q['sandboxServices'])); sg=r2(sum(x['gross'] for x in q['sandboxServices']))
+        q['sandbox']={'net':sn,'gross':sg,'discounts':r2(sg-sn)}
     periods[nk]=q
 # Azure H1 baseline in Riyals
 az=extra['azure']; h1=az.pop('h1_usd')

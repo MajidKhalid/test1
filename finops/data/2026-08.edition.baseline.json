@@ -1,7 +1,7 @@
 {
  "meta": {
   "studio": 1,
-  "stamp": "2026-09-07T11:32:49Z",
+  "stamp": "2026-09-07T11:59:03Z",
   "builtFrom": "FinOps_Dashboard_v20 (July 2026) + Q2 2026 quarterly report"
  },
  "edition": {
@@ -33,33 +33,65 @@
    "tdLabelEn": "October 2025 to August 2026",
    "tdLabelAr": "أكتوبر 2025 إلى أغسطس 2026",
    "credit": {
-    "starting": 9685235.81,
-    "remaining": 5654114.44,
-    "committed": 1882086.75,
-    "asAt": "31 July 2026",
-    "asAtAr": "31 يوليو 2026",
-    "descEn": "Of {{starting}} in purchase-order credit, {{consumed}} has been consumed to date: enhanced support, back-end drawdowns and dashboard usage combined.",
-    "descAr": "من أصل {{starting}} من رصيد أوامر الشراء، استُهلك {{consumed}} حتى تاريخه، ويشمل ذلك الدعم المتقدم والسحوبات الخلفية والاستهلاك الظاهر في لوحات الفوترة.",
-    "clarEn": "Contract position as at {{asAt}}, including support and tax, from contract start on 1 June 2025. The spend figures below are metered usage in this billing account from 1 October 2025, so the two are not meant to subtract.",
-    "clarAr": "الموقف التعاقدي حتى {{asAt}}، شاملاً الدعم والضريبة، منذ بداية العقد في 1 يونيو 2025. أما أرقام الإنفاق أدناه فهي الاستهلاك المقاس في حساب الفوترة هذا منذ 1 أكتوبر 2025، ولذلك لا يُقصد طرح أحدهما من الآخر.",
-    "sources": [
+    "purchaseOrders": [
      {
       "name": "PO 1",
       "nameAr": "أمر الشراء 1",
-      "amount": 333782.21,
+      "sar": 102359.88,
+      "usd": 89008.59,
       "status": "full"
      },
      {
-      "name": "PO 2 · inc. enhanced support",
-      "nameAr": "أمر الشراء 2 · شامل الدعم المتقدم",
-      "amount": 9351453.6,
-      "status": "live",
-      "remaining": 5654114.44
+      "name": "PO 2 (inc. Enhanced Support)",
+      "nameAr": "أمر الشراء 2 (شامل الدعم المتقدم)",
+      "sar": 2867779.1,
+      "usd": 2493720.96,
+      "status": "live"
+     }
+    ],
+    "fixed": [
+     {
+      "name": "Enhanced Support",
+      "nameAr": "الدعم المتقدم",
+      "usd": 235520.0,
+      "noteEn": "Support drawn from PO 2; not visible in billing dashboards",
+      "noteAr": "دعم مسحوب من أمر الشراء 2؛ لا يظهر في لوحات الفوترة"
      },
      {
-      "name": "Google incentive · NotebookLM",
-      "nameAr": "حافز Google · NotebookLM",
-      "amount": 1687500.0,
+      "name": "Log Optimization and Customer Success",
+      "nameAr": "تحسين السجلات ونجاح العملاء",
+      "usd": 128517.64,
+      "noteEn": "One-time payment, fully paid, not visible in billing dashboards",
+      "noteAr": "دفعة واحدة مسددة بالكامل، لا تظهر في لوحات الفوترة"
+     }
+    ],
+    "commitments": [
+     {
+      "name": "SecOps",
+      "nameAr": "SecOps",
+      "usd": 914135.0,
+      "services": [
+       "Chronicle"
+      ],
+      "noteEn": "Paid monthly as the service is used",
+      "noteAr": "يُدفع شهرياً بحسب الاستخدام"
+     },
+     {
+      "name": "Security Command Center",
+      "nameAr": "Security Command Center",
+      "usd": 81672.81,
+      "services": [
+       "Security Command Center"
+      ],
+      "noteEn": "Paid monthly as the service is used",
+      "noteAr": "يُدفع شهرياً بحسب الاستخدام"
+     }
+    ],
+    "incentives": [
+     {
+      "name": "GCP credits (NotebookLM)",
+      "nameAr": "أرصدة GCP (NotebookLM)",
+      "usd": 450000.0,
       "status": "full"
      }
     ]
@@ -81,14 +113,14 @@
      "label": "July 2026",
      "labelAr": "يوليو 2026",
      "totals": {
-      "net": 546798.0,
-      "gross": 1193561.0,
-      "discounts": 646764.0
+      "net": 546797.56,
+      "gross": 1193561.15,
+      "discounts": 646763.59
      },
      "sandbox": {
-      "net": 1486.0,
-      "gross": 1505.0,
-      "discounts": 19.0
+      "net": 1485.74,
+      "gross": 1505.06,
+      "discounts": 19.32
      },
      "services": [
       {
@@ -491,14 +523,14 @@
      "label": "June 2026",
      "labelAr": "يونيو 2026",
      "totals": {
-      "net": 498575.0,
-      "gross": 798873.0,
-      "discounts": 300299.0
+      "net": 498574.72,
+      "gross": 798873.33,
+      "discounts": 300298.61
      },
      "sandbox": {
-      "net": 820.0,
-      "gross": 840.0,
-      "discounts": 19.0
+      "net": 820.34,
+      "gross": 839.58,
+      "discounts": 19.24
      },
      "services": [
       {
@@ -708,13 +740,13 @@
      "label": "May 2026",
      "labelAr": "مايو 2026",
      "totals": {
-      "net": 456866.0,
-      "gross": 542933.0,
-      "discounts": 86067.0
+      "net": 456865.79,
+      "gross": 542933.07,
+      "discounts": 86067.28
      },
      "sandbox": {
-      "net": 274.0,
-      "gross": 274.0,
+      "net": 273.54,
+      "gross": 273.54,
       "discounts": 0.0
      },
      "services": [
@@ -877,14 +909,14 @@
      "label": "April 2026",
      "labelAr": "أبريل 2026",
      "totals": {
-      "net": 80784.0,
-      "gross": 620282.0,
-      "discounts": 539498.0
+      "net": 80783.88,
+      "gross": 620281.57,
+      "discounts": 539497.69
      },
      "sandbox": {
       "net": 0.0,
-      "gross": 9422.0,
-      "discounts": 9422.0
+      "gross": 9421.57,
+      "discounts": 9421.57
      },
      "services": [
       {
@@ -1076,14 +1108,14 @@
      "label": "March 2026",
      "labelAr": "مارس 2026",
      "totals": {
-      "net": 80246.0,
-      "gross": 659738.0,
-      "discounts": 579492.0
+      "net": 80246.14,
+      "gross": 659738.48,
+      "discounts": 579492.34
      },
      "sandbox": {
       "net": 0.0,
-      "gross": 71824.0,
-      "discounts": 71824.0
+      "gross": 71823.64,
+      "discounts": 71823.64
      },
      "services": [
       {
@@ -1281,14 +1313,14 @@
      "label": "February 2026",
      "labelAr": "فبراير 2026",
      "totals": {
-      "net": 705481.0,
-      "gross": 1246725.0,
-      "discounts": 541244.0
+      "net": 705480.68,
+      "gross": 1246724.86,
+      "discounts": 541244.18
      },
      "sandbox": {
       "net": 0.0,
-      "gross": 60928.0,
-      "discounts": 60928.0
+      "gross": 60928.5,
+      "discounts": 60928.5
      },
      "services": [
       {
@@ -1480,14 +1512,14 @@
      "label": "January 2026",
      "labelAr": "يناير 2026",
      "totals": {
-      "net": 483831.0,
-      "gross": 536324.0,
-      "discounts": 52493.0
+      "net": 483831.2,
+      "gross": 536323.94,
+      "discounts": 52492.74
      },
      "sandbox": {
-      "net": 18776.0,
-      "gross": 21331.0,
-      "discounts": 2556.0
+      "net": 18775.5,
+      "gross": 21331.39,
+      "discounts": 2555.89
      },
      "services": [
       {
@@ -1673,14 +1705,14 @@
      "label": "H1 2026",
      "labelAr": "النصف الأول 2026",
      "totals": {
-      "net": 2305782.0,
-      "gross": 4404875.0,
-      "discounts": 2099093.0
+      "net": 2305782.48,
+      "gross": 4404875.47,
+      "discounts": 2099092.99
      },
      "sandbox": {
-      "net": 19869.0,
-      "gross": 164618.0,
-      "discounts": 144749.0
+      "net": 19869.34,
+      "gross": 164618.24,
+      "discounts": 144748.9
      },
      "services": [
       {
@@ -2104,14 +2136,14 @@
      "label": "Q2 2026",
      "labelAr": "الربع الثاني 2026",
      "totals": {
-      "net": 1036224.0,
-      "gross": 1962088.0,
-      "discounts": 925864.0
+      "net": 1036224.41,
+      "gross": 1962088.01,
+      "discounts": 925863.6
      },
      "sandbox": {
-      "net": 1094.0,
-      "gross": 10535.0,
-      "discounts": 9441.0
+      "net": 1093.87,
+      "gross": 10534.69,
+      "discounts": 9440.82
      },
      "services": [
       {
@@ -2363,14 +2395,14 @@
      "label": "Q1 2026",
      "labelAr": "الربع الأول 2026",
      "totals": {
-      "net": 1269558.0,
-      "gross": 2442787.0,
-      "discounts": 1173229.0
+      "net": 1269558.01,
+      "gross": 2442787.28,
+      "discounts": 1173229.27
      },
      "sandbox": {
-      "net": 18776.0,
-      "gross": 154084.0,
-      "discounts": 135308.0
+      "net": 18775.5,
+      "gross": 154083.52,
+      "discounts": 135308.02
      },
      "services": [
       {
@@ -2598,14 +2630,14 @@
      "label": "October 2025 to July 2026",
      "labelAr": "أكتوبر 2025 إلى يوليو 2026",
      "totals": {
-      "net": 3128009.0,
-      "gross": 5896378.0,
-      "discounts": 2768369.0
+      "net": 3128008.82,
+      "gross": 5896377.97,
+      "discounts": 2768369.15
      },
      "sandbox": {
-      "net": 21355.0,
-      "gross": 166124.0,
-      "discounts": 144768.0
+      "net": 21355.24,
+      "gross": 166123.5,
+      "discounts": 144768.26
      },
      "services": [
       {
@@ -3085,10 +3117,7 @@
    "credit": {
     "starting": null,
     "remaining": 383182.5,
-    "committed": 0,
     "expiry": "",
-    "asAt": "30 July 2026",
-    "asAtAr": "30 يوليو 2026",
     "labelEn": "Microsoft credit balance available as at 30 July 2026",
     "labelAr": "رصيد Microsoft المتاح حتى 30 يوليو 2026",
     "descEn": "USD 102,182 at 3.75, as stated in the Q2 2026 quarterly report. The Microsoft agreement states the credit as a three-year total, so the annualised line understates later years by design.",
@@ -3096,16 +3125,7 @@
     "clarEn": "Refresh each month from Cost Management + Billing > Credits (MCA) or Enrollment > Prepayment (EA). The starting balance and the expiry date are requested for the October edition.",
     "clarAr": "يُحدَّث شهرياً من إدارة التكلفة والفوترة > الأرصدة (MCA) أو التسجيل > الدفع المسبق (EA). والرصيد الابتدائي وتاريخ الانتهاء مطلوبان لإصدار أكتوبر.",
     "footEn": "Contract-year consumption to 30 July 2026: 935K Riyals against an annualised line of 785K (119%), flagged in the Q2 report as context, not as an overrun of contract.",
-    "footAr": "استهلاك سنة العقد حتى 30 يوليو 2026: 935 ألف ريال مقابل خط سنوي قدره 785 ألفاً (119%)، وقد أُشير إليه في تقرير الربع الثاني للسياق لا بوصفه تجاوزاً للعقد.",
-    "sources": [
-     {
-      "name": "Microsoft credit · three-year total",
-      "nameAr": "رصيد Microsoft · إجمالي ثلاث سنوات",
-      "amount": null,
-      "status": "live",
-      "remaining": 383182.5
-     }
-    ]
+    "footAr": "استهلاك سنة العقد حتى 30 يوليو 2026: 935 ألف ريال مقابل خط سنوي قدره 785 ألفاً (119%)، وقد أُشير إليه في تقرير الربع الثاني للسياق لا بوصفه تجاوزاً للعقد."
    },
    "notes": {
     "servicesEn": "Actual cost as reported by Cost analysis after Microsoft credits, converted from the US dollars Microsoft invoices at the official rate of 3.75 Riyals to the US dollar.",
