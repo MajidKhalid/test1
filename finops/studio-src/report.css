@@ -228,6 +228,10 @@ tr.tfoot td{font-weight:700;color:var(--ink);border-top:2px solid var(--line)}
 .empty b{color:var(--ink)}
 .empty ul{margin:8px 0 0;padding-inline-start:20px;font-size:13px}
 
+.delta{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;background:#F3F6FA;margin-inline-start:8px;vertical-align:middle;white-space:nowrap}
+.delta i{font-style:normal;font-weight:600;color:#5E748E}
+.delta.up{color:#C0341C}.delta.down{color:#087F7C}
+
 /* ---- footer ---- */
 .foot{background:#050c1d;color:#7fa6cc;padding:24px 5vw 22px;font-size:12px;text-align:center;line-height:1.9;margin-top:28px}
 .foot .init{font-size:9.5px;letter-spacing:.18em;color:#8b96ac;text-transform:uppercase;margin-bottom:8px}

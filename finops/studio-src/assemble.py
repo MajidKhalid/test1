@@ -9,7 +9,7 @@ def r2(v): return round(v+1e-9,2)
 FX=3.75
 fonts=("@font-face{font-family:'Lafet';src:url(data:font/otf;base64,%s) format('opentype');font-weight:400;font-display:swap}" % b64(ASSETS+'/Lafet-Regular.otf')
  + ''.join("@font-face{font-family:'IBM Plex Sans Arabic';src:url(data:font/woff2;base64,%s) format('woff2');font-weight:%s;font-display:swap}" % (b64(ASSETS+'/plex-%s.woff2'%w), w) for w in ('400','600','700')))
-rs=rd(ASSETS+'/rs.css'); report_css=rd(B+'/report.css'); studio_css=rd(B+'/studio.css'); body=rd(B+'/body.html'); app=rd(B+'/app.js')
+rs=rd(ASSETS+'/rs.css'); report_css=rd(B+'/report.css'); studio_css=rd(B+'/studio.css'); body=rd(B+'/body.html'); app=rd(B+'/app.js')+'\n'+rd(B+'/app-studio.js')
 gcp=json.load(open(HERE+'/gcp_periods_2026-07.json',encoding='utf-8')); extra=json.load(open(B+'/baseline_extra.json',encoding='utf-8'))
 KEYMAP={'jan':'2026-01','feb':'2026-02','mar':'2026-03','apr':'2026-04','may':'2026-05','jun':'2026-06','jul':'2026-07','q1':'2026-q1','q2':'2026-q2','h1':'2026-h1','td':'td'}
 periods={}

@@ -6,6 +6,16 @@ It replaces `FinOps_Builder.html` and continues the version line: the July 2026 
 
 Everything runs in the browser. Nothing dropped into the page leaves the machine. The page it generates has zero JavaScript and makes no external requests, so it opens on SharePoint, from a file share, or as an email attachment, and prints to PDF with every detail table open.
 
+## How it feels to use (Studio v1.1)
+
+- **One drop zone.** Drop every CSV for the month at once. The Studio reads each file's header (GCP by service, GCP by project, Azure by service, by subscription, by location) and its date range (from the file name) and files it into the right slot. Each loaded file gets a chip with a selector to re-route or remove it. A month file whose dates do not match the edition is flagged, not refused.
+- **One field drives the edition.** Set the reporting month and the data-as-of date, the edition label, the to-date ranges and the quarter rule fill themselves, English and Arabic. Edit any of them after.
+- **Unmapped means a picker, not a text edit.** A project or subscription the map does not know appears with a department picker; choosing one writes the map line for you.
+- **The statement writes itself around the numbers.** Click a token chip to insert it at the cursor; the live preview on the right shows the panel as it will read in the report; the preview updates as you type without re-rendering the whole report.
+- **You always know where you are.** A five-step progress strip at the top, a fixed bar at the bottom with the blocker count and the Generate button, and toasts for every file loaded, mapped or refused.
+- **Preview as published.** One click shows exactly what will be generated (publishing rules applied, studio hidden), and one click brings the Studio back.
+- **Month-on-month in the report.** The key figures carry a delta chip against the previous month for both clouds.
+
 ## The monthly cycle
 
 | Step | Who | What |

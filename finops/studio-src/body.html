@@ -1,22 +1,24 @@
 <section id="studio" class="studio" aria-label="FinOps Report Studio">
   <div class="st-head">
-    <h1>FinOps Report Studio <span class="ver">Studio v1</span></h1>
+    <h1>FinOps Report Studio <span class="ver">Studio v1.1</span></h1>
     <div class="warn">Internal operator tool for the FinOps owner. Never publish or share this file. The report it generates (FinOps_Dashboard.html) is the shareable one. Nothing dropped here leaves your browser.</div>
     <div class="st-actions">
-      <a class="btn ghost" href="#report">See the report preview</a>
+      <button class="btn ghost" id="btn-pubpreview" type="button">Preview as published</button>
       <button class="btn primary" id="btn-gen-top" type="button" disabled>Generate the report</button>
     </div>
   </div>
-  <ol class="st-steps">
-    <li><b>Pull the exports.</b> <b>GCP_Data_Pull_Runbook.md</b> for the Google Cloud Reports CSVs and <b>Azure_Data_Pull_Runbook.md</b> for the Azure Cost analysis CSVs. Pull on the 3rd of the month or later.</li>
-    <li><b>Drop each file into its slot.</b> The readiness list tells you what is still missing, what does not reconcile and what the report will say if you publish as is.</li>
-    <li><b>Write the FinOps statement of the month</b>, refresh the credit positions and the notes. Tokens such as <span class="tok">{{gcp.net}}</span> fill themselves from the files.</li>
-    <li><b>Generate.</b> Check the preview below, then upload <b>FinOps_Dashboard.html</b> to SharePoint over the previous edition so the link never changes. Keep the versioned copy as the archive and save the edition state next to the CSVs.</li>
+  <ol class="st-flow" id="st-flow" aria-label="Progress">
+    <li data-step="1"><b>1</b><span>Edition</span><em></em></li>
+    <li data-step="2"><b>2</b><span>Files</span><em></em></li>
+    <li data-step="3"><b>3</b><span>Credits and maps</span><em></em></li>
+    <li data-step="4"><b>4</b><span>Statement</span><em></em></li>
+    <li data-step="5"><b>5</b><span>Generate</span><em></em></li>
   </ol>
 
   <div class="st-grid">
     <div class="st" id="st-edition">
       <h3><span class="n">1</span>Edition</h3>
+      <p class="hint">Set the reporting month and everything below it fills in: data as of, labels, to-date ranges, the quarter rule. Edit any field after.</p>
       <div class="two">
         <div><label class="lab" for="f-month">Reporting month</label><input id="f-month" type="month" data-bind="edition.month"></div>
         <div><label class="lab" for="f-version">Report version</label><input id="f-version" type="number" min="1" step="1" data-bind="edition.version"></div>
@@ -39,17 +41,28 @@
       </div>
       <label class="chk-inline"><input type="checkbox" data-bind="edition.quarterEnd"> Quarter-end edition: publish the Quarter tab</label>
       <label class="chk-inline"><input type="checkbox" data-bind="clouds.azure.enabled"> Include Microsoft Azure (adds the cloud switch to the report)</label>
-      <p class="hint">The published report only carries the Quarter tab in quarter-end editions (March, June, September, December). The preview below shows every period that has data so you can check it.</p>
+      <div class="btnrow"><button class="btn" id="btn-derive" type="button">Fill dates and labels from the month again</button></div>
+    </div>
+
+    <div class="st wide" id="st-files">
+      <h3><span class="n">2</span>Drop this month's exports</h3>
+      <div class="bigzone" id="bigzone" tabindex="0" role="button" aria-label="Drop CSV exports here or press Enter to choose files">
+        <input type="file" multiple accept=".csv,text/csv" aria-label="Choose CSV exports">
+        <div class="bz-title">Drop every CSV for <span id="bz-month">the month</span> here, all at once</div>
+        <div class="bz-sub">Google Cloud Reports by service and by project (all GCP and the sandbox), Azure Cost analysis by service, subscription and location, for the month and contract to date. The Studio reads each file's header and date range and files it into the right slot. Re-route or remove any file below.</div>
+      </div>
+      <div class="routed" id="routed"></div>
+      <details class="slots"><summary>Slots, and what each one builds</summary>
+        <div class="two">
+          <div><div class="lab">Google Cloud · Billing &gt; Reports, credits and discounts options ON</div><div class="zones" id="zones-gcp"></div></div>
+          <div><div class="lab">Microsoft Azure · Cost analysis, Actual cost, billing-account scope</div><div class="zones" id="zones-azure"></div></div>
+        </div>
+        <p class="hint">Dropping a file on a slot forces it there; the big zone above decides by header and file name. A month file whose dates do not match the edition month is flagged, not refused, so a previous month can be re-issued.</p>
+      </details>
     </div>
 
     <div class="st" id="st-gcp">
-      <h3><span class="n">2</span>Data request · Google Cloud</h3>
-      <p class="hint">Billing &gt; Reports, grouped by Service or by Project, with the credits and discounts options switched on. The file name gives the date range; the header row is checked on drop.</p>
-      <div class="zones" id="zones-gcp"></div>
-      <div class="two">
-        <div><label class="lab" for="f-gtd">To-date label (EN)</label><input id="f-gtd" type="text" data-bind="clouds.gcp.tdLabelEn"></div>
-        <div><label class="lab" for="f-gtd-ar">To-date label (AR)</label><input id="f-gtd-ar" type="text" dir="rtl" data-bind="clouds.gcp.tdLabelAr"></div>
-      </div>
+      <h3><span class="n">3</span>Google Cloud · credits and ownership</h3>
       <span class="lab">Credit position (Riyals) · from Billing &gt; Credits and the purchase-order ledger</span>
       <div class="three">
         <div><label class="lab" for="f-gcs">Starting credit</label><input id="f-gcs" type="number" step="0.01" data-bind="clouds.gcp.credit.starting"></div>
@@ -60,29 +73,29 @@
         <div><label class="lab" for="f-gca">Balance as at (EN)</label><input id="f-gca" type="text" data-bind="clouds.gcp.credit.asAt"></div>
         <div><label class="lab" for="f-gca-ar">Balance as at (AR)</label><input id="f-gca-ar" type="text" dir="rtl" data-bind="clouds.gcp.credit.asAtAr"></div>
       </div>
-      <label class="lab" for="f-gcn">Credits note under the service chart (EN)</label><textarea id="f-gcn" data-bind="clouds.gcp.notes.creditsEn"></textarea>
-      <label class="lab" for="f-gcn-ar">Credits note (AR)</label><textarea id="f-gcn-ar" dir="rtl" data-bind="clouds.gcp.notes.creditsAr"></textarea>
-      <span class="lab">Key highlight override · empty = automatic (fastest-growing service at 3% of net or more)</span>
-      <div class="three">
-        <div><input type="text" placeholder="Month" data-bind="clouds.gcp.highlights.m"></div>
-        <div><input type="text" placeholder="Quarter" data-bind="clouds.gcp.highlights.q"></div>
-        <div><input type="text" placeholder="To date" data-bind="clouds.gcp.highlights.t"></div>
+      <div class="two">
+        <div><label class="lab" for="f-gtd">To-date label (EN)</label><input id="f-gtd" type="text" data-bind="clouds.gcp.tdLabelEn"></div>
+        <div><label class="lab" for="f-gtd-ar">To-date label (AR)</label><input id="f-gtd-ar" type="text" dir="rtl" data-bind="clouds.gcp.tdLabelAr"></div>
       </div>
-      <details><summary>Project to general-department map</summary>
-        <textarea class="code" data-bind="clouds.gcp.projectMapText" spellcheck="false"></textarea>
-        <p class="hint">One line per project: <span class="tok">project-id = cyber | itsvc | business | other</span>. The account-level bucket is the blank id and is split by service (Chronicle and Security Command Center stay Cybersecurity; Fortinet Security SaaS moves to IT Services GD). A project missing from this table stops the build with its name.</p>
+      <div class="quickmap" id="qm-gcp" hidden></div>
+      <details><summary>Credits note, highlight overrides, project map</summary>
+        <label class="lab" for="f-gcn">Credits note under the service chart (EN)</label><textarea id="f-gcn" data-bind="clouds.gcp.notes.creditsEn"></textarea>
+        <label class="lab" for="f-gcn-ar">Credits note (AR)</label><textarea id="f-gcn-ar" dir="rtl" data-bind="clouds.gcp.notes.creditsAr"></textarea>
+        <span class="lab">Key highlight override · empty = automatic (fastest-growing service at 3% of net or more)</span>
+        <div class="three">
+          <div><input type="text" placeholder="Month" data-bind="clouds.gcp.highlights.m"></div>
+          <div><input type="text" placeholder="Quarter" data-bind="clouds.gcp.highlights.q"></div>
+          <div><input type="text" placeholder="To date" data-bind="clouds.gcp.highlights.t"></div>
+        </div>
+        <label class="lab" for="f-gmap">Project to general-department map</label>
+        <textarea id="f-gmap" class="code" data-bind="clouds.gcp.projectMapText" spellcheck="false"></textarea>
+        <p class="hint">One line per project: <span class="tok">project-id = cyber | itsvc | business | other</span>. The account-level bucket is <span class="tok">[account-level]</span> and is split by service. A project missing from this table is listed above with a picker and blocks the build until mapped.</p>
       </details>
     </div>
 
     <div class="st" id="st-azure">
-      <h3><span class="n">3</span>Data request · Microsoft Azure</h3>
-      <p class="hint">Cost Management &gt; Cost analysis, Actual cost, grouped by Service name, Subscription name or Resource location, downloaded as CSV at the billing-account scope.</p>
-      <div class="zones" id="zones-azure"></div>
-      <div class="two">
-        <div><label class="lab" for="f-atd">To-date label (EN)</label><input id="f-atd" type="text" data-bind="clouds.azure.tdLabelEn"></div>
-        <div><label class="lab" for="f-atd-ar">To-date label (AR)</label><input id="f-atd-ar" type="text" dir="rtl" data-bind="clouds.azure.tdLabelAr"></div>
-      </div>
-      <span class="lab">Credit position (Riyals) · from Cost Management + Billing &gt; Credits (MCA) or Enrollment &gt; Prepayment (EA)</span>
+      <h3><span class="n">3</span>Microsoft Azure · credits and ownership</h3>
+      <span class="lab">Credit position (Riyals) · Cost Management + Billing &gt; Credits (MCA) or Enrollment &gt; Prepayment (EA)</span>
       <div class="three">
         <div><label class="lab" for="f-acs">Starting credit</label><input id="f-acs" type="number" step="0.01" data-bind="clouds.azure.credit.starting" placeholder="requested"></div>
         <div><label class="lab" for="f-acr">Balance available</label><input id="f-acr" type="number" step="0.01" data-bind="clouds.azure.credit.remaining"></div>
@@ -92,36 +105,52 @@
         <div><label class="lab" for="f-aca">Balance as at (EN)</label><input id="f-aca" type="text" data-bind="clouds.azure.credit.asAt"></div>
         <div><label class="lab" for="f-aca-ar">Balance as at (AR)</label><input id="f-aca-ar" type="text" dir="rtl" data-bind="clouds.azure.credit.asAtAr"></div>
       </div>
-      <label class="lab" for="f-acd">Credit description (EN)</label><textarea id="f-acd" data-bind="clouds.azure.credit.descEn"></textarea>
-      <label class="lab" for="f-acd-ar">Credit description (AR)</label><textarea id="f-acd-ar" dir="rtl" data-bind="clouds.azure.credit.descAr"></textarea>
-      <label class="lab" for="f-acn">Note under the service chart (EN)</label><textarea id="f-acn" data-bind="clouds.azure.notes.servicesEn"></textarea>
-      <label class="lab" for="f-acn-ar">Note under the service chart (AR)</label><textarea id="f-acn-ar" dir="rtl" data-bind="clouds.azure.notes.servicesAr"></textarea>
-      <span class="lab">Key highlight override · empty = automatic</span>
-      <div class="three">
-        <div><input type="text" placeholder="Month" data-bind="clouds.azure.highlights.m"></div>
-        <div><input type="text" placeholder="Quarter" data-bind="clouds.azure.highlights.q"></div>
-        <div><input type="text" placeholder="To date" data-bind="clouds.azure.highlights.t"></div>
+      <div class="two">
+        <div><label class="lab" for="f-atd">To-date label (EN)</label><input id="f-atd" type="text" data-bind="clouds.azure.tdLabelEn"></div>
+        <div><label class="lab" for="f-atd-ar">To-date label (AR)</label><input id="f-atd-ar" type="text" dir="rtl" data-bind="clouds.azure.tdLabelAr"></div>
       </div>
-      <details><summary>Subscription to general-department map</summary>
-        <textarea class="code" data-bind="clouds.azure.subMapText" spellcheck="false"></textarea>
-        <p class="hint">One line per subscription: <span class="tok">subscription name or id = cyber | itsvc | business | other</span>. Matching is case-insensitive on either the name or the id. An unmapped subscription is listed in the readiness list and blocks the build until it is mapped.</p>
+      <div class="quickmap" id="qm-azure" hidden></div>
+      <details><summary>Credit description, notes, highlight overrides, subscription map</summary>
+        <label class="lab" for="f-acd">Credit description (EN)</label><textarea id="f-acd" data-bind="clouds.azure.credit.descEn"></textarea>
+        <label class="lab" for="f-acd-ar">Credit description (AR)</label><textarea id="f-acd-ar" dir="rtl" data-bind="clouds.azure.credit.descAr"></textarea>
+        <label class="lab" for="f-acn">Note under the service chart (EN)</label><textarea id="f-acn" data-bind="clouds.azure.notes.servicesEn"></textarea>
+        <label class="lab" for="f-acn-ar">Note under the service chart (AR)</label><textarea id="f-acn-ar" dir="rtl" data-bind="clouds.azure.notes.servicesAr"></textarea>
+        <span class="lab">Key highlight override · empty = automatic</span>
+        <div class="three">
+          <div><input type="text" placeholder="Month" data-bind="clouds.azure.highlights.m"></div>
+          <div><input type="text" placeholder="Quarter" data-bind="clouds.azure.highlights.q"></div>
+          <div><input type="text" placeholder="To date" data-bind="clouds.azure.highlights.t"></div>
+        </div>
+        <label class="lab" for="f-amap">Subscription to general-department map</label>
+        <textarea id="f-amap" class="code" data-bind="clouds.azure.subMapText" spellcheck="false"></textarea>
+        <p class="hint">One line per subscription: <span class="tok">subscription name or id = cyber | itsvc | business | other</span>. Matching is case-insensitive on the name or the id. Unmapped subscriptions appear above with a picker.</p>
       </details>
     </div>
 
-    <div class="st" id="st-statement">
+    <div class="st wide" id="st-statement">
       <h3><span class="n">4</span>FinOps statement of the month</h3>
-      <p class="hint">The statement opens the report, above the cloud switch. Write it to say where we are, what we are dealing with and where we are heading. Tokens: <span class="tok">{{month}}</span> <span class="tok">{{prevMonth}}</span> <span class="tok">{{gcp.net}}</span> <span class="tok">{{gcp.gross}}</span> <span class="tok">{{gcp.discounts}}</span> <span class="tok">{{gcp.change}}</span> <span class="tok">{{gcp.sandbox}}</span> <span class="tok">{{gcp.top.name}}</span> <span class="tok">{{gcp.top.share}}</span> <span class="tok">{{gcp.td.net}}</span> <span class="tok">{{gcp.credit.remaining}}</span> <span class="tok">{{gcp.credit.pct}}</span> <span class="tok">{{azure.net}}</span> <span class="tok">{{azure.change}}</span> <span class="tok">{{azure.top.name}}</span> <span class="tok">{{azure.top.share}}</span> <span class="tok">{{azure.credit.remaining}}</span></p>
+      <p class="hint">The statement opens the report, above the cloud switch: where we are, what we are dealing with, where we are heading. One paragraph per line. Click a token to insert it at the cursor; tokens fill from the loaded files and stay right if a file is replaced.</p>
+      <div class="tokchips" id="tokchips"></div>
       <div class="two">
-        <div><label class="lab" for="f-sh">Headline (EN)</label><input id="f-sh" type="text" data-bind="statement.headEn"></div>
-        <div><label class="lab" for="f-sh-ar">Headline (AR)</label><input id="f-sh-ar" type="text" dir="rtl" data-bind="statement.headAr"></div>
-      </div>
-      <label class="lab" for="f-sb">Statement (EN) · one paragraph per line</label><textarea id="f-sb" style="min-height:150px" data-bind="statement.bodyEn"></textarea>
-      <label class="lab" for="f-sb-ar">Statement (AR) · one paragraph per line</label><textarea id="f-sb-ar" dir="rtl" style="min-height:150px" data-bind="statement.bodyAr"></textarea>
-      <label class="lab" for="f-sd">Where we are heading (EN) · one line per point, up to three</label><textarea id="f-sd" data-bind="statement.dirEn"></textarea>
-      <label class="lab" for="f-sd-ar">Where we are heading (AR)</label><textarea id="f-sd-ar" dir="rtl" data-bind="statement.dirAr"></textarea>
-      <div class="two">
-        <div><label class="lab" for="f-ss">Signature (EN)</label><input id="f-ss" type="text" data-bind="statement.signEn"></div>
-        <div><label class="lab" for="f-ss-ar">Signature (AR)</label><input id="f-ss-ar" type="text" dir="rtl" data-bind="statement.signAr"></div>
+        <div>
+          <div class="two">
+            <div><label class="lab" for="f-sh">Headline (EN)</label><input id="f-sh" type="text" data-bind="statement.headEn" data-stmt></div>
+            <div><label class="lab" for="f-sh-ar">Headline (AR)</label><input id="f-sh-ar" type="text" dir="rtl" data-bind="statement.headAr" data-stmt></div>
+          </div>
+          <label class="lab" for="f-sb">Statement (EN)</label><textarea id="f-sb" style="min-height:170px" data-bind="statement.bodyEn" data-stmt></textarea>
+          <label class="lab" for="f-sb-ar">Statement (AR)</label><textarea id="f-sb-ar" dir="rtl" style="min-height:120px" data-bind="statement.bodyAr" data-stmt></textarea>
+          <label class="lab" for="f-sd">Where we are heading (EN) · one line per point, up to three</label><textarea id="f-sd" data-bind="statement.dirEn" data-stmt></textarea>
+          <label class="lab" for="f-sd-ar">Where we are heading (AR)</label><textarea id="f-sd-ar" dir="rtl" data-bind="statement.dirAr" data-stmt></textarea>
+          <div class="two">
+            <div><label class="lab" for="f-ss">Signature (EN)</label><input id="f-ss" type="text" data-bind="statement.signEn" data-stmt></div>
+            <div><label class="lab" for="f-ss-ar">Signature (AR)</label><input id="f-ss-ar" type="text" dir="rtl" data-bind="statement.signAr" data-stmt></div>
+          </div>
+          <div class="btnrow"><button class="btn" id="btn-draft" type="button">Restore the embedded draft</button></div>
+        </div>
+        <div>
+          <div class="lab">Live preview · as it will read in the report</div>
+          <div class="stmt-wrap" id="stmt-preview"></div>
+        </div>
       </div>
     </div>
 
@@ -136,10 +165,19 @@
         <label class="btn" for="f-load">Load edition state<input id="f-load" type="file" accept=".json,application/json" hidden></label>
         <button class="btn" id="btn-reset" type="button">Reset to the embedded baseline</button>
       </div>
-      <p class="status" id="status"></p>
-      <p class="hint">Generate is enabled once every required item above is green. The downloads land in your Downloads folder. The stable name is the one SharePoint overwrites; the versioned name is the archive copy. Your edits are kept in this browser automatically; the JSON state is the copy to keep with the month's CSVs.</p>
+      <div class="gen-result" id="gen-result" hidden></div>
+      <p class="hint">Generate is enabled once every red item above is cleared. The stable name is the one SharePoint overwrites so the link never changes; the versioned name is the archive copy. Your edits are kept in this browser automatically; the JSON state is the copy to keep with the month's CSVs.</p>
     </div>
   </div>
 </section>
-<div class="preview-head">Report preview <b>· live · every loaded period shown, publishing rules applied on generate</b></div>
+<div class="st-bar" id="st-bar" aria-live="polite">
+  <span class="bar-status" id="bar-status"></span>
+  <span class="saved" id="saved"></span>
+  <span class="bar-spacer"></span>
+  <button class="btn ghost" id="btn-pubpreview-bar" type="button">Preview as published</button>
+  <button class="btn primary" id="btn-gen-bar" type="button" disabled>Generate the report</button>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="preview-head" id="preview-head">Report preview <b>· live · every loaded period shown, publishing rules applied on generate</b></div>
 <div id="report" class="report"></div>
+<button class="btn primary back-to-studio" id="btn-back" type="button" hidden>Back to the Studio</button>
