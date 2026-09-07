@@ -1,0 +1,25 @@
+Project name,Project ID,Subtotal ($),Percent change in subtotal compared to previous period
+[Charges not specific to a project],,79430.00,-1%
+MOE-SECOPS,moe-secops-484408,95.00,1%
+prj-moenergy-prd-hub,prj-moenergy-prd-hub,43211.33,-1%
+prj-moenergy-bootstrap,prj-moenergy-bootstrap,830.00,0%
+prj-moenergy-dmz-host,prj-moenergy-dmz-host,790.00,0%
+prj-moenergy-prd-bc-centlogs,prj-moenergy-prd-bc-centlogs,700.00,-4%
+prj-moenergy-iw-sb-development,prj-moenergy-iw-sb-development,410.00,3%
+prj-moenergy-prd-data-dbs,prj-moenergy-prd-data-dbs,9100.00,3%
+prj-moenergy-dev-data-dbs,prj-moenergy-dev-data-dbs,5800.00,1%
+prj-moenergy-prd-bs-devops,prj-moenergy-prd-bs-devops,1200.00,0%
+prj-moenergy-prd-infra-mngeng,prj-moenergy-prd-infra-mngeng,940.00,1%
+prj-moenergy-test-host,prj-moenergy-test-host,905.00,0%
+prj-moenergy-dev-bs-devops,prj-moenergy-dev-bs-devops,840.00,0%
+prj-moenergy-migration-host-hq,prj-moenergy-migration-host-hq,42.00,0%
+prj-moenergy-prd-bc-website,prj-moenergy-prd-bc-website,42.00,0%
+prj-moenergy-dmz-srv,prj-moenergy-dmz-srv,41.00,0%
+prj-moenergy-prd-host,prj-moenergy-prd-host,12.00,0%
+prj-moenergy-dev-host,prj-moenergy-dev-host,7.00,0%
+prj-moenergy-prd-security-kms,prj-moenergy-prd-security-kms,3.50,0%
+prj-moenergy-dev-security-kms,prj-moenergy-dev-security-kms,6.00,0%
+prj-moenergy-dev-centlogs,prj-moenergy-dev-centlogs,4.00,0%
+prj-moenergy-billexp,prj-moenergy-billexp,0.20,0%
+prj-moenergy-iw-it-dtgd-ad-ne,prj-moenergy-iw-it-dtgd-ad-ne,0.01,0%
+prj-moenergy-iw-spark-admin,prj-moenergy-iw-spark-admin,141.29,0%
