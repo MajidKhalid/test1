@@ -1,7 +1,7 @@
 {
  "meta": {
   "studio": 1,
-  "stamp": "2026-09-07T11:59:03Z",
+  "stamp": "2026-09-07T21:28:59Z",
   "builtFrom": "FinOps_Dashboard_v20 (July 2026) + Q2 2026 quarterly report"
  },
  "edition": {
@@ -15,7 +15,11 @@
   "labelAr": "إصدار سبتمبر 2026 · بيانات أغسطس 2026",
   "fx": 3.75,
   "azureCurrency": "USD",
-  "quarterEnd": false
+  "quarterEnd": false,
+  "ledgerCurrency": "USD",
+  "ledgerConfirmed": false,
+  "versionManual": false,
+  "publishedManual": false
  },
  "statement": {
   "headEn": "We know where every riyal sits, and we are now managing to that.",

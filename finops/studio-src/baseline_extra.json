@@ -10,7 +10,11 @@
   "labelAr": "إصدار سبتمبر 2026 · بيانات أغسطس 2026",
   "fx": 3.75,
   "azureCurrency": "USD",
-  "quarterEnd": false
+  "quarterEnd": false,
+  "ledgerCurrency": "USD",
+  "ledgerConfirmed": false,
+  "versionManual": false,
+  "publishedManual": false
  },
  "statement": {
   "headEn": "We know where every riyal sits, and we are now managing to that.",

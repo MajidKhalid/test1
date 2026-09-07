@@ -1,11 +1,11 @@
 <section id="studio" class="studio" aria-label="FinOps Report Studio">
   <header class="st-top">
     <div class="wrap st-top-in">
-      <div class="st-brand"><span class="st-title">FinOps Report Studio</span><span class="ver">v1.2</span></div>
+      <div class="st-brand"><span class="st-title">FinOps Report Studio</span><span class="ver">v1.3</span></div>
       <div class="st-note">Internal tool for the FinOps team. Share the report it generates, never this file. Nothing dropped here leaves your browser.</div>
       <div class="st-actions">
         <button class="btn ghost" id="btn-pubpreview" type="button">Preview as published</button>
-        <button class="btn primary" id="btn-gen-top" type="button" disabled>Generate the report</button>
+        <button class="btn primary" id="btn-gen-top" type="button" disabled>Download the report</button>
       </div>
     </div>
   </header>
@@ -25,7 +25,7 @@
       <h2>Which month is this edition about?</h2>
       <div class="row">
         <div class="field big"><label for="f-month">Reporting month</label><select id="f-month" data-bind="edition.month"></select></div>
-        <div class="field"><label for="f-version">Report version</label><input id="f-version" type="number" min="1" step="1" data-bind="edition.version"><small>July 2026 was v20, so August is v21.</small></div>
+        <div class="field"><label for="f-version">Report version</label><input id="f-version" type="number" min="1" step="1" data-bind="edition.version"><small id="ver-note"></small></div>
       </div>
       <div class="derived" id="derived"></div>
       <label class="check"><input type="checkbox" data-bind="clouds.azure.enabled"> Include Microsoft Azure in this edition (adds the cloud switch to the report)</label>
@@ -57,6 +57,33 @@
         <div class="bz-title">Drop all the CSV files here, or click to choose them</div>
         <div class="bz-sub">Google Cloud Reports (by service, by project, sandbox) and Azure Cost analysis (by service, subscription, location), for the month and contract to date. Each file is filed by its header and its date range; the table below shows where it landed.</div>
       </div>
+      <details class="adjust guide"><summary>How to pull these files (about ten minutes per cloud)</summary>
+        <div class="grid2 guides">
+          <div>
+            <h4>Google Cloud · Billing &gt; Reports</h4>
+            <ol>
+              <li>Open <b>Billing &gt; Reports</b> for the Ministry's billing account (needs the Billing Account Viewer role).</li>
+              <li>Set the date range to the month, the 1st to the last day. Set <b>Group by: Service</b>. In the panel on the right keep every credits and discounts option <b>on</b>. Download CSV: this is the by-service file.</li>
+              <li>Change to <b>Group by: Project</b> and download again: the by-project file.</li>
+              <li>Back to Group by Service, add the filter <b>Projects = prj-moenergy-iw-sb-development</b> and download again: the sandbox file.</li>
+              <li>Clear the filter and set the date range to <b>1 October 2025 to today</b> for the contract-to-date by-service file. By project and sandbox for that range are optional.</li>
+              <li>Keep the names Google writes: the date range in the name is how the Studio files them. Pull on the 3rd of the month or later; the data lags up to two days.</li>
+            </ol>
+          </div>
+          <div>
+            <h4>Microsoft Azure · Cost Management &gt; Cost analysis</h4>
+            <ol>
+              <li>Open <b>Cost analysis</b> with the scope set to the Ministry's billing account (needs Cost Management Reader). Leave <b>Actual cost</b> selected.</li>
+              <li>Set the date range to the month. <b>Group by: Service name</b>, then Download &gt; CSV: the by-service file.</li>
+              <li><b>Group by: Subscription name</b>, download again: the by-subscription file. <b>Group by: Resource location</b> for the optional region file.</li>
+              <li>Set the date range from the contract start to today and download by Service name again: the contract-to-date file.</li>
+              <li>Name each file with its range, for example <span class="tok">azure_by_service_2026-08-01_2026-08-31.csv</span>. A file without dates in its name is filed under the reporting month.</li>
+              <li>Read the credit or prepayment balance from Billing &gt; Credits (MCA) or Enrollment &gt; Prepayment (EA) and type it in step 3.</li>
+            </ol>
+          </div>
+        </div>
+        <p class="hint">The one trap: a Google export pulled with the credits and discounts options off shows Subtotal equal to List cost on every row, and the Studio refuses it. The full runbooks are GCP_Data_Pull_Runbook.md and Azure_Data_Pull_Runbook.md in the finops folder.</p>
+      </details>
       <div class="ftable" id="ftable"></div>
       <div class="nav"><button class="btn" type="button" data-next="1">Back</button><button class="btn primary" type="button" data-next="3">Next: credits</button></div>
     </section>
@@ -64,6 +91,10 @@
     <section class="st-panel" data-panel="3" hidden>
       <h2>Credits: the balance is added up, not typed</h2>
       <p class="lead-s">Enter what the ledger says once. The remaining balance, the remaining commitments and the uncommitted headroom are computed from these rows and from the contract-to-date export, so they move with the spend every month.</p>
+      <div class="ledger-row">
+        <div class="field"><label for="f-ledger">Ledger column currency</label><select id="f-ledger" data-bind="edition.ledgerCurrency"><option value="USD">US dollars, converted at the peg (as the July 2026 edition did)</option><option value="SAR">Riyals net of VAT, used as they are</option></select></div>
+        <label class="check"><input type="checkbox" data-bind="edition.ledgerConfirmed"> Procurement has confirmed the ledger currency (removes the "still being confirmed" line from the report)</label>
+      </div>
       <div class="grid-credit">
         <div class="ceditors" id="ceditors"></div>
         <aside class="balance" id="balance"></aside>
@@ -106,7 +137,7 @@
 
     <section class="st-panel" data-panel="5" hidden>
       <h2>FinOps statement of the month</h2>
-      <p class="lead-s">Where we are, what we are dealing with, where we are heading. One paragraph per line. Click a token to insert a live number at the cursor.</p>
+      <p class="lead-s">Where we are, what we are dealing with, where we are heading. One paragraph per line. Click a token to insert a live number at the cursor. Leadership sees the headline and the direction points first; the paragraphs open under "Read the full statement".</p>
       <div class="tokchips" id="tokchips"></div>
       <div class="grid-stmt">
         <div>
@@ -136,18 +167,22 @@
     </section>
 
     <section class="st-panel" data-panel="6" hidden>
-      <h2>Ready to generate?</h2>
+      <h2>Ready to download the report?</h2>
       <ul class="chk" id="checklist"></ul>
       <div class="btnrow">
-        <button class="btn primary" id="btn-gen" type="button" disabled>Generate FinOps_Dashboard_v21.html</button>
-        <button class="btn" id="btn-gen-stable" type="button" disabled>Generate the stable FinOps_Dashboard.html</button>
+        <button class="btn primary" id="btn-gen" type="button" disabled>Download FinOps_Dashboard_v21.html</button>
         <button class="btn" id="btn-print" type="button">Print or save as PDF</button>
-        <button class="btn" id="btn-save" type="button">Save edition state</button>
-        <label class="btn" for="f-load">Load edition state<input id="f-load" type="file" accept=".json,application/json" hidden></label>
-        <button class="btn" id="btn-reset" type="button">Reset to the embedded baseline</button>
       </div>
       <div class="gen-result" id="gen-result" hidden></div>
-      <p class="hint">Generate opens once every red item is cleared. The stable name is the one SharePoint overwrites so the link never changes; the versioned name is the archive copy. Edits are kept in this browser; the saved state is the copy to keep with the month's CSVs.</p>
+      <p class="hint">The download opens once every red item is cleared. What downloads is the standalone report leadership opens: one HTML file, no scripts, no internet connection, no Studio. Once it is down, this panel offers the stable copy for SharePoint and the edition state.</p>
+      <details class="adjust"><summary>Edition state: save, load or start over</summary>
+        <div class="btnrow">
+          <button class="btn" id="btn-save" type="button">Download the edition state</button>
+          <label class="btn" for="f-load">Load an edition state<input id="f-load" type="file" accept=".json,application/json" hidden></label>
+          <button class="btn" id="btn-reset" type="button">Reset to the embedded baseline</button>
+        </div>
+        <p class="hint">This browser keeps every edit and file between months on its own. The edition state file is the backup and the hand-over: keep it with the month's CSVs, and load it on another machine to continue from there.</p>
+      </details>
       <div class="nav"><button class="btn" type="button" data-next="5">Back</button><span></span></div>
     </section>
   </div>
@@ -159,7 +194,7 @@
     <span class="bar-spacer"></span>
     <a class="btn ghost" href="#report">See the report preview</a>
     <button class="btn ghost" id="btn-pubpreview-bar" type="button">Preview as published</button>
-    <button class="btn primary" id="btn-gen-bar" type="button" disabled>Generate the report</button>
+    <button class="btn primary" id="btn-gen-bar" type="button" disabled>Download the report</button>
   </div>
 </div>
 <div class="toasts" id="toasts" aria-live="polite"></div>

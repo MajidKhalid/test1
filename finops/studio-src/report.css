@@ -79,11 +79,17 @@ bdi.m{white-space:nowrap}
 .stmt .eyebrow .ed{color:#8FA9C8;letter-spacing:.12em;font-weight:600;text-transform:none;font-size:11px}
 .stmt h2{font-family:var(--font-display);font-weight:400;font-size:28px;line-height:1.22;margin:10px 0 12px;color:#EEF4FF;text-wrap:balance;letter-spacing:.01em;max-width:30em}
 .stmt p{margin:0 0 9px;color:rgba(228,238,255,.88);font-size:14.5px;line-height:1.62;max-width:74ch}
-.stmt .dir-h{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8FA9C8;font-weight:700;margin-top:14px}
+.stmt .dir-h{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8FA9C8;font-weight:700;margin-top:10px}
 .stmt .dir{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:8px}
 .stmt .dir>div{position:relative;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 14px 12px 28px;font-size:13px;line-height:1.5;color:rgba(228,238,255,.92)}
 .stmt .dir>div::before{content:"";position:absolute;inset-inline-start:12px;top:15px;width:5px;height:22px;transform:skewX(-15deg);background:linear-gradient(180deg,var(--blue),var(--teal),var(--green))}
 .stmt .sign{margin-top:14px;font-size:12.5px;color:#8FA9C8;font-style:italic}
+.stmt .more{margin-top:14px}
+.stmt .more>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#5FD3C8;border:1px solid rgba(95,211,200,.45);border-radius:9px;padding:6px 11px;background:rgba(255,255,255,.05)}
+.stmt .more>summary::-webkit-details-marker{display:none}
+.stmt .more>summary::before{content:"";width:0;height:0;border-inline-start:7px solid #5FD3C8;border-top:5px solid transparent;border-bottom:5px solid transparent;transition:transform .2s}
+.stmt .more[open]>summary::before{transform:rotate(90deg)}
+.stmt .more-body{margin-top:12px}
 #lang:checked~header .stmt{padding:22px 32px 22px 28px}
 #lang:checked~header .stmt .dir>div{padding:12px 28px 12px 14px}
 
@@ -283,6 +289,9 @@ tr.tfoot td{font-weight:700;color:var(--ink);border-top:2px solid var(--line)}
   .card>details>summary,.calc>summary{display:none}
   .calc>*:not(summary){display:block}
   .calc::details-content{display:block!important;content-visibility:visible!important}
+  .stmt .more>summary{display:none}
+  .stmt .more>*:not(summary){display:block}
+  .stmt .more::details-content{display:block!important;content-visibility:visible!important}
   .card>details>*:not(summary){display:block}
   .card>details::details-content{display:block!important;content-visibility:visible!important}
   .print-period{display:block;margin:12px 0 0;font-size:12px;color:#BBD2EA}

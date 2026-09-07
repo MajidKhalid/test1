@@ -1,32 +1,96 @@
+/* Playwright verification for FinOps Report Studio v1.3: the operator flow end to end, the real download, and the downloaded file with JavaScript disabled. */
 const { chromium } = require('playwright');
 const fs = require('fs');
-const STUDIO = 'file:///home/user/test1/finops/FinOps_Studio_v1.html';
-const D = '/home/user/test1/finops/data/';
-const OUT = '/tmp/finops-verify';
+const path = require('path'), os = require('os');
+// Run from anywhere with Playwright available: NODE_PATH=$(npm root -g) node finops/studio-src/verify.js
+const FIN = path.resolve(__dirname, '..');
+const STUDIO = 'file://' + path.join(FIN, 'FinOps_Studio_v1.html');
+const D = path.join(FIN, 'data') + '/';
+const OUT = path.join(os.tmpdir(), 'finops-verify');
 const R = OUT + '/route/';
+// copies of the sample files under the names Google writes, so the routing by file name is exercised too
+fs.mkdirSync(R, { recursive: true });
+fs.copyFileSync(D + 'SAMPLE_gcp_cost_by_service_2026-08.csv', R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31.csv');
+fs.copyFileSync(D + 'SAMPLE_gcp_sandbox_by_service_2026-08.csv', R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31 (1).csv');
+fs.copyFileSync(D + 'SAMPLE_gcp_cost_by_service_2026-08.csv', R + 'SAMPLE_gcp_cost_by_service_to-date.csv');
+fs.copyFileSync(D + 'SAMPLE_azure_cost_by_service_2026-08.csv', R + 'SAMPLE_azure_cost_by_service_to-date.csv');
 const near = (a, b, tol) => Math.abs(a - b) <= (tol || 0.06);
+const fails = [];
+const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name + (extra !== undefined ? ' | ' + JSON.stringify(extra) : '')); if (!ok) fails.push(name); };
 (async () => {
   const b = await chromium.launch();
-  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 }, acceptDownloads: true });
   const p = await ctx.newPage();
   const errs = [], reqs = [];
   p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
   p.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE ' + m.text()); });
-  p.on('request', r => { if (!r.url().startsWith('file:')) reqs.push(r.url()); });
+  p.on('request', r => { if (!r.url().startsWith('file:') && !r.url().startsWith('blob:')) reqs.push(r.url()); });
   await p.goto(STUDIO); await p.waitForTimeout(800);
-  const s0 = await p.evaluate(() => {
-    const c = window.FinOpsStudio.creditCalc('gcp');
-    return { step1Visible: !document.querySelector('[data-panel="1"]').hidden, monthValue: document.getElementById('f-month').value, monthOptions: document.getElementById('f-month').options.length,
-      derived: document.getElementById('derived').textContent.replace(/\s+/g, ' ').slice(0, 220),
-      calc: { basis: c.basis, startingSar: c.startingSar, fixedSar: c.fixedSar, consumptionSar: c.consumptionSar, remainingSar: c.remainingSar, pct: +c.pct.toFixed(1), commit: c.commitments.map(k => [k.name, k.usedSar, k.remainingSar, k.found]), commitRemainingSar: c.commitRemainingSar, uncommittedSar: c.uncommittedSar },
-      cardValue: document.querySelector('#report .mfig-card.for-gcp .mfig-value').textContent, calcRows: document.querySelectorAll('#report .mfig-card.for-gcp .calc tbody tr').length,
-      foot: document.querySelector('#report .mfig-card.for-gcp .mfig-foot').textContent.replace(/\s+/g, ' ').slice(0, 160) };
-  });
-  console.log('INITIAL', JSON.stringify(s0, null, 1));
+  const today = await p.evaluate(() => { const M = ['January','February','March','April','May','June','July','August','September','October','November','December']; const d = new Date(); return d.getDate() + ' ' + M[d.getMonth()] + ' ' + d.getFullYear(); });
+  // ---- step 1: version and published derivation
+  let s = await p.evaluate(() => ({ version: document.getElementById('f-version').value, note: document.getElementById('ver-note').textContent, derived: document.getElementById('derived').textContent, published: window.FinOpsStudio.state().edition.published, resumed: window.FinOpsStudio.resumed() }));
+  check('fresh load: version derived as 21', s.version === '21', s.note);
+  check('fresh load: published refreshed to today', s.published === today, s.published);
+  check('fresh load: derived chips show version and refresh note', /Version\s*v21/.test(s.derived) && /refreshed on download/.test(s.derived));
+  check('fresh load: not resumed', s.resumed === false);
+  await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(300);
+  s = await p.evaluate(() => ({ version: document.getElementById('f-version').value, note: document.getElementById('ver-note').textContent }));
+  check('month 2026-09 derives v22', s.version === '22', s.note);
+  await p.selectOption('#f-month', '2026-07'); await p.waitForTimeout(300);
+  check('month 2026-07 derives v20', (await p.inputValue('#f-version')) === '20');
+  await p.selectOption('#f-month', '2026-08'); await p.waitForTimeout(300);
+  await p.fill('#f-version', '25'); await p.waitForTimeout(300);
+  await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(300);
+  s = await p.evaluate(() => ({ version: document.getElementById('f-version').value, note: document.getElementById('ver-note').textContent, manual: window.FinOpsStudio.state().edition.versionManual }));
+  check('hand-set version survives a month change', s.version === '25' && s.manual === true, s.note);
+  await p.click('.adjust > summary'); await p.waitForTimeout(150);
+  await p.fill('#f-pub', '1 January 2030'); await p.waitForTimeout(300);
+  s = await p.evaluate(() => ({ manual: window.FinOpsStudio.state().edition.publishedManual, derived: document.getElementById('derived').textContent }));
+  check('hand-set published date is flagged', s.manual === true && /set by hand/.test(s.derived));
+  await p.click('#btn-derive'); await p.waitForTimeout(300);
+  s = await p.evaluate(() => ({ version: document.getElementById('f-version').value, pub: window.FinOpsStudio.state().edition.published, vm: window.FinOpsStudio.state().edition.versionManual, pm: window.FinOpsStudio.state().edition.publishedManual }));
+  check('refill returns version and published to derived', s.version === '22' && s.pub === today && !s.vm && !s.pm, s);
+  await p.selectOption('#f-month', '2026-08'); await p.waitForTimeout(300);
+  check('back on August: v21', (await p.inputValue('#f-version')) === '21');
+  // ---- statement: collapsed in the report, open in the live preview
+  s = await p.evaluate(() => ({ reportMore: !!document.querySelector('#report .stmt details.more'), reportOpen: !!document.querySelector('#report .stmt details.more[open]'), dirBeforeMore: (() => { const st = document.querySelector('#report .stmt'); const i1 = [...st.children].findIndex(e => e.classList.contains('dir')); const i2 = [...st.children].findIndex(e => e.classList.contains('more')); return i1 > -1 && i2 > i1; })(), paragraphs: document.querySelectorAll('#report .stmt .more-body .en p').length }));
+  check('report statement: headline, direction points, then Read more (closed)', s.reportMore && !s.reportOpen && s.dirBeforeMore && s.paragraphs === 4, s);
+  await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(200);
+  check('step 5 live preview shows the paragraphs open', await p.evaluate(() => !!document.querySelector('#stmt-preview details.more[open]')));
+  // ---- step 3: ledger currency and confirmation
+  await p.click('#st-steps button[data-step="3"]'); await p.waitForTimeout(300);
+  let c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
+  check('ledger USD: starting credit 9,685,235.81', near(c.startingSar, 9685235.81) && c.ledger === 'USD');
   const exp0 = 9685235.81 - (235520 + 128517.64) * 3.75 - 3128008.84;
-  console.log('HAND CHECK baseline remaining', exp0.toFixed(2), 'matches:', near(s0.calc.remainingSar, exp0, 0.06));
-  // step 2: drop everything on the big zone
+  check('baseline remaining hand check', near(c.remainingSar, exp0), [c.remainingSar, exp0.toFixed(2)]);
+  s = await p.evaluate(() => ({ warn: [...document.querySelectorAll('#checklist li.warn')].map(l => l.textContent).filter(t => /ledger/.test(t)).length, note: document.querySelector('#report .mfig-card.for-gcp .calc-note .en').textContent, cols: document.querySelectorAll('#report .mfig-card.for-gcp .calc thead th').length, basis: document.querySelector('#balance .basis').textContent, poLabel: document.querySelector('#ceditors .ceditor th:nth-child(3)').textContent }));
+  check('unconfirmed ledger: amber checklist item, note in the report, 3 columns', s.warn === 1 && /still being confirmed with procurement/.test(s.note) && s.cols === 3 && /not yet confirmed/.test(s.basis) && s.poLabel === 'Price ($, net of VAT)', s);
+  await p.check('input[data-bind="edition.ledgerConfirmed"]'); await p.waitForTimeout(400);
+  s = await p.evaluate(() => ({ warn: [...document.querySelectorAll('#checklist li.warn')].map(l => l.textContent).filter(t => /ledger/.test(t)).length, note: document.querySelector('#report .mfig-card.for-gcp .calc-note .en').textContent }));
+  check('confirmed ledger: warning and note gone', s.warn === 0 && !/still being confirmed/.test(s.note) && /converted at 3.75/.test(s.note));
+  await p.selectOption('#f-ledger', 'SAR'); await p.waitForTimeout(400);
+  c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
+  s = await p.evaluate(() => ({ cols: document.querySelectorAll('#report .mfig-card.for-gcp .calc thead th').length, note: document.querySelector('#report .mfig-card.for-gcp .calc-note .en').textContent, poLabel: document.querySelector('#ceditors .ceditor th:nth-child(3)').textContent, err: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent).filter(t => /negative/.test(t)).length }));
+  check('ledger SAR: starting 2,582,729.55, two columns, negative balance blocks', near(c.startingSar, 2582729.55) && s.cols === 2 && /used as they are/.test(s.note) && s.poLabel === 'Price (SAR, net of VAT)' && s.err === 1, [c.startingSar, c.remainingSar, s]);
+  await p.selectOption('#f-ledger', 'USD'); await p.uncheck('input[data-bind="edition.ledgerConfirmed"]'); await p.waitForTimeout(400);
+  c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
+  check('ledger back to USD unconfirmed', near(c.startingSar, 9685235.81) && c.ledgerConfirmed === false);
+  // tolerant commitment matching against the baseline to-date rows
+  await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="servicesText"]', 'chronicle'); await p.waitForTimeout(400);
+  c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
+  check('commitment matched case-insensitively (chronicle)', c.commitments[0].found && c.commitments[0].matched.length >= 1, c.commitments[0].matched);
+  await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="servicesText"]', 'Chron'); await p.waitForTimeout(400);
+  c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
+  check('commitment matched on a partial name (Chron)', c.commitments[0].found, c.commitments[0].matched);
+  await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="servicesText"]', 'No Such Service'); await p.waitForTimeout(400);
+  s = await p.evaluate(() => ({ c: window.FinOpsStudio.creditCalc('gcp').commitments[0], warn: [...document.querySelectorAll('#checklist li.warn')].map(l => l.textContent).filter(t => /no service row/.test(t)).length, panel: document.querySelector('#balance').textContent }));
+  check('unmatched commitment warns and reads as fully remaining', !s.c.found && near(s.c.remainingSar, 914135 * 3.75) && s.warn === 1 && /no matching service row/.test(s.panel));
+  await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="servicesText"]', 'Chronicle'); await p.waitForTimeout(400);
+  // ---- step 2: guide and the drop
   await p.click('#st-steps button[data-step="2"]'); await p.waitForTimeout(200);
+  check('step 2 pull guide present with both clouds', await p.evaluate(() => { const g = document.querySelector('[data-panel="2"] details.guide'); return !!g && g.querySelectorAll('.guides ol').length === 2 && /Billing Account Viewer/.test(g.textContent) && /Cost Management Reader/.test(g.textContent); }));
+  await p.click('[data-panel="2"] details.guide > summary'); await p.waitForTimeout(200);
+  await p.screenshot({ path: OUT + '/studio_v13_files.png', fullPage: false });
   await p.setInputFiles('#bigzone input', [
     R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31.csv',
     R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31 (1).csv',
@@ -34,57 +98,82 @@ const near = (a, b, tol) => Math.abs(a - b) <= (tol || 0.06);
     D + 'SAMPLE_azure_cost_by_service_2026-08.csv', D + 'SAMPLE_azure_cost_by_subscription_2026-08.csv', D + 'SAMPLE_azure_cost_by_location_2026-08.csv', R + 'SAMPLE_azure_cost_by_service_to-date.csv',
   ]);
   await p.waitForTimeout(1500);
-  const s1 = await p.evaluate(() => {
-    const c = window.FinOpsStudio.creditCalc('gcp');
-    return { loaded: document.querySelectorAll('#ftable .badge.ok, #ftable .badge.sample').length, required: document.querySelectorAll('#ftable .badge.req').length,
-      steps: [...document.querySelectorAll('#st-steps button')].map(b => b.className.replace('active', '').trim() + ':' + b.querySelector('em').textContent),
-      calc: { basis: c.basis, consumptionSar: c.consumptionSar, remainingSar: c.remainingSar, commit: c.commitments.map(k => [k.name, k.usedSar, k.remainingSar, k.found]) },
-      errs: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent.slice(0, 90)) };
-  });
-  console.log('AFTER DROP', JSON.stringify(s1, null, 1));
+  c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
   const exp1 = 9685235.81 - (235520 + 128517.64) * 3.75 - 144550.33 * 3.75;
-  console.log('HAND CHECK uploaded remaining', exp1.toFixed(2), 'matches:', near(s1.calc.remainingSar, exp1, 0.06), '| SecOps remaining expected', (914135 * 3.75 - 72030 * 3.75).toFixed(2), '| SCC expected', (81672.81 * 3.75 - 7400 * 3.75).toFixed(2));
-  // step 3: edit a ledger row and see the balance move
-  await p.click('#st-steps button[data-step="3"]'); await p.waitForTimeout(300);
-  await p.screenshot({ path: OUT + '/studio_v12_credits.png', fullPage: false });
-  const before = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp').remainingSar);
-  await p.fill('#ceditors input[data-ed="1"][data-i="1"][data-f="usd"]', '128517.64'); await p.waitForTimeout(300);
-  await p.fill('#ceditors input[data-ed="1"][data-i="1"][data-f="usd"]', '130000'); await p.waitForTimeout(400);
-  const after = await p.evaluate(() => ({ rem: window.FinOpsStudio.creditCalc('gcp').remainingSar, panel: document.querySelector('#balance .big').textContent, card: document.querySelector('#report .mfig-card.for-gcp .mfig-value').textContent }));
-  console.log('EDIT ROW', before, '->', after.rem, 'expected delta', ((130000 - 128517.64) * 3.75).toFixed(2), 'panel', after.panel, 'card', after.card);
-  await p.fill('#ceditors input[data-ed="1"][data-i="1"][data-f="usd"]', '128517.64'); await p.waitForTimeout(300);
-  await p.click('#ceditors button[data-add="3"]'); await p.waitForTimeout(200);
-  const rowsAfterAdd = await p.evaluate(() => document.querySelectorAll('#ceditors .ceditor:nth-child(4) tbody tr').length);
-  await p.click('#ceditors .ceditor:nth-child(4) tbody tr:last-child button[data-del]'); await p.waitForTimeout(200);
-  console.log('ADD/DEL incentive row', rowsAfterAdd, '->', await p.evaluate(() => document.querySelectorAll('#ceditors .ceditor:nth-child(4) tbody tr').length));
-  // step 4: quick map
+  check('uploaded to-date: remaining hand check', near(c.remainingSar, exp1) && c.basis === 'upload', [c.remainingSar, exp1.toFixed(2)]);
+  check('SecOps and SCC remaining after upload', near(c.commitments[0].remainingSar, (914135 - 72030) * 3.75) && near(c.commitments[1].remainingSar, (81672.81 - 7400) * 3.75), c.commitments.map(k => [k.name, k.remainingSar, k.matched]));
   await p.click('#st-steps button[data-step="4"]'); await p.waitForTimeout(200);
   for (const [name, dept] of Object.entries({ 'MOE-SEC-PRD': 'cyber', 'MOE-INFRA-HUB': 'itsvc', 'MOE-BUSINESS-APPS': 'business' })) { await p.selectOption(`#qm-azure select[data-qm="${name}"]`, dept); await p.waitForTimeout(250); }
   await p.waitForTimeout(400);
-  console.log('AFTER MAP', JSON.stringify(await p.evaluate(() => ({ allmapped: !document.getElementById('allmapped').hidden, errs: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent.slice(0, 80)), steps: [...document.querySelectorAll('#st-steps button')].map(b => b.className.replace('active', '').trim()) }))));
-  // step 5 + 6
-  await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(200);
-  console.log('STATEMENT preview tokens missing:', await p.evaluate(() => document.querySelectorAll('#stmt-preview .tok-missing').length), '| remaining token in preview:', await p.evaluate(() => (document.querySelector('#stmt-preview .en').textContent.match(/purchase-order balance stands at [^,]+/) || [''])[0]));
+  // ---- step 6: one-click download, result panel, open in a new tab, secondary downloads
   await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
-  await p.screenshot({ path: OUT + '/studio_v12_full.png', fullPage: true });
-  await p.click('#btn-pubpreview'); await p.waitForTimeout(400);
-  console.log('PUB PREVIEW', JSON.stringify(await p.evaluate(() => ({ cls: document.body.className, quarterTab: !!document.getElementById('pv-gcp-q'), calc: !!document.querySelector('#report .calc') }))));
-  await p.click('#btn-back'); await p.waitForTimeout(300);
-  const published = await p.evaluate(() => window.FinOpsStudio.publishedHtml());
-  const genPath = OUT + '/generated_v12.html'; fs.writeFileSync(genPath, published);
-  console.log('generated KB', Math.round(published.length / 1024), 'scripts', (published.match(/<script/g) || []).length, 'emdash', published.replace(/base64,[A-Za-z0-9+/=]+/g, '').includes('—'));
+  s = await p.evaluate(() => ({ errs: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent.slice(0, 80)), gen: document.getElementById('btn-gen').textContent, disabled: document.getElementById('btn-gen').disabled, stable: !!document.getElementById('btn-gen-stable'), bar: document.getElementById('bar-status').textContent, keep: [...document.querySelectorAll('#checklist li.ok')].some(l => /keeps every edit/.test(l.textContent)) }));
+  check('step 6: one primary button, no stable button, reminder about the saved state', s.gen === 'Download FinOps_Dashboard_v21.html' && !s.stable && s.keep, s);
+  console.log('   blockers left (sample files expected):', s.errs);
+  // sample files block the download: prove it, then lift the block by pretending the files are real
+  await p.evaluate(() => window.FinOpsStudio.generate()); await p.waitForTimeout(300);
+  check('download refused while blockers remain', await p.evaluate(() => document.getElementById('gen-result').hidden === true && !window.FinOpsStudio.lastGen()));
+  await p.evaluate(() => { const S = window.FinOpsStudio.state(); ['gcp', 'azure'].forEach(c => Object.values(S.clouds[c].periods).forEach(pp => { if (pp.sample) { pp.sample = false; Object.keys(pp.files).forEach(k => { pp.files[k] = pp.files[k].replace(/^SAMPLE_/i, 'real_'); }); } })); });
+  await p.click('#st-steps button[data-step="1"]'); await p.waitForTimeout(100); await p.selectOption('#f-month', '2026-08'); await p.waitForTimeout(400); await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
+  s = await p.evaluate(() => ({ errs: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent.slice(0, 80)), disabled: document.getElementById('btn-gen').disabled }));
+  check('no blockers once real files are in', s.errs.length === 0 && !s.disabled, s.errs);
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btn-gen')]);
+  const dlName = dl.suggestedFilename(); const dlPath = OUT + '/' + dlName; await dl.saveAs(dlPath);
+  await p.waitForTimeout(500);
+  s = await p.evaluate(() => ({ hidden: document.getElementById('gen-result').hidden, text: document.getElementById('gen-result').textContent, btns: ['btn-open', 'btn-stable', 'btn-state'].map(id => !!document.getElementById(id)), published: window.FinOpsStudio.state().edition.published }));
+  check('one click downloads the versioned standalone file', dlName === 'FinOps_Dashboard_v21.html', dlName);
+  check('result panel: standalone wording and the three secondary buttons', !s.hidden && /no scripts, no internet connection, no Studio/.test(s.text) && s.btns.every(Boolean) && new RegExp('published ' + today).test(s.text));
+  await p.screenshot({ path: OUT + '/studio_v13_result.png', fullPage: false });
+  const [dl2] = await Promise.all([p.waitForEvent('download'), p.click('#btn-stable')]);
+  check('stable copy downloads as FinOps_Dashboard.html', dl2.suggestedFilename() === 'FinOps_Dashboard.html');
+  const [dl3] = await Promise.all([p.waitForEvent('download'), p.click('#btn-state')]);
+  check('edition state downloads as JSON for the month', dl3.suggestedFilename() === 'finops_edition_2026-08.json');
+  const [np] = await Promise.all([ctx.waitForEvent('page'), p.click('#btn-open')]);
+  await np.waitForLoadState(); await np.waitForTimeout(400);
+  const npReqs = []; np.on('request', r => { if (!r.url().startsWith('blob:')) npReqs.push(r.url()); });
+  s = await np.evaluate(() => ({ title: document.title, scripts: document.querySelectorAll('script').length, more: !!document.querySelector('.stmt details.more'), url: location.protocol }));
+  check('open in a new tab shows the report itself (blob, zero scripts)', /Cloud FinOps Report/.test(s.title) && s.scripts === 0 && s.more && s.url === 'blob:', s);
+  await np.close();
+  const published = fs.readFileSync(dlPath, 'utf8');
+  check('downloaded file equals publishedHtml()', published === await p.evaluate(() => window.FinOpsStudio.publishedHtml()));
+  check('downloaded file: zero scripts, no em dash, standalone marker', (published.match(/<script/g) || []).length === 0 && !published.replace(/base64,[A-Za-z0-9+/=]+/g, '').includes('\u2014') && /Studio v1\.3/.test(published));
+  // an edit after the download hides the stale result panel
+  await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(100);
+  await p.fill('#f-sh', 'We know where every riyal sits, and we manage to it.'); await p.waitForTimeout(400);
+  check('an edit after the download clears the result panel', await p.evaluate(() => document.getElementById('gen-result').hidden && !window.FinOpsStudio.lastGen()));
+  await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
+  await p.screenshot({ path: OUT + '/studio_v13_full.png', fullPage: true });
   console.log('STUDIO errors:', errs, 'external requests:', reqs.length);
+  check('studio: zero page errors and zero external requests', errs.length === 0 && reqs.length === 0);
+  // ---- resume: reload keeps everything and says so
+  await p.reload(); await p.waitForTimeout(900);
+  s = await p.evaluate(() => ({ resumed: window.FinOpsStudio.resumed(), head: document.getElementById('f-sh').value, toast: [...document.querySelectorAll('.toast')].map(t => t.textContent).join(' | '), files: document.querySelectorAll('#ftable .badge.ok').length }));
+  check('reload resumes the saved state with a toast', s.resumed && /manage to it/.test(s.head) && /Picked up where you left off/.test(s.toast) && s.files >= 8, [s.files, s.toast.slice(0, 80)]);
   await ctx.close();
+  // ---- the generated file with JavaScript disabled
   const ctx2 = await b.newContext({ viewport: { width: 1280, height: 900 }, javaScriptEnabled: false });
   const g = await ctx2.newPage(); const reqs2 = []; g.on('request', r => { if (!r.url().startsWith('file:')) reqs2.push(r.url()); });
-  await g.goto('file://' + genPath); await g.waitForTimeout(400);
+  await g.goto('file://' + dlPath); await g.waitForTimeout(400);
   const vis = sel => g.evaluate(s => { const e = document.querySelector(s); return e ? getComputedStyle(e).display : 'MISSING'; }, sel);
-  const t = { aug: await vis('.mv-gcp-2026-08'), calcSummary: await vis('.calc>summary') };
+  const t = { aug: await vis('.mv-gcp-2026-08'), moreSummary: await vis('.stmt .more>summary'), bodyBefore: await g.evaluate(() => document.querySelector('.stmt .more-body p').checkVisibility()) };
+  await g.click('.stmt .more>summary'); await g.waitForTimeout(200);
+  t.bodyAfter = await g.evaluate(() => document.querySelector('.stmt .more-body p').checkVisibility());
+  check('generated (no JS): Read more opens the paragraphs', t.moreSummary !== 'none' && t.bodyBefore === false && t.bodyAfter === true, t);
+  await g.click('.stmt .more>summary'); await g.waitForTimeout(150);
+  await g.screenshot({ path: OUT + '/generated_v13_hero.png', fullPage: false });
   await g.click('.calc>summary'); await g.waitForTimeout(150); t.calcOpenRows = await g.evaluate(() => document.querySelectorAll('.calc[open] tbody tr').length);
+  t.calcNote = await g.evaluate(() => document.querySelector('.calc-note .en').textContent);
+  check('generated: calc table opens and states the ledger basis plus the unconfirmed line', t.calcOpenRows >= 8 && /converted at 3.75/.test(t.calcNote) && /still being confirmed/.test(t.calcNote));
   await g.click('label[for="c-azure"]'); await g.waitForTimeout(150); t.azure = await vis('.mv-azure-2026-08');
   await g.click('label[for="lang"]'); await g.waitForTimeout(150); t.rtl = await g.evaluate(() => getComputedStyle(document.querySelector('main')).direction);
-  await g.click('label[for="c-gcp"]'); await g.waitForTimeout(200);
-  await g.screenshot({ path: OUT + '/generated_v12_ar.png', fullPage: false });
-  console.log('GENERATED (no JS)', JSON.stringify(t), 'external', reqs2.length);
+  t.arMore = await g.evaluate(() => getComputedStyle(document.querySelector('.stmt .more>summary .ar')).display);
+  check('generated: cloud switch, RTL flip, Arabic Read more label', t.aug === 'block' && t.azure === 'block' && t.rtl === 'rtl' && t.arMore !== 'none', t);
+  await g.click('label[for="lang"]'); await g.click('label[for="c-gcp"]'); await g.waitForTimeout(150);
+  await g.emulateMedia({ media: 'print' }); await g.waitForTimeout(200);
+  const pr = await g.evaluate(() => ({ summary: getComputedStyle(document.querySelector('.stmt .more>summary')).display, body: document.querySelector('.stmt .more-body p').checkVisibility(), calc: document.querySelector('.calc tbody tr td').checkVisibility(), period: getComputedStyle(document.querySelector('.print-period')).display }));
+  check('generated (print): statement paragraphs and calc table open, summary hidden', pr.summary === 'none' && pr.body === true && pr.calc === true && pr.period === 'block', pr);
+  check('generated: zero external requests', reqs2.length === 0);
   await b.close();
-})().catch(e => { console.error('FAILED', e); process.exit(1); });
+  console.log(fails.length ? 'FAILED CHECKS: ' + fails.join(' ; ') : 'ALL CHECKS PASSED');
+  process.exit(fails.length ? 1 : 0);
+})().catch(e => { console.error('CRASH', e); process.exit(1); });
