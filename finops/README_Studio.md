@@ -34,6 +34,7 @@ The file people open is the standalone HTML page the Studio downloads, so the fl
 - **The published date is the download day.** It refreshes when the Studio opens, when you preview as published and when you download, unless you set it by hand in the Adjust section.
 - **The ledger currency is explicit** (see the credit section above) and the report says whether procurement has confirmed it.
 - **The pull guide is in the page.** Step 2 carries the Google Cloud and Azure export steps inline, so nobody has to open a runbook to know which Group by and which date range each file needs.
+- **Six owning departments.** The ownership picker and the map keys cover Cybersecurity (`cyber`), IT Services GD (`itsvc`), Digital Transformation GD (`dtgd`), Digital Enterprise Architecture (`dea`), Business departments (`business`) and Other (`other`). A department appears in the donut and the legend as soon as a project or subscription is mapped to it; at zero it stays out of the chart.
 - **Continuity.** One person runs the Studio from one machine, so the browser keeps every edit and file between months and says so when the page reopens ("Picked up where you left off"). The edition state file is the backup and the hand-over: save it with the month's CSVs, load it on another machine to continue from there.
 
 ## How it feels to use (Studio v1.2)
@@ -132,7 +133,7 @@ The GCP runbook, the Python generator and the July editions live in the `finops/
 - Zero JavaScript in the published file; every control is a CSS radio or a native details element, so it survives SharePoint's preview pane with scripts blocked.
 - Bilingual in one page: every string ships EN and AR twins, the switch flips to RTL, charts and tables stay LTR, figures sit inside `bdi` so they never reverse.
 - The credit card is a contract position (from 1 June 2025, support and tax included); the spend figures are metered usage in the billing account (from 1 October 2025). The report now says so under both, so nobody subtracts one from the other again.
-- The department split is read from the billing project (or subscription), never from labels; a security appliance can be owned by IT Services GD, and the type column says so.
+- The department split is read from the billing project (or subscription), never from labels; a security appliance can be owned by IT Services GD, and the type column says so. Six departments are tracked: Cybersecurity, IT Services GD, Digital Transformation GD, Digital Enterprise Architecture, Business departments and Other.
 - Arabic added in this edition (the statement, the Azure strings, the cloud switch) is fresh modern standard Arabic and needs a native review before the first bilingual send, as the earlier additions did.
 
 ## Rebuilding the Studio

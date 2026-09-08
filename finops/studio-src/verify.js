@@ -103,8 +103,11 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('uploaded to-date: remaining hand check', near(c.remainingSar, exp1) && c.basis === 'upload', [c.remainingSar, exp1.toFixed(2)]);
   check('SecOps and SCC remaining after upload', near(c.commitments[0].remainingSar, (914135 - 72030) * 3.75) && near(c.commitments[1].remainingSar, (81672.81 - 7400) * 3.75), c.commitments.map(k => [k.name, k.remainingSar, k.matched]));
   await p.click('#st-steps button[data-step="4"]'); await p.waitForTimeout(200);
-  for (const [name, dept] of Object.entries({ 'MOE-SEC-PRD': 'cyber', 'MOE-INFRA-HUB': 'itsvc', 'MOE-BUSINESS-APPS': 'business' })) { await p.selectOption(`#qm-azure select[data-qm="${name}"]`, dept); await p.waitForTimeout(250); }
+  check('ownership picker offers the six departments', await p.evaluate(() => { const o = [...document.querySelector('#qm-azure select[data-qm]').options].map(x => x.value).filter(Boolean); return o.length === 6 && o.includes('dtgd') && o.includes('dea'); }));
+  for (const [name, dept] of Object.entries({ 'MOE-SEC-PRD': 'cyber', 'MOE-INFRA-HUB': 'itsvc', 'MOE-BUSINESS-APPS': 'dtgd' })) { await p.selectOption(`#qm-azure select[data-qm="${name}"]`, dept); await p.waitForTimeout(250); }
   await p.waitForTimeout(400);
+  s = await p.evaluate(() => { const d = window.FinOpsStudio.state().clouds.azure.periods['2026-08'].departments; const leg = [...document.querySelectorAll('#report .mv-azure-2026-08 .dleg li')].map(l => l.textContent); return { dtgd: (d.find(x => x.key === 'dtgd') || {}).net, legend: leg.length, hasName: leg.some(t => /Digital Transformation GD/.test(t)), zeroShown: leg.some(t => /Digital Enterprise Architecture/.test(t)) }; });
+  check('a subscription mapped to Digital Transformation GD shows in the legend; the unused department stays out', s.dtgd > 0 && s.hasName && !s.zeroShown && s.legend === 3, s);
   // ---- step 6: one-click download, result panel, open in a new tab, secondary downloads
   await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
   s = await p.evaluate(() => ({ errs: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent.slice(0, 80)), gen: document.getElementById('btn-gen').textContent, disabled: document.getElementById('btn-gen').disabled, stable: !!document.getElementById('btn-gen-stable'), bar: document.getElementById('bar-status').textContent, keep: [...document.querySelectorAll('#checklist li.ok')].some(l => /keeps every edit/.test(l.textContent)) }));

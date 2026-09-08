@@ -103,7 +103,7 @@
    "q": "",
    "t": ""
   },
-  "projectMapText": "# project id = cyber | itsvc | business | other\n# [account-level] is the bucket [Charges not specific to a project]; it is split by service.\n[account-level] = cyber\nmoe-secops-484408 = cyber\nprj-moenergy-prd-security-kms = itsvc\nprj-moenergy-dev-security-kms = itsvc\nprj-moenergy-prd-hub = itsvc\nprj-moenergy-dmz-host = itsvc\nprj-moenergy-dmz-srv = itsvc\nprj-moenergy-prd-host = itsvc\nprj-moenergy-dev-host = itsvc\nprj-moenergy-bootstrap = itsvc\nprj-moenergy-billexp = itsvc\nprj-moenergy-prd-bc-centlogs = itsvc\nprj-moenergy-dev-centlogs = itsvc\nprj-moenergy-iw-sb-development = itsvc\nprj-moenergy-iw-it-dtgd-ad-ne = itsvc\nprj-moenergy-iw-spark-admin = itsvc\nprj-moenergy-prd-bc-website = business\nprj-moenergy-migration-host-hq = business\nprj-moenergy-prd-data-dbs = business\nprj-moenergy-dev-data-dbs = business\nprj-moenergy-prd-bs-devops = business\nprj-moenergy-dev-bs-devops = business\nprj-moenergy-prd-infra-mngeng = business\nprj-moenergy-test-host = business\nmoe-notebooklm = other\n"
+  "projectMapText": "# project id = cyber | itsvc | dtgd | dea | business | other\n# [account-level] is the bucket [Charges not specific to a project]; it is split by service.\n[account-level] = cyber\nmoe-secops-484408 = cyber\nprj-moenergy-prd-security-kms = itsvc\nprj-moenergy-dev-security-kms = itsvc\nprj-moenergy-prd-hub = itsvc\nprj-moenergy-dmz-host = itsvc\nprj-moenergy-dmz-srv = itsvc\nprj-moenergy-prd-host = itsvc\nprj-moenergy-dev-host = itsvc\nprj-moenergy-bootstrap = itsvc\nprj-moenergy-billexp = itsvc\nprj-moenergy-prd-bc-centlogs = itsvc\nprj-moenergy-dev-centlogs = itsvc\nprj-moenergy-iw-sb-development = itsvc\nprj-moenergy-iw-it-dtgd-ad-ne = itsvc\nprj-moenergy-iw-spark-admin = itsvc\nprj-moenergy-prd-bc-website = business\nprj-moenergy-migration-host-hq = business\nprj-moenergy-prd-data-dbs = business\nprj-moenergy-dev-data-dbs = business\nprj-moenergy-prd-bs-devops = business\nprj-moenergy-dev-bs-devops = business\nprj-moenergy-prd-infra-mngeng = business\nprj-moenergy-test-host = business\nmoe-notebooklm = other\n"
  },
  "azure": {
   "enabled": true,
@@ -131,7 +131,7 @@
    "q": "",
    "t": ""
   },
-  "subMapText": "# subscription name or id = cyber | itsvc | business | other\n# Fill this in from the by-subscription export. Matching is case-insensitive on the name or the id.\n# Example of the shape (not real subscriptions):\n#   MOE-SEC-PRD = cyber\n#   MOE-INFRA-HUB = itsvc\n#   MOE-BUSINESS-APPS = business\n",
+  "subMapText": "# subscription name or id = cyber | itsvc | dtgd | dea | business | other\n# Fill this in from the by-subscription export. Matching is case-insensitive on the name or the id.\n# Example of the shape (not real subscriptions):\n#   MOE-SEC-PRD = cyber\n#   MOE-INFRA-HUB = itsvc\n#   MOE-BUSINESS-APPS = business\n",
   "h1_usd": {
    "services": [
     {

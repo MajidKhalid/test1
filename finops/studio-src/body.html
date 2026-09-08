@@ -122,14 +122,14 @@
 
     <section class="st-panel" data-panel="4" hidden>
       <h2>Who owns what</h2>
-      <p class="lead-s">Every GCP project and Azure subscription is charged to a general department. Anything the map does not know yet appears here with a picker; choosing a department writes the map for you.</p>
+      <p class="lead-s">Every GCP project and Azure subscription is charged to a general department: Cybersecurity, IT Services GD, Digital Transformation GD, Digital Enterprise Architecture, Business departments or Other. Anything the map does not know yet appears here with a picker; choosing a department writes the map for you.</p>
       <div class="quickmap" id="qm-gcp" hidden></div>
       <div class="quickmap" id="qm-azure" hidden></div>
       <p class="allgood" id="allmapped" hidden>Everything loaded is mapped to a department.</p>
       <details class="adjust"><summary>Full maps</summary>
         <div class="grid2">
-          <div class="field"><label for="f-gmap">GCP project map</label><textarea id="f-gmap" class="code" data-bind="clouds.gcp.projectMapText" spellcheck="false"></textarea><small>One line per project: <span class="tok">project-id = cyber | itsvc | business | other</span>. <span class="tok">[account-level]</span> is the bucket with no project; it is split by service.</small></div>
-          <div class="field"><label for="f-amap">Azure subscription map</label><textarea id="f-amap" class="code" data-bind="clouds.azure.subMapText" spellcheck="false"></textarea><small>One line per subscription: <span class="tok">name or id = cyber | itsvc | business | other</span>, case-insensitive.</small></div>
+          <div class="field"><label for="f-gmap">GCP project map</label><textarea id="f-gmap" class="code" data-bind="clouds.gcp.projectMapText" spellcheck="false"></textarea><small>One line per project: <span class="tok">project-id = cyber | itsvc | dtgd | dea | business | other</span>. <span class="tok">[account-level]</span> is the bucket with no project; it is split by service.</small></div>
+          <div class="field"><label for="f-amap">Azure subscription map</label><textarea id="f-amap" class="code" data-bind="clouds.azure.subMapText" spellcheck="false"></textarea><small>One line per subscription: <span class="tok">name or id = cyber | itsvc | dtgd | dea | business | other</span>, case-insensitive.</small></div>
         </div>
       </details>
       <div class="nav"><button class="btn" type="button" data-next="3">Back</button><button class="btn primary" type="button" data-next="5">Next: statement</button></div>
