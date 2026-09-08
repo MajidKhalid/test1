@@ -57,6 +57,20 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('report statement: headline, direction points, then Read more (closed)', s.reportMore && !s.reportOpen && s.dirBeforeMore && s.paragraphs === 4, s);
   await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(200);
   check('step 5 live preview shows the paragraphs open', await p.evaluate(() => !!document.querySelector('#stmt-preview details.more[open]')));
+  // ---- Azure switched off with the draft still mentioning it: the check names the field and offers the fix
+  await p.click('#st-steps button[data-step="1"]'); await p.waitForTimeout(150);
+  await p.uncheck('input[data-bind="clouds.azure.enabled"]'); await p.waitForTimeout(400);
+  await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
+  s = await p.evaluate(() => { const li = [...document.querySelectorAll('#checklist li.err')].find(l => /Azure is not included/.test(l.textContent)); return { found: !!li, text: li ? li.textContent : '', btn: !!(li && li.querySelector('button[data-act="dropAzure"]')), tokensDead: [...document.querySelectorAll('#tokchips button.dead')].map(b => b.dataset.tok) }; });
+  check('Azure off: the blocker names the Azure tokens and the fields, with a fix button', s.found && /Statement \(EN\)/.test(s.text) && /Statement \(AR\)/.test(s.text) && s.btn && s.tokensDead.includes('azure.net') && s.tokensDead.includes('azure.credit.remaining'), s.text.slice(0, 160));
+  await p.click('#checklist button[data-act="dropAzure"]'); await p.waitForTimeout(500);
+  s = await p.evaluate(() => { const st = window.FinOpsStudio.state().statement; return { en: st.bodyEn, ar: st.bodyAr, azureErr: [...document.querySelectorAll('#checklist li.err')].some(l => /Azure|azure/.test(l.textContent)), paragraphs: document.querySelectorAll('#report .stmt .more-body .en p').length, arParas: document.querySelectorAll('#report .stmt .more-body .ar p').length, gcpOnly: !document.querySelector('#report .cloudsw') }; });
+  check('one click removes the Azure lines from both languages and clears the blocker', !/azure/i.test(s.en) && !/azure/i.test(s.ar) && !s.azureErr && s.paragraphs === 3 && s.arParas === 3 && s.gcpOnly, [s.paragraphs, s.arParas, s.azureErr, s.gcpOnly]);
+  await p.click('#st-steps button[data-step="1"]'); await p.waitForTimeout(150);
+  await p.check('input[data-bind="clouds.azure.enabled"]'); await p.waitForTimeout(300);
+  await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(150);
+  await p.click('#btn-draft'); await p.waitForTimeout(400);
+  check('Azure back on and the draft restored', await p.evaluate(() => /azure\.net/.test(window.FinOpsStudio.state().statement.bodyEn) && !!document.querySelector('#report .cloudsw')));
   // ---- step 3: ledger currency and confirmation
   await p.click('#st-steps button[data-step="3"]'); await p.waitForTimeout(300);
   let c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
