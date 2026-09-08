@@ -75,6 +75,7 @@ body.studio-mode{padding-bottom:72px}
 .ceditor td input,.ceditor td select{padding:7px 9px;font-size:13px;border-radius:8px}
 .ceditor td.num input{text-align:end;font-variant-numeric:tabular-nums}
 .ceditor td:first-child{width:36%}.ceditor td:first-child input{min-width:170px}.ceditor td.num{width:150px}
+.ceditor td.mon{width:170px}.ceditor td.mon input{font-variant-numeric:tabular-nums}
 .ceditor td.del{width:34px;text-align:center}
 .ceditor td.del button{font:inherit;border:0;background:transparent;color:var(--mut);cursor:pointer;font-size:16px;line-height:1;padding:4px 6px;border-radius:6px}
 .ceditor td.del button:hover{background:#fde8e4;color:#7a2416}

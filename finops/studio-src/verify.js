@@ -89,6 +89,25 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await p.selectOption('#f-ledger', 'USD'); await p.uncheck('input[data-bind="edition.ledgerConfirmed"]'); await p.waitForTimeout(400);
   c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
   check('ledger back to USD unconfirmed', near(c.startingSar, 9685235.81) && c.ledgerConfirmed === false);
+  // commitments: monthly instalments from the detected service start (December 2025 on the July stream)
+  const inst = (usd, term) => usd * 3.75 / term, remAfter = (usd, n, term) => usd * 3.75 - Math.min(usd * 3.75, inst(usd, term) * n);
+  s = c.commitments.map(k => ({ n: k.name, start: k.start, est: k.startEstimated, first: k.firstSeen, el: k.elapsed, rem: k.remainingSar, inst: k.instalmentSar, billed: k.billedNetSar }));
+  check('SecOps: start detected as December 2025 (estimated), 9 of 12 instalments to August, remaining = total less 9 instalments', s[0].start === '2025-12' && s[0].est && s[0].first === '2026-01' && s[0].el === 9 && near(s[0].rem, remAfter(914135, 9, 12)) && near(s[0].inst, inst(914135, 12)) && near(s[0].billed, 1056037.95, 0.5), s[0]);
+  check('Security Command Center: same start, remaining = total less 9 instalments', s[1].start === '2025-12' && s[1].el === 9 && near(s[1].rem, remAfter(81672.81, 9, 12)), s[1]);
+  check('committed footer equals the sum of the two remaining commitments', near(c.commitRemainingSar, remAfter(914135, 9, 12) + remAfter(81672.81, 9, 12)));
+  s = await p.evaluate(() => ({ warn: [...document.querySelectorAll('#checklist li.warn')].filter(l => /start month estimated as December 2025/.test(l.textContent)).length, placeholder: document.querySelector('#ceditors input[data-ed="2"][data-i="0"][data-f="start"]').placeholder, term: document.querySelector('#ceditors input[data-ed="2"][data-i="0"][data-f="term"]').value, panel: document.querySelector('#balance').textContent, calcRow: document.querySelector('#report .mfig-card.for-gcp .calc tbody').textContent }));
+  check('estimated start is flagged in the checklist, the editor placeholder and the report arithmetic', s.warn === 2 && s.placeholder === 'detected 2025-12' && s.term === '12' && /9 of 12 instalments/.test(s.panel) && /12 months from December 2025; 9 of 12 monthly instalments/.test(s.calcRow) && /Start month estimated/.test(s.calcRow), [s.placeholder, s.term]);
+  await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="start"]', '2026-03'); await p.waitForTimeout(400);
+  c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
+  check('a hand-set start month (March 2026) gives 6 instalments and no estimate flag', c.commitments[0].start === '2026-03' && c.commitments[0].startManual && !c.commitments[0].startEstimated && c.commitments[0].elapsed === 6 && near(c.commitments[0].remainingSar, remAfter(914135, 6, 12)), [c.commitments[0].elapsed, c.commitments[0].remainingSar]);
+  await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="term"]', '24'); await p.waitForTimeout(400);
+  c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
+  check('a 24-month term halves the instalment', near(c.commitments[0].instalmentSar, inst(914135, 24)) && near(c.commitments[0].remainingSar, remAfter(914135, 6, 24)));
+  await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="term"]', '12'); await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="start"]', ''); await p.waitForTimeout(400);
+  c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
+  check('clearing the start month returns to the detected December 2025', c.commitments[0].start === '2025-12' && c.commitments[0].elapsed === 9);
+  s = await p.evaluate(() => { const i = document.querySelector('#report .mfig-card.for-gcp .meter>i'); return { width: i.style.width, cap: document.querySelector('#report .mfig-card.for-gcp .meter-cap .en').textContent, anim: getComputedStyle(i, '::after').animationName, pct: window.FinOpsStudio.creditCalc('gcp').pct }; });
+  check('meter: the coloured part is the consumed share and it shines', s.width === (100 - s.pct).toFixed(1) + '%' && /^\d+\.\d% of starting credit consumed · \d+\.\d% remaining$/.test(s.cap) && s.anim === 'meter-shine', [s.width, s.cap, s.anim]);
   // tolerant commitment matching against the baseline to-date rows
   await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="servicesText"]', 'chronicle'); await p.waitForTimeout(400);
   c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
@@ -98,7 +117,7 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('commitment matched on a partial name (Chron)', c.commitments[0].found, c.commitments[0].matched);
   await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="servicesText"]', 'No Such Service'); await p.waitForTimeout(400);
   s = await p.evaluate(() => ({ c: window.FinOpsStudio.creditCalc('gcp').commitments[0], warn: [...document.querySelectorAll('#checklist li.warn')].map(l => l.textContent).filter(t => /no service row/.test(t)).length, panel: document.querySelector('#balance').textContent }));
-  check('unmatched commitment warns and reads as fully remaining', !s.c.found && near(s.c.remainingSar, 914135 * 3.75) && s.warn === 1 && /no matching service row/.test(s.panel));
+  check('unmatched commitment warns and reads as fully remaining', !s.c.found && s.c.startUnknown && near(s.c.remainingSar, 914135 * 3.75) && s.warn === 1 && /start month unknown/.test(s.panel));
   await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="servicesText"]', 'Chronicle'); await p.waitForTimeout(400);
   // ---- step 2: guide and the drop
   await p.click('#st-steps button[data-step="2"]'); await p.waitForTimeout(200);
@@ -115,7 +134,7 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
   const exp1 = 9685235.81 - (235520 + 128517.64) * 3.75 - 144550.33 * 3.75;
   check('uploaded to-date: remaining hand check', near(c.remainingSar, exp1) && c.basis === 'upload', [c.remainingSar, exp1.toFixed(2)]);
-  check('SecOps and SCC remaining after upload', near(c.commitments[0].remainingSar, (914135 - 72030) * 3.75) && near(c.commitments[1].remainingSar, (81672.81 - 7400) * 3.75), c.commitments.map(k => [k.name, k.remainingSar, k.matched]));
+  check('after the drop the to-date file carries no earlier charges, so the start is January 2026 and 8 instalments have run', c.commitments[0].start === '2026-01' && !c.commitments[0].startEstimated && c.commitments[0].elapsed === 8 && near(c.commitments[0].remainingSar, remAfter(914135, 8, 12)) && near(c.commitments[1].remainingSar, remAfter(81672.81, 8, 12)) && c.commitments[0].found, c.commitments.map(k => [k.name, k.start, k.elapsed, k.remainingSar, k.matched]));
   await p.click('#st-steps button[data-step="4"]'); await p.waitForTimeout(200);
   check('ownership picker offers the six departments', await p.evaluate(() => { const o = [...document.querySelector('#qm-azure select[data-qm]').options].map(x => x.value).filter(Boolean); return o.length === 6 && o.includes('dtgd') && o.includes('dea'); }));
   for (const [name, dept] of Object.entries({ 'MOE-SEC-PRD': 'cyber', 'MOE-INFRA-HUB': 'itsvc', 'MOE-BUSINESS-APPS': 'dtgd' })) { await p.selectOption(`#qm-azure select[data-qm="${name}"]`, dept); await p.waitForTimeout(250); }
@@ -166,6 +185,10 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await p.reload(); await p.waitForTimeout(900);
   s = await p.evaluate(() => ({ resumed: window.FinOpsStudio.resumed(), head: document.getElementById('f-sh').value, toast: [...document.querySelectorAll('.toast')].map(t => t.textContent).join(' | '), files: document.querySelectorAll('#ftable .badge.ok').length }));
   check('reload resumes the saved state with a toast', s.resumed && /manage to it/.test(s.head) && /Picked up where you left off/.test(s.toast) && s.files >= 8, [s.files, s.toast.slice(0, 80)]);
+  await p.evaluate(() => { const k = 'finops-studio-v1', st = JSON.parse(localStorage.getItem(k)); st.meta.stamp = 'older-build'; delete st.clouds.gcp.credit.commitments[0].term; delete st.clouds.gcp.credit.commitments[0].start; delete st.edition.showQuarter; st.edition.quarterEnd = false; localStorage.setItem(k, JSON.stringify(st)); });
+  await p.reload(); await p.waitForTimeout(900);
+  s = await p.evaluate(() => { const S = window.FinOpsStudio.state(); return { migrated: window.FinOpsStudio.migrated(), head: document.getElementById('f-sh').value, term: S.clouds.gcp.credit.commitments[0].term, start: S.clouds.gcp.credit.commitments[0].start, showQuarter: S.edition.showQuarter, files: document.querySelectorAll('#ftable .badge.ok').length, toast: [...document.querySelectorAll('.toast')].map(t => t.textContent).join(' | '), stamp: S.meta.stamp, migratedFrom: S.meta.migratedFrom }; });
+  check('an older saved state is migrated into the new build: edits and files kept, new fields filled, toast shown', s.migrated && /manage to it/.test(s.head) && s.term === 12 && s.start === '' && s.showQuarter === true && s.files >= 8 && /Studio was updated/.test(s.toast) && s.stamp !== 'older-build' && s.migratedFrom === 'older-build', [s.term, s.start, s.showQuarter, s.files, s.toast.slice(0, 60)]);
   await ctx.close();
   // ---- the generated file with JavaScript disabled
   const ctx2 = await b.newContext({ viewport: { width: 1280, height: 900 }, javaScriptEnabled: false });
@@ -189,6 +212,9 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await g.emulateMedia({ media: 'print' }); await g.waitForTimeout(200);
   const pr = await g.evaluate(() => ({ summary: getComputedStyle(document.querySelector('.stmt .more>summary')).display, body: document.querySelector('.stmt .more-body p').checkVisibility(), calc: document.querySelector('.calc tbody tr td').checkVisibility(), period: getComputedStyle(document.querySelector('.print-period')).display }));
   check('generated (print): statement paragraphs and calc table open, summary hidden', pr.summary === 'none' && pr.body === true && pr.calc === true && pr.period === 'block', pr);
+  await g.emulateMedia({ media: 'screen' }); await g.waitForTimeout(100);
+  const q = await g.evaluate(() => ({ tab: !!document.getElementById('pv-gcp-q'), opts: [...document.querySelectorAll('.sw.for-gcp .seg.s-q .dd-opt')].map(l => l.textContent.replace(/\s+/g, ' ')) }));
+  check('generated: the Quarter tab is present with Q1 2026, Q2 2026 and H1 2026, as in v20', q.tab && q.opts.length === 3 && q.opts.some(t => /Q1 2026/.test(t)) && q.opts.some(t => /Q2 2026/.test(t)) && q.opts.some(t => /H1 2026/.test(t)), q.opts);
   check('generated: zero external requests', reqs2.length === 0);
   await b.close();
   console.log(fails.length ? 'FAILED CHECKS: ' + fails.join(' ; ') : 'ALL CHECKS PASSED');

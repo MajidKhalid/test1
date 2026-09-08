@@ -118,7 +118,9 @@ bdi.m{white-space:nowrap}
 .mfig-label{font-weight:700;color:#EEF4FF;margin-top:6px;font-size:14px}
 .mfig-meter{margin-top:12px}
 .meter{position:relative;height:14px;border-radius:999px;background:rgba(255,255,255,.17);overflow:hidden}
-.meter>i{position:absolute;inset:0 auto 0 0;display:block;background:linear-gradient(90deg,#0180E9 0%,#0B8F92 54%,#00AC29 100%);clip-path:polygon(0 0,100% 0,calc(100% - 7px) 100%,0 100%)}
+.meter>i{position:absolute;inset:0 auto 0 0;display:block;overflow:hidden;background:linear-gradient(90deg,#0180E9 0%,#0B8F92 54%,#00AC29 100%);clip-path:polygon(0 0,100% 0,calc(100% - 7px) 100%,0 100%)}
+.meter>i::after{content:"";position:absolute;top:0;bottom:0;left:-45%;width:45%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.62),rgba(255,255,255,0));animation:meter-shine 3.4s ease-in-out infinite}
+@keyframes meter-shine{0%{left:-45%}60%,100%{left:110%}}
 #lang:checked~header .meter>i{inset:0 0 0 auto;clip-path:polygon(7px 0,100% 0,100% 100%,0 100%)}
 .meter-cap{font-size:11.5px;font-weight:600;color:rgba(228,238,255,.74);margin-top:6px}
 .mfig-desc{font-size:11.5px;line-height:1.5;color:rgba(228,238,255,.78);margin-top:8px;max-width:660px}
@@ -275,7 +277,7 @@ tr.tfoot td{font-weight:700;color:var(--ink);border-top:2px solid var(--line)}
   .stmt{padding:18px 18px 18px 24px}
   .stmt h2{font-size:23px}
 }
-@media (prefers-reduced-motion:reduce){.summary-blade::after{animation:none}.lsw .kn,.sw .seg>label,.cloudsw label{transition:none}}
+@media (prefers-reduced-motion:reduce){.summary-blade::after,.meter>i::after{animation:none}.lsw .kn,.sw .seg>label,.cloudsw label{transition:none}}
 
 /* ---- print: the whole report, every detail block open, period stated in words ---- */
 @media print{
@@ -285,6 +287,7 @@ tr.tfoot td{font-weight:700;color:var(--ink);border-top:2px solid var(--line)}
   .stmt,.mfig-card{background:#0d2044!important;backdrop-filter:none!important;box-shadow:none!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .mfig-side,.mfig-foot{background:#152a52!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .meter{background:#2b3f63!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .meter>i::after{display:none}
   .card{box-shadow:none;break-inside:avoid}
   .card>details>summary,.calc>summary{display:none}
   .calc>*:not(summary){display:block}

@@ -44,7 +44,7 @@
           <div class="field"><label for="f-fx">Riyals per US dollar</label><input id="f-fx" type="number" step="0.01" min="0.1" data-bind="edition.fx"></div>
           <div class="field"><label for="f-azcur">Azure export currency</label><select id="f-azcur" data-bind="edition.azureCurrency"><option value="USD">USD, convert at the peg</option><option value="SAR">SAR, read as is</option></select></div>
         </div>
-        <label class="check"><input type="checkbox" data-bind="edition.quarterEnd"> Publish the Quarter tab (quarter-end editions only)</label>
+        <label class="check"><input type="checkbox" data-bind="edition.showQuarter"> Show the Quarter tab (Q1, Q2 and H1 2026 from the July report; the current quarter joins when its export is dropped in step 2)</label>
         <div class="btnrow"><button class="btn" id="btn-derive" type="button">Refill everything from the month</button></div>
       </details>
       <div class="nav"><span></span><button class="btn primary" type="button" data-next="2">Next: files</button></div>

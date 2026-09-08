@@ -17,7 +17,7 @@ The remaining credit balance follows the model in the "GCP, Remaining Credit" sl
 | minus direct drawdowns from the back end | one-time payments not visible in the billing dashboard (Log Optimization and Customer Success) |
 | minus total consumption based on the GCP dashboard, contract start to date | the net figure of the contract-to-date export you drop in step 2 |
 | = Remaining balance | computed |
-| Commitments (SecOps, Security Command Center) | contracted totals; what has been used is read from the to-date export by billing service name (Chronicle, Security Command Center); remaining = total minus used |
+| Commitments (SecOps, Security Command Center) | annual totals billed in equal monthly instalments (total divided by the term, 12 months by default) from the month the service started. The start month is read from the first loaded billing month that carries the service row (Chronicle, Security Command Center), pushed back when the to-date export carries earlier charges (December 2025 for both, on the July stream), and can be typed in step 3. Remaining = total less the instalments elapsed to the reporting month; the usage billed so far is shown alongside for reference |
 | = Remaining commitment, = Uncommitted balance | computed |
 
 Fortinet is a one-time payment too, but it appears in the billing dashboard as Fortinet Security SaaS, so it is already inside consumption and is not entered twice. The Google incentives (the NotebookLM credit) sit inside the usage figures as savings and are listed as a source only. The report's credit card carries the same arithmetic in an expandable "How the balance is computed" table, English and Arabic, so leadership can see how the figure was reached.
@@ -35,6 +35,10 @@ The file people open is the standalone HTML page the Studio downloads, so the fl
 - **The ledger currency is explicit** (see the credit section above) and the report says whether procurement has confirmed it.
 - **The pull guide is in the page.** Step 2 carries the Google Cloud and Azure export steps inline, so nobody has to open a runbook to know which Group by and which date range each file needs.
 - **The statement check names the field and the language.** A token with no data behind it is reported as "{{gcp.net}} in Statement (AR)", so the offending line is found in one look. When Microsoft Azure is unticked, any Azure token left in the statement (the collapsed Arabic text included) is reported as "Azure is not included in this edition" with a one-click "Remove the Azure lines" button that drops those lines from both languages.
+- **The credit meter reads as spend.** The coloured part of the bar is what has been consumed, the grey part what remains, with a slow shine across the colour; the caption says "52.2% consumed, 47.8% remaining".
+- **The Quarter tab is back as in v20.** Q1 2026, Q2 2026 and H1 2026 from the July report show in every edition; the current quarter joins when its export is dropped in step 2. A tick in step 1 hides the tab if an edition should not carry it.
+- **Commitments run on the instalment schedule** (see the credit section above), with the start month detected from the billing data, flagged when it is estimated, and editable per row with the term in months.
+- **A new Studio build keeps your work.** Opening a newer build over a saved session carries the files, ledger rows, maps and statement across, refreshes the embedded baseline and says so; before, a new build started over.
 - **Six owning departments.** The ownership picker and the map keys cover Cybersecurity (`cyber`), IT Services GD (`itsvc`), Digital Transformation GD (`dtgd`), Digital Enterprise Architecture (`dea`), Business departments (`business`) and Other (`other`). A department appears in the donut and the legend as soon as a project or subscription is mapped to it; at zero it stays out of the chart.
 - **Continuity.** One person runs the Studio from one machine, so the browser keeps every edit and file between months and says so when the page reopens ("Picked up where you left off"). The edition state file is the backup and the hand-over: save it with the month's CSVs, load it on another machine to continue from there.
 
@@ -72,7 +76,7 @@ Six steps, one at a time, on a light page: **Month** (a dropdown; dates, labels,
 | Month · sandbox by service | same as the first, filtered to `prj-moenergy-iw-sb-development` | yes | the sandbox figure and chart |
 | To date · all GCP by service | 1 Oct 2025 to today | yes | the Contract to date tab |
 | To date · by project, To date · sandbox | same ranges | optional | exact split and sandbox on the to-date tab |
-| Quarter · three slots | the quarter | quarter-end editions only | the Quarter tab |
+| Quarter · three slots | the quarter | optional (expected in quarter-end months) | the Quarter tab, alongside Q1, Q2 and H1 2026 |
 | Credit position | Billing > Credits plus the PO ledger | yes | the credit card in the hero |
 
 **Microsoft Azure** (Cost Management > Cost analysis, Actual cost, billing-account scope, Download CSV):
@@ -109,7 +113,7 @@ A token with no data behind it shows as an amber "awaiting August 2026 data" mar
 
 ## Publishing rules the Studio applies on generate
 
-- The Quarter tab appears only in quarter-end editions (the checkbox in the Edition box; the readiness list warns if it disagrees with the month).
+- The Quarter tab is shown whenever quarter periods exist (Q1, Q2 and H1 2026 from the July report), as v20 did; untick "Show the Quarter tab" in step 1 to hide it. In a quarter-end month the readiness list expects that quarter's export.
 - The published file opens on Google Cloud, English, the reporting month.
 - The `.studio-only` elements (the awaiting-data banner, the preview footer line) are removed.
 - Figures are Saudi Riyals at the rate in the Edition box (3.75 to the US dollar). Google invoices in US dollars; for Azure, set the billing currency in the export (USD converted at the peg, or SAR read as is).

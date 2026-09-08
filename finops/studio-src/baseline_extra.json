@@ -10,7 +10,7 @@
   "labelAr": "إصدار سبتمبر 2026 · بيانات أغسطس 2026",
   "fx": 3.75,
   "azureCurrency": "USD",
-  "quarterEnd": false,
+  "showQuarter": true,
   "ledgerCurrency": "USD",
   "ledgerConfirmed": false,
   "versionManual": false,
@@ -72,7 +72,9 @@
       "Chronicle"
      ],
      "noteEn": "Paid monthly as the service is used",
-     "noteAr": "يُدفع شهرياً بحسب الاستخدام"
+     "noteAr": "يُدفع شهرياً بحسب الاستخدام",
+     "start": "",
+     "term": 12
     },
     {
      "name": "Security Command Center",
@@ -82,7 +84,9 @@
       "Security Command Center"
      ],
      "noteEn": "Paid monthly as the service is used",
-     "noteAr": "يُدفع شهرياً بحسب الاستخدام"
+     "noteAr": "يُدفع شهرياً بحسب الاستخدام",
+     "start": "",
+     "term": 12
     }
    ],
    "incentives": [
