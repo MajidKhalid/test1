@@ -131,6 +131,8 @@
       <details class="adjust"><summary>Full maps</summary>
         <div class="grid2">
           <div class="field"><label for="f-gmap">GCP project map</label><textarea id="f-gmap" class="code" data-bind="clouds.gcp.projectMapText" spellcheck="false"></textarea><small>One line per project: <span class="tok">project-id = cyber | itsvc | dtgd | dea | business | other</span>. <span class="tok">[account-level]</span> is the bucket with no project; it is split by service.</small></div>
+          <div class="field"><label for="f-gspark">SPARK folder</label><textarea id="f-gspark" class="code" data-bind="clouds.gcp.sparkProjectsText" spellcheck="false"></textarea><small>Which billing projects count as SPARK spend. One project id per line; a trailing <span class="tok">*</span> matches a prefix.</small></div>
+          <div class="field"><label for="f-gcases">SPARK use cases</label><textarea id="f-gcases" class="code" data-bind="clouds.gcp.sparkUseCasesText" spellcheck="false"></textarea><small>One line per use case: <span class="tok">Name | project-id = dtgd</span>, the project id optional so a use case with no billing project yet still counts. This list, not the exports, drives the use-case donut.</small></div>
           <div class="field"><label for="f-amap">Azure subscription map</label><textarea id="f-amap" class="code" data-bind="clouds.azure.subMapText" spellcheck="false"></textarea><small>One line per subscription: <span class="tok">name or id = cyber | itsvc | dtgd | dea | business | other</span>, case-insensitive.</small></div>
         </div>
       </details>

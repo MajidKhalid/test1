@@ -80,10 +80,11 @@ function sparkList(){return lines(S.clouds.gcp.sparkProjectsText||'').filter(fun
 function inSpark(pid){var L=sparkList(),p=String(pid||'').toLowerCase();return L.some(function(x){return x.slice(-1)==='*'?p.indexOf(x.slice(0,-1))===0:p===x;});}
 function sparkSplit(projRows,map){var tot=zeroDepts(),rows=[],unknown=[];(projRows||[]).forEach(function(r){if(!inSpark(r.pid))return;var b=map[r.pid];if(b==null){unknown.push(r.pid||r.name);return;}tot[b]+=r.net;rows.push({pid:r.pid,name:r.name,dept:b,net:r.net});});
  return {parts:DEPT_ORDER.map(function(k){return {key:k,net:r2(tot[k])};}),rows:rows.sort(byNetDesc),unknown:unknown};}
-function sparkRoster(){var map=parseMap(S.clouds.gcp.projectMapText),seen={},out=[];
- var P=S.clouds.gcp.periods;Object.keys(P).forEach(function(k){(P[k].projectsRaw||[]).forEach(function(r){
-  if(!inSpark(r.pid)||seen[r.pid])return;seen[r.pid]=1;out.push({pid:r.pid,name:r.name,dept:map[r.pid]||null});});});
- return out.sort(function(a,b){return a.pid<b.pid?-1:1;});}
+function sparkUseCases(){var out=[];lines(S.clouds.gcp.sparkUseCasesText||'').forEach(function(l){
+ if(l.charAt(0)==='#')return;var i=l.lastIndexOf('=');if(i<0)return;
+ var left=l.slice(0,i).trim(),dept=l.slice(i+1).trim().toLowerCase();if(!DEPT[dept]||dept==='unmapped')return;
+ var bar=left.indexOf('|'),label=bar<0?left:left.slice(0,bar).trim(),pid=bar<0?'':left.slice(bar+1).trim().toLowerCase();
+ if(label)out.push({label:label,pid:pid,dept:dept});});return out;}
 function parseMap(text){var out={};lines(text).forEach(function(l){if(l.charAt(0)==='#')return;var i=l.indexOf('=');if(i<0)return;var k=l.slice(0,i).trim().toLowerCase(),v=l.slice(i+1).trim().toLowerCase();if(k==='[account-level]')k='';if(!DEPT[v]||v==='unmapped')return;out[k]=v;});return out;}
 function accountItsvc(services){return r2(services.filter(function(s){return ACCOUNT_ITSVC.indexOf(s.name)>=0;}).reduce(function(a,s){return a+s.net;},0));}
 function appliances(services){return r2(services.filter(function(s){return APPLIANCE.some(function(p){return s.name.indexOf(p)===0;});}).reduce(function(a,s){return a+s.net;},0));}
@@ -189,22 +190,21 @@ function deptCard(c,p,stack){var L=esc(p.label),LA=esc(p.labelAr),net=p.totals?p
 function deltaChip(p,c){if(p.kind!=='month')return '';var prev=S.clouds[c].periods[prevMonth(p.key)];if(!prev||!prev.totals||!prev.totals.net||!p.totals||!p.totals.net)return '';var d=(p.totals.net-prev.totals.net)/prev.totals.net*100,a=Math.abs(d).toFixed(1)+'%';return ' <span class="delta '+(d>=0?'up':'down')+'"><span aria-hidden="true">'+(d>=0?'&#9650;':'&#9660;')+'</span> '+a+' <i>'+tw('vs '+esc(prev.label),'مقابل '+esc(prev.labelAr))+'</i></span>';}
 /* ---------- rendering: GCP period block ---------- */
 function sparkMark(){return A.spark?'<img class="spark-mark" src="'+A.spark+'" alt="SPARK">':'<b class="spark-word">SPARK</b>';}
-function sparkCountCard(){var roster=sparkRoster(),head='<h3>'+tw('SPARK use cases per general department','حالات الاستخدام في سبارك حسب الإدارة العامة')+'</h3>';
- var known=roster.filter(function(r){return r.dept;});
- if(!known.length)return '<div class="card">'+head+'<p class="note">'+tw('No by-project export has been loaded, so the projects inside the SPARK folder cannot be counted.','لم يُحمَّل تقرير المشاريع، فيتعذر عدّ المشاريع داخل مجلد سبارك.')+'</p></div>';
+function sparkCountCard(){var known=sparkUseCases(),head='<h3>'+tw('SPARK use cases per general department','حالات الاستخدام في سبارك حسب الإدارة العامة')+'</h3>';
+ if(!known.length)return '<div class="card">'+head+'<p class="note">'+tw('The SPARK use-case list is empty, so there is nothing to count. It is edited in step 4 of the Studio.','قائمة حالات الاستخدام في سبارك فارغة، فلا يوجد ما يُعدّ. وتُحرَّر في الخطوة 4 من الاستوديو.')+'</p></div>';
  var cnt=zeroDepts();known.forEach(function(r){cnt[r.dept]+=1;});
  var parts=DEPT_ORDER.map(function(k){return {key:k,net:cnt[k]};}).filter(function(d){return d.net>0;}).sort(byNetDesc),tot=sum(parts,'net')||1;
  var dparts=parts.map(function(d){return {name:DEPT[d.key].en,net:d.net,share:d.net/tot,color:DEPT[d.key].c};});
  var leg='<ul class="dleg">'+parts.map(function(d){return '<li><span class="dot" style="background:'+DEPT[d.key].c+'"></span><span class="dl-name">'+tw(esc(DEPT[d.key].en),esc(DEPT[d.key].ar))+'</span><span class="dl-val">'+num(d.net,0)+'</span><span class="dl-share">'+pctS(d.net/tot*100)+'</span></li>';}).join('')+'</ul>';
  var chart='<div class="dchart">'+donutSvg(dparts)+'<div class="dcentre"><span class="dc-lab">'+tw('Use cases','حالات الاستخدام')+'</span><span class="dc-val">'+num(tot,0)+'</span></div></div>';
- var det=details(tw('Every SPARK project and its general department','كل مشروع في سبارك وإدارته العامة'),'<th>'+tw('Project','المشروع')+'</th><th>'+tw('General department','الإدارة العامة')+'</th>',roster.map(function(r){var LB=GCP_LABELS[r.pid];return '<tr><td>'+(LB?tw(esc(LB[0]),esc(LB[1])):esc(r.name||r.pid))+'</td><td>'+(r.dept?tw(esc(DEPT[r.dept].en),esc(DEPT[r.dept].ar)):tw('not mapped','غير مُسند'))+'</td></tr>';}).join(''));
- return '<div class="card">'+head+'<div class="dwrap stack">'+chart+leg+'</div><p class="note">'+tw('One project inside the SPARK folder is one use case. Counted across every period loaded, so a use case that spent nothing this month still shows. The shared development environment and SPARK Admin are carried by the department that operates the platform.','يُحتسب كل مشروع داخل مجلد سبارك حالة استخدام واحدة، عبر كل الفترات المحمّلة، فتظهر الحالة حتى إن لم تُنفق شيئاً هذا الشهر. وتتحمل الإدارة المشغّلة للمنصة بيئة التطوير المشتركة وإدارة سبارك.')+'</p>'+det+'</div>';}
+ var det=details(tw('Every SPARK use case and its general department','كل حالة استخدام في سبارك وإدارتها العامة'),'<th>'+tw('Use case','حالة الاستخدام')+'</th><th>'+tw('General department','الإدارة العامة')+'</th><th>'+tw('Billing project','مشروع الفوترة')+'</th>',known.map(function(r){return '<tr><td>'+esc(r.label)+'</td><td>'+tw(esc(DEPT[r.dept].en),esc(DEPT[r.dept].ar))+'</td><td>'+(r.pid?esc(r.pid):'<i>'+tw('not recorded','غير مسجَّل')+'</i>')+'</td></tr>';}).join(''));
+ return '<div class="card">'+head+'<div class="dwrap stack">'+chart+leg+'</div><p class="note">'+tw('Counted from the SPARK use-case list, not from the exports, so a use case that spent nothing this month, or has no billing project yet, still shows. The shared development environment every use case builds on is the platform rather than a use case, so it is not counted here; its spend still sits inside the SPARK figures.','يُحتسب العدد من قائمة حالات الاستخدام في سبارك لا من التقارير، فتظهر الحالة حتى إن لم تُنفق شيئاً هذا الشهر أو لم يُنشأ لها مشروع فوترة بعد. أما بيئة التطوير المشتركة التي تُبنى عليها الحالات فهي المنصة لا حالة استخدام، فلا تُعدّ هنا، ويظل إنفاقها ضمن أرقام سبارك.')+'</p>'+det+'</div>';}
 function sparkBlock(p,t,L,LA){var sb=p.sandbox,C=S.clouds.gcp,month=p.kind==='month';
  var kick='<div class="kick">'+tw('04 · SPARK · ','04 · سبارك · ')+'<bdi>'+tw(L,LA)+'</bdi><span class="clar">'+tw('The Ministry\'s AI experimentation platform, inside the SPARK folder of this billing account.','منصة الوزارة لتجارب الذكاء الاصطناعي، داخل مجلد سبارك في حساب الفوترة هذا.')+'</span></div><h2>'+tw('What is running inside SPARK?','ماذا يعمل داخل سبارك؟')+'</h2>';
  var mark='<div class="spark-head">'+sparkMark()+'<span class="spark-cap">'+tw('The Ministry\'s AI experimentation platform','منصة الوزارة لتجارب الذكاء الاصطناعي')+'</span></div>';
  if(!sb)return kick+mark+'<div class="card"><h3>'+tw('SPARK spend','إنفاق سبارك')+'</h3><p class="note">'+tw('The SPARK-filtered export for this period has not been loaded.','لم يُحمَّل تقرير سبارك لهذه الفترة.')+'</p></div>';
  var share=t.net?sb.net/t.net*100:0,ps=pctS(share);
- var n=sparkRoster().filter(function(r){return r.dept;}).length,d=0,seenD={};sparkRoster().forEach(function(r){if(r.dept&&!seenD[r.dept]){seenD[r.dept]=1;d++;}});
+ var uc=sparkUseCases(),n=uc.length,d=0,seenD={};uc.forEach(function(r){if(!seenD[r.dept]){seenD[r.dept]=1;d++;}});
  var lead=month&&n?tw('For '+L+', SPARK ran '+n+' use cases across '+d+' general departments and spent '+money(sb.net,0)+', which is '+ps+' of total GCP net spend.','خلال '+LA+'، ضمّت سبارك '+n+' حالة استخدام في '+d+' إدارات عامة بإنفاق قدره '+money(sb.net,0)+'، أي '+ps+' من إجمالي صافي الإنفاق على GCP.')
   :tw('For '+L+', SPARK net spend was '+money(sb.net,0)+', which is '+ps+' of total GCP net spend, on the services below.','خلال '+LA+'، بلغ صافي إنفاق سبارك '+money(sb.net,0)+'، أي '+ps+' من إجمالي صافي الإنفاق على GCP، على الخدمات أدناه.');
  var link='<p class="lead">'+lead+'</p>';
