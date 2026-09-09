@@ -52,6 +52,11 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('refill returns version and published to derived', s.version === '22' && s.pub === today && !s.vm && !s.pm, s);
   await p.selectOption('#f-month', '2026-08'); await p.waitForTimeout(300);
   check('back on August: v21', (await p.inputValue('#f-version')) === '21');
+  // ---- the August edition as shipped: no opening paragraph, no statement, Google Cloud only
+  s = await p.evaluate(() => ({ lead: !!document.querySelector('#report .hero .wrap > p.sub'), stmt: !!document.querySelector('#report .stmt'), sw: !!document.querySelector('#report .cloudsw'), off: [...document.querySelectorAll('#checklist li.ok')].some(l => /statement of the month is switched off/.test(l.textContent)) }));
+  check('as shipped: no opening paragraph, no statement, no cloud switch, and the statement check passes as switched off', !s.lead && !s.stmt && !s.sw && s.off, s);
+  await p.check('input[data-bind="edition.showLead"]'); await p.check('input[data-bind="edition.showStatement"]'); await p.check('input[data-bind="clouds.azure.enabled"]'); await p.waitForTimeout(600);
+  check('switching the three back on restores the paragraph, the statement and the cloud switch', await p.evaluate(() => !!document.querySelector('#report .hero .wrap > p.sub') && !!document.querySelector('#report .stmt') && !!document.querySelector('#report .cloudsw')));
   // ---- statement: collapsed in the report, open in the live preview
   s = await p.evaluate(() => ({ reportMore: !!document.querySelector('#report .stmt details.more'), reportOpen: !!document.querySelector('#report .stmt details.more[open]'), dirBeforeMore: (() => { const st = document.querySelector('#report .stmt'); const i1 = [...st.children].findIndex(e => e.classList.contains('dir')); const i2 = [...st.children].findIndex(e => e.classList.contains('more')); return i1 > -1 && i2 > i1; })(), paragraphs: document.querySelectorAll('#report .stmt .more-body .en p').length }));
   check('report statement: headline, direction points, then Read more (closed)', s.reportMore && !s.reportOpen && s.dirBeforeMore && s.paragraphs === 4, s);
@@ -89,23 +94,14 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await p.selectOption('#f-ledger', 'USD'); await p.uncheck('input[data-bind="edition.ledgerConfirmed"]'); await p.waitForTimeout(400);
   c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
   check('ledger back to USD unconfirmed', near(c.startingSar, 9685235.81) && c.ledgerConfirmed === false);
-  // commitments: monthly instalments from the detected service start (December 2025 on the July stream)
-  const inst = (usd, term) => usd * 3.75 / term, remAfter = (usd, n, term) => usd * 3.75 - Math.min(usd * 3.75, inst(usd, term) * n);
-  s = c.commitments.map(k => ({ n: k.name, start: k.start, est: k.startEstimated, first: k.firstSeen, el: k.elapsed, rem: k.remainingSar, inst: k.instalmentSar, billed: k.billedNetSar }));
-  check('SecOps: start detected as December 2025 (estimated), 9 of 12 instalments to August, remaining = total less 9 instalments', s[0].start === '2025-12' && s[0].est && s[0].first === '2026-01' && s[0].el === 9 && near(s[0].rem, remAfter(914135, 9, 12)) && near(s[0].inst, inst(914135, 12)) && near(s[0].billed, 1056037.95, 0.5), s[0]);
-  check('Security Command Center: same start, remaining = total less 9 instalments', s[1].start === '2025-12' && s[1].el === 9 && near(s[1].rem, remAfter(81672.81, 9, 12)), s[1]);
-  check('committed footer equals the sum of the two remaining commitments', near(c.commitRemainingSar, remAfter(914135, 9, 12) + remAfter(81672.81, 9, 12)));
-  s = await p.evaluate(() => ({ warn: [...document.querySelectorAll('#checklist li.warn')].filter(l => /start month estimated as December 2025/.test(l.textContent)).length, placeholder: document.querySelector('#ceditors input[data-ed="2"][data-i="0"][data-f="start"]').placeholder, term: document.querySelector('#ceditors input[data-ed="2"][data-i="0"][data-f="term"]').value, panel: document.querySelector('#balance').textContent, calcRow: document.querySelector('#report .mfig-card.for-gcp .calc tbody').textContent }));
-  check('estimated start is flagged in the checklist, the editor placeholder and the report arithmetic', s.warn === 2 && s.placeholder === 'detected 2025-12' && s.term === '12' && /9 of 12 instalments/.test(s.panel) && /12 months from December 2025; 9 of 12 monthly instalments/.test(s.calcRow) && /Start month estimated/.test(s.calcRow), [s.placeholder, s.term]);
-  await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="start"]', '2026-03'); await p.waitForTimeout(400);
-  c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
-  check('a hand-set start month (March 2026) gives 6 instalments and no estimate flag', c.commitments[0].start === '2026-03' && c.commitments[0].startManual && !c.commitments[0].startEstimated && c.commitments[0].elapsed === 6 && near(c.commitments[0].remainingSar, remAfter(914135, 6, 12)), [c.commitments[0].elapsed, c.commitments[0].remainingSar]);
-  await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="term"]', '24'); await p.waitForTimeout(400);
-  c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
-  check('a 24-month term halves the instalment', near(c.commitments[0].instalmentSar, inst(914135, 24)) && near(c.commitments[0].remainingSar, remAfter(914135, 6, 24)));
-  await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="term"]', '12'); await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="start"]', ''); await p.waitForTimeout(400);
-  c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
-  check('clearing the start month returns to the detected December 2025', c.commitments[0].start === '2025-12' && c.commitments[0].elapsed === 9);
+  // commitments: paid as the service is used, read from the contract-to-date export
+  const SEC = 914135 * 3.75, SCC = 81672.81 * 3.75, SECPAID = 1056037.95, SCCPAID = 109331.1;
+  s = c.commitments.map(k => ({ n: k.name, sar: k.sar, used: k.usedSar, rem: k.remainingSar, found: k.found, matched: k.matched }));
+  check('SecOps: committed in full, with the Chronicle rows of the to-date export counted as paid towards it', near(s[0].sar, SEC) && near(s[0].used, SECPAID) && near(s[0].rem, SEC - SECPAID) && s[0].found && s[0].matched.join() === 'Chronicle', s[0]);
+  check('Security Command Center: committed less what the to-date export has already billed', near(s[1].sar, SCC) && near(s[1].used, SCCPAID) && near(s[1].rem, SCC - SCCPAID), s[1]);
+  check('committed footer equals the sum of the two remaining commitments', near(c.commitRemainingSar, (SEC - SECPAID) + (SCC - SCCPAID)));
+  s = await p.evaluate(() => ({ panel: document.querySelector('#balance').textContent, calcRow: document.querySelector('#report .mfig-card.for-gcp .calc tbody').textContent, fields: [...document.querySelectorAll('#ceditors input[data-ed="2"]')].map(i => i.dataset.f) }));
+  check('the balance panel and the report arithmetic read as paid to date, and the editor has no start or term field', /1,056,038 paid to date, read from Chronicle/.test(s.panel) && /paid towards it to date/.test(s.calcRow) && !/instalment/i.test(s.panel + s.calcRow) && s.fields.indexOf('start') < 0 && s.fields.indexOf('term') < 0, [s.calcRow.slice(0, 90), s.fields]);
   s = await p.evaluate(() => { const i = document.querySelector('#report .mfig-card.for-gcp .meter>i'); return { width: i.style.width, cap: document.querySelector('#report .mfig-card.for-gcp .meter-cap .en').textContent, anim: getComputedStyle(i, '::after').animationName, pct: window.FinOpsStudio.creditCalc('gcp').pct }; });
   check('meter: the coloured part is the consumed share and it shines', s.width === (100 - s.pct).toFixed(1) + '%' && /^\d+\.\d% of starting credit consumed · \d+\.\d% remaining$/.test(s.cap) && s.anim === 'meter-shine', [s.width, s.cap, s.anim]);
   // tolerant commitment matching against the baseline to-date rows
@@ -117,7 +113,7 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('commitment matched on a partial name (Chron)', c.commitments[0].found, c.commitments[0].matched);
   await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="servicesText"]', 'No Such Service'); await p.waitForTimeout(400);
   s = await p.evaluate(() => ({ c: window.FinOpsStudio.creditCalc('gcp').commitments[0], warn: [...document.querySelectorAll('#checklist li.warn')].map(l => l.textContent).filter(t => /no service row/.test(t)).length, panel: document.querySelector('#balance').textContent }));
-  check('unmatched commitment warns and reads as fully remaining', !s.c.found && s.c.startUnknown && near(s.c.remainingSar, 914135 * 3.75) && s.warn === 1 && /start month unknown/.test(s.panel));
+  check('unmatched commitment warns and reads as fully remaining', !s.c.found && near(s.c.usedSar, 0) && near(s.c.remainingSar, SEC) && s.warn === 1 && /no matching row in the contract-to-date export/.test(s.panel));
   await p.fill('#ceditors input[data-ed="2"][data-i="0"][data-f="servicesText"]', 'Chronicle'); await p.waitForTimeout(400);
   // ---- step 2: guide and the drop
   await p.click('#st-steps button[data-step="2"]'); await p.waitForTimeout(200);
@@ -134,7 +130,26 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
   const exp1 = 9685235.81 - (235520 + 128517.64) * 3.75 - 144550.33 * 3.75;
   check('uploaded to-date: remaining hand check', near(c.remainingSar, exp1) && c.basis === 'upload', [c.remainingSar, exp1.toFixed(2)]);
-  check('after the drop the to-date file carries no earlier charges, so the start is January 2026 and 8 instalments have run', c.commitments[0].start === '2026-01' && !c.commitments[0].startEstimated && c.commitments[0].elapsed === 8 && near(c.commitments[0].remainingSar, remAfter(914135, 8, 12)) && near(c.commitments[1].remainingSar, remAfter(81672.81, 8, 12)) && c.commitments[0].found, c.commitments.map(k => [k.name, k.start, k.elapsed, k.remainingSar, k.matched]));
+  check('the uploaded to-date export resets what has been paid towards each commitment', near(c.commitments[0].usedSar, 270112.5) && near(c.commitments[0].remainingSar, SEC - 270112.5) && near(c.commitments[1].usedSar, 27750) && near(c.commitments[1].remainingSar, SCC - 27750) && c.commitments[0].found, c.commitments.map(k => [k.name, k.usedSar, k.remainingSar, k.matched]));
+  // ---- where did the money go: department on the left, service on the right; SPARK below with the same pairing
+  s = await p.evaluate(() => {
+    const mv = document.querySelector('#report .mv-gcp-2026-08'), cols = [...mv.querySelectorAll('.twocol')];
+    const heads = e => [...e.children].map(c => (c.querySelector('h3') || {}).textContent || '');
+    const kinds = e => [...e.children].map(c => c.querySelector('.dwrap') ? 'donut' : c.querySelector('.bars') ? 'bars' : '?');
+    const sp = cols[1];
+    return { cols: cols.length, heads: cols.map(heads), kinds: cols.map(kinds), stacked: !!cols[0].querySelector('.dwrap.stack'),
+      mark: !!mv.querySelector('.spark-head img.spark-mark'),
+      sparkLeg: sp ? [...sp.querySelectorAll('.dleg li')].map(l => l.textContent) : [],
+      sparkRows: sp ? sp.children[0].querySelectorAll('details table tbody tr').length : 0,
+      sandbox: /sandbox/i.test(mv.textContent) };
+  });
+  check('the money-go row pairs the department donut on the left with the service bars on the right', s.cols === 2 && /Spend per general department/.test(s.heads[0][0]) && /Overall spend by service/.test(s.heads[0][1]) && s.kinds[0].join() === 'donut,bars' && s.stacked, [s.heads[0], s.kinds[0]]);
+  check('the SPARK row pairs its own department donut with its service bars, under the SPARK mark', s.mark && /SPARK spend per general department/.test(s.heads[1][0]) && /SPARK spend by service/.test(s.heads[1][1]) && s.kinds[1].join() === 'donut,bars', [s.heads[1], s.kinds[1], s.mark]);
+  check('the SPARK donut splits the folder by department and the word sandbox is gone', s.sparkLeg.length === 3 && s.sparkLeg.some(t => /IT Services GD/.test(t)) && s.sparkLeg.some(t => /Digital Enterprise Architecture/.test(t)) && s.sparkRows === 4 && !s.sandbox, [s.sparkLeg, s.sparkRows, s.sandbox]);
+  s = await p.evaluate(() => { const d = window.FinOpsStudio.state().clouds.gcp.periods['2026-08']; return { parts: (d.sparkDepts || []).filter(x => x.net > 0).map(x => [x.key, +x.net.toFixed(2)]), tot: d.sparkProjTotal }; });
+  check('SPARK per-department figures are read from the project ids inside the folder', JSON.stringify(s.parts) === JSON.stringify([['itsvc', 2067.34], ['dtgd', 0.04], ['dea', 759.38]]) && near(s.tot, 2826.76, 0.02), s);
+  s = await p.evaluate(() => { const src = document.querySelector('#report .mfig-card.for-gcp .src'); return { sub: [...src.querySelectorAll('.s.sub')].map(e => e.textContent), withSub: src.querySelectorAll('.s.with-sub').length }; });
+  check('the drawdowns sit under the live purchase order and say so', s.withSub === 1 && s.sub.length === 2 && /Enhanced Support/.test(s.sub[0]) && /drawn from this order/.test(s.sub[0]) && /Log Optimization/.test(s.sub[1]), s.sub);
   await p.click('#st-steps button[data-step="4"]'); await p.waitForTimeout(200);
   check('ownership picker offers the six departments', await p.evaluate(() => { const o = [...document.querySelector('#qm-azure select[data-qm]').options].map(x => x.value).filter(Boolean); return o.length === 6 && o.includes('dtgd') && o.includes('dea'); }));
   for (const [name, dept] of Object.entries({ 'MOE-SEC-PRD': 'cyber', 'MOE-INFRA-HUB': 'itsvc', 'MOE-BUSINESS-APPS': 'dtgd' })) { await p.selectOption(`#qm-azure select[data-qm="${name}"]`, dept); await p.waitForTimeout(250); }
@@ -185,10 +200,10 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await p.reload(); await p.waitForTimeout(900);
   s = await p.evaluate(() => ({ resumed: window.FinOpsStudio.resumed(), head: document.getElementById('f-sh').value, toast: [...document.querySelectorAll('.toast')].map(t => t.textContent).join(' | '), files: document.querySelectorAll('#ftable .badge.ok').length }));
   check('reload resumes the saved state with a toast', s.resumed && /manage to it/.test(s.head) && /Picked up where you left off/.test(s.toast) && s.files >= 8, [s.files, s.toast.slice(0, 80)]);
-  await p.evaluate(() => { const k = 'finops-studio-v1', st = JSON.parse(localStorage.getItem(k)); st.meta.stamp = 'older-build'; delete st.clouds.gcp.credit.commitments[0].term; delete st.clouds.gcp.credit.commitments[0].start; delete st.edition.showQuarter; st.edition.quarterEnd = false; localStorage.setItem(k, JSON.stringify(st)); });
+  await p.evaluate(() => { const k = 'finops-studio-v1', st = JSON.parse(localStorage.getItem(k)); st.meta.stamp = 'older-build'; delete st.edition.showLead; delete st.edition.showStatement; delete st.clouds.gcp.sparkProjectsText; delete st.edition.showQuarter; st.edition.quarterEnd = false; localStorage.setItem(k, JSON.stringify(st)); });
   await p.reload(); await p.waitForTimeout(900);
-  s = await p.evaluate(() => { const S = window.FinOpsStudio.state(); return { migrated: window.FinOpsStudio.migrated(), head: document.getElementById('f-sh').value, term: S.clouds.gcp.credit.commitments[0].term, start: S.clouds.gcp.credit.commitments[0].start, showQuarter: S.edition.showQuarter, files: document.querySelectorAll('#ftable .badge.ok').length, toast: [...document.querySelectorAll('.toast')].map(t => t.textContent).join(' | '), stamp: S.meta.stamp, migratedFrom: S.meta.migratedFrom }; });
-  check('an older saved state is migrated into the new build: edits and files kept, new fields filled, toast shown', s.migrated && /manage to it/.test(s.head) && s.term === 12 && s.start === '' && s.showQuarter === true && s.files >= 8 && /Studio was updated/.test(s.toast) && s.stamp !== 'older-build' && s.migratedFrom === 'older-build', [s.term, s.start, s.showQuarter, s.files, s.toast.slice(0, 60)]);
+  s = await p.evaluate(() => { const S = window.FinOpsStudio.state(); return { migrated: window.FinOpsStudio.migrated(), head: document.getElementById('f-sh').value, lead: S.edition.showLead, spark: S.clouds.gcp.sparkProjectsText, showQuarter: S.edition.showQuarter, files: document.querySelectorAll('#ftable .badge.ok').length, toast: [...document.querySelectorAll('.toast')].map(t => t.textContent).join(' | '), stamp: S.meta.stamp, migratedFrom: S.meta.migratedFrom }; });
+  check('an older saved state is migrated into the new build: edits and files kept, new fields filled, toast shown', s.migrated && /manage to it/.test(s.head) && s.lead === false && /prj-moenergy-iw-/.test(s.spark || '') && s.showQuarter === true && s.files >= 8 && /Studio was updated/.test(s.toast) && s.stamp !== 'older-build' && s.migratedFrom === 'older-build', [s.lead, s.spark, s.showQuarter, s.files, s.toast.slice(0, 60)]);
   await ctx.close();
   // ---- the generated file with JavaScript disabled
   const ctx2 = await b.newContext({ viewport: { width: 1280, height: 900 }, javaScriptEnabled: false });

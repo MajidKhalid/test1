@@ -44,6 +44,8 @@
           <div class="field"><label for="f-fx">Riyals per US dollar</label><input id="f-fx" type="number" step="0.01" min="0.1" data-bind="edition.fx"></div>
           <div class="field"><label for="f-azcur">Azure export currency</label><select id="f-azcur" data-bind="edition.azureCurrency"><option value="USD">USD, convert at the peg</option><option value="SAR">SAR, read as is</option></select></div>
         </div>
+        <label class="check"><input type="checkbox" data-bind="edition.showLead"> Show the opening paragraph under the title</label>
+        <label class="check"><input type="checkbox" data-bind="edition.showStatement"> Show the FinOps statement of the month</label>
         <label class="check"><input type="checkbox" data-bind="edition.showQuarter"> Show the Quarter tab (Q1, Q2 and H1 2026 from the July report; the current quarter joins when its export is dropped in step 2)</label>
         <div class="btnrow"><button class="btn" id="btn-derive" type="button">Refill everything from the month</button></div>
       </details>
@@ -55,7 +57,7 @@
       <div class="bigzone" id="bigzone" tabindex="0" role="button" aria-label="Drop CSV exports here or press Enter to choose files">
         <input type="file" multiple accept=".csv,text/csv" aria-label="Choose CSV exports">
         <div class="bz-title">Drop all the CSV files here, or click to choose them</div>
-        <div class="bz-sub">Google Cloud Reports (by service, by project, sandbox) and Azure Cost analysis (by service, subscription, location), for the month and contract to date. Each file is filed by its header and its date range; the table below shows where it landed.</div>
+        <div class="bz-sub">Google Cloud Reports (by service, by project, SPARK) and Azure Cost analysis (by service, subscription, location), for the month and contract to date. Each file is filed by its header and its date range; the table below shows where it landed.</div>
       </div>
       <details class="adjust guide"><summary>How to pull these files (about ten minutes per cloud)</summary>
         <div class="grid2 guides">
@@ -65,8 +67,8 @@
               <li>Open <b>Billing &gt; Reports</b> for the Ministry's billing account (needs the Billing Account Viewer role).</li>
               <li>Set the date range to the month, the 1st to the last day. Set <b>Group by: Service</b>. In the panel on the right keep every credits and discounts option <b>on</b>. Download CSV: this is the by-service file.</li>
               <li>Change to <b>Group by: Project</b> and download again: the by-project file.</li>
-              <li>Back to Group by Service, add the filter <b>Projects = prj-moenergy-iw-sb-development</b> and download again: the sandbox file.</li>
-              <li>Clear the filter and set the date range to <b>1 October 2025 to today</b> for the contract-to-date by-service file. By project and sandbox for that range are optional.</li>
+              <li>Back to Group by Service, filter to the <b>SPARK folder (969004756048)</b> or pick every project whose id starts <b>prj-moenergy-iw-</b>, and download again: the SPARK file.</li>
+              <li>Clear the filter and set the date range to <b>1 October 2025 to today</b> for the contract-to-date by-service file. By project and SPARK for that range are optional.</li>
               <li>Keep the names Google writes: the date range in the name is how the Studio files them. Pull on the 3rd of the month or later; the data lags up to two days.</li>
             </ol>
           </div>

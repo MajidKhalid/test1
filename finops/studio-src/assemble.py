@@ -36,7 +36,7 @@ gcp_cloud=dict(extra['gcp']); gcp_cloud['periods']=periods
 az_cloud=dict(az); az_cloud['periods']=azp
 state={'meta':{'studio':1,'stamp':stamp,'builtFrom':'FinOps_Dashboard_v20 (July 2026) + Q2 2026 quarterly report'},'edition':extra['edition'],'statement':extra['statement'],'clouds':{'gcp':gcp_cloud,'azure':az_cloud}}
 json_text=json.dumps(state,ensure_ascii=False,separators=(',',':')).replace('</','<\\/')
-assets={'gdew':'data:image/png;base64,'+b64(ASSETS+'/de-wordmark.png'),'dew':'data:image/png;base64,'+b64(ASSETS+'/de-lockup.png'),'moe':'data:image/png;base64,'+b64(ASSETS+'/moe-lockup.png')}
+assets={'spark':'data:image/svg+xml;base64,'+b64(ASSETS+'/spark-lockup-navy.svg'),'gdew':'data:image/png;base64,'+b64(ASSETS+'/de-wordmark.png'),'dew':'data:image/png;base64,'+b64(ASSETS+'/de-lockup.png'),'moe':'data:image/png;base64,'+b64(ASSETS+'/moe-lockup.png')}
 favicon="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%230180E9'/%3E%3Cstop offset='.55' stop-color='%230B8F92'/%3E%3Cstop offset='1' stop-color='%2300AC29'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='7' fill='%23081631'/%3E%3Cpath d='M18 4h6l-8 24h-6z' fill='url(%23b)'/%3E%3C/svg%3E"
 html=('<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<meta name="robots" content="noindex">\n'
  '<title>FinOps Report Studio</title>\n<link rel="icon" href="%s">\n' % favicon

@@ -17,7 +17,7 @@ The remaining credit balance follows the model in the "GCP, Remaining Credit" sl
 | minus direct drawdowns from the back end | one-time payments not visible in the billing dashboard (Log Optimization and Customer Success) |
 | minus total consumption based on the GCP dashboard, contract start to date | the net figure of the contract-to-date export you drop in step 2 |
 | = Remaining balance | computed |
-| Commitments (SecOps, Security Command Center) | annual totals billed in equal monthly instalments (total divided by the term, 12 months by default) from the month the service started. The start month is read from the first loaded billing month that carries the service row (Chronicle, Security Command Center), pushed back when the to-date export carries earlier charges (December 2025 for both, on the July stream), and can be typed in step 3. Remaining = total less the instalments elapsed to the reporting month; the usage billed so far is shown alongside for reference |
+| Commitments (SecOps, Security Command Center) | contracted totals paid as the service is used, the basis the GCP balance sheet uses. What has been paid is the net usage the contract-to-date export shows for the commitment's billing rows (Chronicle, Security Command Center); remaining = the contracted total less that. Both the report arithmetic and the balance panel name the rows they read |
 | = Remaining commitment, = Uncommitted balance | computed |
 
 Fortinet is a one-time payment too, but it appears in the billing dashboard as Fortinet Security SaaS, so it is already inside consumption and is not entered twice. The Google incentives (the NotebookLM credit) sit inside the usage figures as savings and are listed as a source only. The report's credit card carries the same arithmetic in an expandable "How the balance is computed" table, English and Arabic, so leadership can see how the figure was reached.
@@ -37,7 +37,10 @@ The file people open is the standalone HTML page the Studio downloads, so the fl
 - **The statement check names the field and the language.** A token with no data behind it is reported as "{{gcp.net}} in Statement (AR)", so the offending line is found in one look. When Microsoft Azure is unticked, any Azure token left in the statement (the collapsed Arabic text included) is reported as "Azure is not included in this edition" with a one-click "Remove the Azure lines" button that drops those lines from both languages.
 - **The credit meter reads as spend.** The coloured part of the bar is what has been consumed, the grey part what remains, with a slow shine across the colour; the caption says "52.2% consumed, 47.8% remaining".
 - **The Quarter tab is back as in v20.** Q1 2026, Q2 2026 and H1 2026 from the July report show in every edition; the current quarter joins when its export is dropped in step 2. A tick in step 1 hides the tab if an edition should not carry it.
-- **Commitments run on the instalment schedule** (see the credit section above), with the start month detected from the billing data, flagged when it is estimated, and editable per row with the term in months.
+- **Commitments are paid as the service is used** (see the credit section above): the contracted total less the usage the contract-to-date export has already billed for its rows. On the August 2026 data this lands on 2,281,341.90 Riyals of remaining commitment, the figure the GCP balance sheet carries.
+- **Where did the money go, side by side.** The department donut sits on the left and the service bars on the right, one row of two equal cards, on every period and both clouds. The pair stacks on a narrow screen and in print.
+- **SPARK, not sandbox.** The AI platform section carries the SPARK lockup and the same side-by-side pairing: **SPARK spend per general department** on the left, **SPARK spend by service** on the right. The department split is read from the billing project each charge sits in, for every project inside the SPARK folder; the folder is described in step 4 as a list of project ids, one per line, where a trailing `*` matches a prefix (`prj-moenergy-iw-*` covers the folder as it stands). A project inside the folder that the ownership map does not know is reported like any other unmapped project. The shared development environment and SPARK Admin are carried by the department that operates the platform, which the card says on its face.
+- **Two edition switches for a leaner front page.** Step 1 carries "Show the opening paragraph under the title" and "Show the FinOps statement of the month". The August 2026 edition ships with both off, so the hero runs title, chips, credit card, period picker; with the statement off the readiness list stops asking for it and stops checking its tokens.
 - **A new Studio build keeps your work.** Opening a newer build over a saved session carries the files, ledger rows, maps and statement across, refreshes the embedded baseline and says so; before, a new build started over.
 - **Six owning departments.** The ownership picker and the map keys cover Cybersecurity (`cyber`), IT Services GD (`itsvc`), Digital Transformation GD (`dtgd`), Digital Enterprise Architecture (`dea`), Business departments (`business`) and Other (`other`). A department appears in the donut and the legend as soon as a project or subscription is mapped to it; at zero it stays out of the chart.
 - **Continuity.** One person runs the Studio from one machine, so the browser keeps every edit and file between months and says so when the page reopens ("Picked up where you left off"). The edition state file is the backup and the hand-over: save it with the month's CSVs, load it on another machine to continue from there.
@@ -73,9 +76,9 @@ Six steps, one at a time, on a light page: **Month** (a dropdown; dates, labels,
 |---|---|---|---|
 | Month · all GCP by service | Reports grouped by Service, the month | yes | key figures, service chart, highlight |
 | Month · all GCP by project | Reports grouped by Project, the month | yes | the department donut, exact, and the project table |
-| Month · sandbox by service | same as the first, filtered to `prj-moenergy-iw-sb-development` | yes | the sandbox figure and chart |
+| Month · SPARK by service | same as the first, filtered to the SPARK folder (969004756048), or to every project whose id starts `prj-moenergy-iw-` | yes | the SPARK figure and its service chart |
 | To date · all GCP by service | 1 Oct 2025 to today | yes | the Contract to date tab |
-| To date · by project, To date · sandbox | same ranges | optional | exact split and sandbox on the to-date tab |
+| To date · by project, To date · SPARK | same ranges | optional | exact split and SPARK on the to-date tab |
 | Quarter · three slots | the quarter | optional (expected in quarter-end months) | the Quarter tab, alongside Q1, Q2 and H1 2026 |
 | Credit position | Billing > Credits plus the PO ledger | yes | the credit card in the hero |
 
@@ -101,7 +104,7 @@ Untick "Include Microsoft Azure" in the Edition box to publish a Google Cloud on
 - The statement has a headline and at least one paragraph, and every token in it has data behind it.
 - No `SAMPLE_` file is still loaded.
 
-Warnings (amber) do not block: a missing by-project file (the split is apportioned on the latest exact period instead), a missing sandbox file, a missing region file, a to-date view still carrying the previous edition.
+Warnings (amber) do not block: a missing by-project file (the split is apportioned on the latest exact period instead), a missing SPARK file, a missing region file, a to-date view still carrying the previous edition.
 
 ## The FinOps statement of the month
 
@@ -147,4 +150,4 @@ The GCP runbook, the Python generator and the July editions live in the `finops/
 python3 finops/studio-src/assemble.py      # writes finops/FinOps_Studio_v1.html and data/2026-08.edition.baseline.json
 ```
 
-The assembler refuses to write if an em dash survives anywhere outside the base64 payloads. A verification script (`studio-src/verify.js`, Playwright) opens the Studio headless, checks the derived version and date, the ledger setting, the commitment matching, drops the sample files, downloads the report through the real button, opens it in a new tab, and then exercises the downloaded file with JavaScript disabled: Read more, cloud switch, month dropdown, to-date tab, language flip, print media, zero external requests.
+The assembler refuses to write if an em dash survives anywhere outside the base64 payloads. A verification script (`studio-src/verify.js`, Playwright) opens the Studio headless, checks the derived version and date, the ledger setting, the commitment matching, the two edition switches, the side-by-side department and service cards, the SPARK block and its per-department split, drops the sample files, downloads the report through the real button, opens it in a new tab, and then exercises the downloaded file with JavaScript disabled: Read more, cloud switch, month dropdown, to-date tab, language flip, print media, zero external requests.

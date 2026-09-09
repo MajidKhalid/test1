@@ -11,6 +11,8 @@
   "fx": 3.75,
   "azureCurrency": "USD",
   "showQuarter": true,
+  "showLead": false,
+  "showStatement": false,
   "ledgerCurrency": "USD",
   "ledgerConfirmed": false,
   "versionManual": false,
@@ -72,9 +74,7 @@
       "Chronicle"
      ],
      "noteEn": "Paid monthly as the service is used",
-     "noteAr": "يُدفع شهرياً بحسب الاستخدام",
-     "start": "",
-     "term": 12
+     "noteAr": "يُدفع شهرياً بحسب الاستخدام"
     },
     {
      "name": "Security Command Center",
@@ -84,9 +84,7 @@
       "Security Command Center"
      ],
      "noteEn": "Paid monthly as the service is used",
-     "noteAr": "يُدفع شهرياً بحسب الاستخدام",
-     "start": "",
-     "term": 12
+     "noteAr": "يُدفع شهرياً بحسب الاستخدام"
     }
    ],
    "incentives": [
@@ -107,10 +105,11 @@
    "q": "",
    "t": ""
   },
-  "projectMapText": "# project id = cyber | itsvc | dtgd | dea | business | other\n# [account-level] is the bucket [Charges not specific to a project]; it is split by service.\n[account-level] = cyber\nmoe-secops-484408 = cyber\nprj-moenergy-prd-security-kms = itsvc\nprj-moenergy-dev-security-kms = itsvc\nprj-moenergy-prd-hub = itsvc\nprj-moenergy-dmz-host = itsvc\nprj-moenergy-dmz-srv = itsvc\nprj-moenergy-prd-host = itsvc\nprj-moenergy-dev-host = itsvc\nprj-moenergy-bootstrap = itsvc\nprj-moenergy-billexp = itsvc\nprj-moenergy-prd-bc-centlogs = itsvc\nprj-moenergy-dev-centlogs = itsvc\nprj-moenergy-iw-sb-development = itsvc\nprj-moenergy-iw-it-dtgd-ad-ne = itsvc\nprj-moenergy-iw-spark-admin = itsvc\nprj-moenergy-prd-bc-website = business\nprj-moenergy-migration-host-hq = business\nprj-moenergy-prd-data-dbs = business\nprj-moenergy-dev-data-dbs = business\nprj-moenergy-prd-bs-devops = business\nprj-moenergy-dev-bs-devops = business\nprj-moenergy-prd-infra-mngeng = business\nprj-moenergy-test-host = business\nmoe-notebooklm = other\n"
+  "projectMapText": "# project id = cyber | itsvc | dtgd | dea | business | other\n# [account-level] is the bucket [Charges not specific to a project]; it is split by service.\n[account-level] = cyber\nmoe-secops-484408 = cyber\nprj-moenergy-prd-security-kms = itsvc\nprj-moenergy-dev-security-kms = itsvc\nprj-moenergy-prd-hub = itsvc\nprj-moenergy-dmz-host = itsvc\nprj-moenergy-dmz-srv = itsvc\nprj-moenergy-prd-host = itsvc\nprj-moenergy-dev-host = itsvc\nprj-moenergy-bootstrap = itsvc\nprj-moenergy-billexp = itsvc\nprj-moenergy-prd-bc-centlogs = itsvc\nprj-moenergy-dev-centlogs = itsvc\nprj-moenergy-iw-sb-development = itsvc\nprj-moenergy-iw-spark-admin = itsvc\nprj-moenergy-prd-bc-website = business\nprj-moenergy-migration-host-hq = business\nprj-moenergy-prd-data-dbs = business\nprj-moenergy-dev-data-dbs = business\nprj-moenergy-prd-bs-devops = business\nprj-moenergy-dev-bs-devops = business\nprj-moenergy-prd-infra-mngeng = business\nprj-moenergy-test-host = business\nmoe-notebooklm = other\nprj-moenergy-iw-it-eagd-ea-nf = dea\nprj-moenergy-iw-it-dtgd-ad-ne = dtgd\nprj-moenergy-preprd-bc-websit = business\nprj-moenergy-dev-bc-website = business\nprj-moenergy-test-bc-website = business\nprj-moenergy-pre-prd-data-dbss = business\nprj-moenergy-test-data-dbss = business\nprj-moenergy-prd-bc-labware = business\nprj-moenergy-dev-bc-labware = business\nprj-moenergy-pre-prd-host = itsvc\n",
+  "sparkProjectsText": "# project ids inside the SPARK folder (969004756048). A trailing * matches a prefix.\nprj-moenergy-iw-*\n"
  },
  "azure": {
-  "enabled": true,
+  "enabled": false,
   "tdLabelEn": "Contract start to 31 August 2026",
   "tdLabelAr": "من بداية العقد إلى 31 أغسطس 2026",
   "credit": {
