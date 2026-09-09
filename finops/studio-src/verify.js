@@ -13,6 +13,7 @@ fs.mkdirSync(R, { recursive: true });
 fs.copyFileSync(D + 'SAMPLE_gcp_cost_by_service_2026-08.csv', R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31.csv');
 fs.copyFileSync(D + 'SAMPLE_gcp_sandbox_by_service_2026-08.csv', R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31 (1).csv');
 fs.copyFileSync(D + 'SAMPLE_gcp_cost_by_service_2026-08.csv', R + 'SAMPLE_gcp_cost_by_service_to-date.csv');
+fs.copyFileSync(D + 'SAMPLE_gcp_sandbox_by_service_2026-08.csv', R + 'SAMPLE_gcp_sandbox_by_service_to-date.csv');
 fs.copyFileSync(D + 'SAMPLE_azure_cost_by_service_2026-08.csv', R + 'SAMPLE_azure_cost_by_service_to-date.csv');
 const near = (a, b, tol) => Math.abs(a - b) <= (tol || 0.06);
 const fails = [];
@@ -123,7 +124,7 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await p.setInputFiles('#bigzone input', [
     R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31.csv',
     R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31 (1).csv',
-    D + 'SAMPLE_gcp_cost_by_project_2026-08.csv', R + 'SAMPLE_gcp_cost_by_service_to-date.csv',
+    D + 'SAMPLE_gcp_cost_by_project_2026-08.csv', R + 'SAMPLE_gcp_cost_by_service_to-date.csv', R + 'SAMPLE_gcp_sandbox_by_service_to-date.csv',
     D + 'SAMPLE_azure_cost_by_service_2026-08.csv', D + 'SAMPLE_azure_cost_by_subscription_2026-08.csv', D + 'SAMPLE_azure_cost_by_location_2026-08.csv', R + 'SAMPLE_azure_cost_by_service_to-date.csv',
   ]);
   await p.waitForTimeout(1500);
@@ -139,15 +140,21 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
     const sp = cols[1];
     return { cols: cols.length, heads: cols.map(heads), kinds: cols.map(kinds), stacked: !!cols[0].querySelector('.dwrap.stack'),
       mark: !!mv.querySelector('.spark-head img.spark-mark'),
+      sparkKick: [...mv.querySelectorAll('.kick')].map(e => e.textContent).find(t => /SPARK/.test(t)) || '',
+      sparkH2: [...mv.querySelectorAll('h2')].map(e => e.textContent).find(t => /SPARK/.test(t)) || '',
+      sparkLead: [...mv.querySelectorAll('p.lead')].map(e => e.textContent).find(t => /SPARK/.test(t)) || '',
       sparkLeg: sp ? [...sp.querySelectorAll('.dleg li')].map(l => l.textContent) : [],
+      sparkCounts: sp ? [...sp.querySelectorAll('.dleg li')].map(l => [l.querySelector('.dl-name .en').textContent, l.querySelector('.dl-val').textContent]) : [],
       sparkRows: sp ? sp.children[0].querySelectorAll('details table tbody tr').length : 0,
       sandbox: /sandbox/i.test(mv.textContent) };
   });
   check('the money-go row pairs the department donut on the left with the service bars on the right', s.cols === 2 && /Spend per general department/.test(s.heads[0][0]) && /Overall spend by service/.test(s.heads[0][1]) && s.kinds[0].join() === 'donut,bars' && s.stacked, [s.heads[0], s.kinds[0]]);
-  check('the SPARK row pairs its own department donut with its service bars, under the SPARK mark', s.mark && /SPARK spend per general department/.test(s.heads[1][0]) && /SPARK spend by service/.test(s.heads[1][1]) && s.kinds[1].join() === 'donut,bars', [s.heads[1], s.kinds[1], s.mark]);
-  check('the SPARK donut splits the folder by department and the word sandbox is gone', s.sparkLeg.length === 3 && s.sparkLeg.some(t => /IT Services GD/.test(t)) && s.sparkLeg.some(t => /Digital Enterprise Architecture/.test(t)) && s.sparkRows === 4 && !s.sandbox, [s.sparkLeg, s.sparkRows, s.sandbox]);
+  check('the SPARK row pairs the use-case donut with its service bars, under the SPARK mark and its own numbered header', s.mark && /SPARK use cases per general department/.test(s.heads[1][0]) && /SPARK spend by service/.test(s.heads[1][1]) && s.kinds[1].join() === 'donut,bars' && /04 · SPARK/.test(s.sparkKick) && /What is running inside SPARK\?/.test(s.sparkH2) && /SPARK ran 4 use cases across 3 general departments/.test(s.sparkLead), [s.heads[1], s.kinds[1], s.sparkKick]);
+  check('the SPARK donut counts one use case per project in the folder and the word sandbox is gone', s.sparkLeg.length === 3 && JSON.stringify(s.sparkCounts) === JSON.stringify([['IT Services GD', '2'], ['Digital Transformation GD', '1'], ['Digital Enterprise Architecture', '1']]) && s.sparkLeg.some(t => /Digital Enterprise Architecture/.test(t)) && s.sparkRows === 4 && !s.sandbox, [s.sparkCounts, s.sparkRows, s.sandbox]);
   s = await p.evaluate(() => { const d = window.FinOpsStudio.state().clouds.gcp.periods['2026-08']; return { parts: (d.sparkDepts || []).filter(x => x.net > 0).map(x => [x.key, +x.net.toFixed(2)]), tot: d.sparkProjTotal }; });
-  check('SPARK per-department figures are read from the project ids inside the folder', JSON.stringify(s.parts) === JSON.stringify([['itsvc', 2067.34], ['dtgd', 0.04], ['dea', 759.38]]) && near(s.tot, 2826.76, 0.02), s);
+  check('SPARK per-department spend is still read from the project ids inside the folder', JSON.stringify(s.parts) === JSON.stringify([['itsvc', 2067.34], ['dtgd', 0.04], ['dea', 759.38]]) && near(s.tot, 2826.76, 0.02), s);
+  s = await p.evaluate(() => { const q = document.querySelector('#report .mv-gcp-td') || document.querySelector('#report .mv-gcp-2026-h1'); const cols = q ? [...q.querySelectorAll('.twocol')] : []; return { cols: cols.length, sparkCards: q ? [...q.querySelectorAll('.card h3')].map(h => h.textContent).filter(t => /SPARK/.test(t)) : [], lead: [...(q ? q.querySelectorAll('p.lead') : [])].map(e => e.textContent).find(t => /SPARK/.test(t)) || '' }; });
+  check('a period other than the month carries one SPARK card, services only', s.cols === 1 && s.sparkCards.length === 1 && /SPARK spend by service/.test(s.sparkCards[0]) && /on the services below/.test(s.lead), s);
   s = await p.evaluate(() => { const src = document.querySelector('#report .mfig-card.for-gcp .src'); return { sub: [...src.querySelectorAll('.s.sub')].map(e => e.textContent), withSub: src.querySelectorAll('.s.with-sub').length }; });
   check('the drawdowns sit under the live purchase order and say so', s.withSub === 1 && s.sub.length === 2 && /Enhanced Support/.test(s.sub[0]) && /drawn from this order/.test(s.sub[0]) && /Log Optimization/.test(s.sub[1]), s.sub);
   await p.click('#st-steps button[data-step="4"]'); await p.waitForTimeout(200);
@@ -173,7 +180,7 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await p.waitForTimeout(500);
   s = await p.evaluate(() => ({ hidden: document.getElementById('gen-result').hidden, text: document.getElementById('gen-result').textContent, btns: ['btn-open', 'btn-stable', 'btn-state'].map(id => !!document.getElementById(id)), published: window.FinOpsStudio.state().edition.published }));
   check('one click downloads the versioned standalone file', dlName === 'FinOps_Dashboard_v21.html', dlName);
-  check('result panel: standalone wording and the three secondary buttons', !s.hidden && /no scripts, no internet connection, no Studio/.test(s.text) && s.btns.every(Boolean) && new RegExp('published ' + today).test(s.text));
+  check('result panel: standalone wording and the three secondary buttons', !s.hidden && /no internet connection, no Studio/.test(s.text) && s.btns.every(Boolean) && new RegExp('published ' + today).test(s.text));
   await p.screenshot({ path: OUT + '/studio_v13_result.png', fullPage: false });
   const [dl2] = await Promise.all([p.waitForEvent('download'), p.click('#btn-stable')]);
   check('stable copy downloads as FinOps_Dashboard.html', dl2.suggestedFilename() === 'FinOps_Dashboard.html');
@@ -183,11 +190,11 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await np.waitForLoadState(); await np.waitForTimeout(400);
   const npReqs = []; np.on('request', r => { if (!r.url().startsWith('blob:')) npReqs.push(r.url()); });
   s = await np.evaluate(() => ({ title: document.title, scripts: document.querySelectorAll('script').length, more: !!document.querySelector('.stmt details.more'), url: location.protocol }));
-  check('open in a new tab shows the report itself (blob, zero scripts)', /Cloud FinOps Report/.test(s.title) && s.scripts === 0 && s.more && s.url === 'blob:', s);
+  check('open in a new tab shows the report itself (blob, one motion script)', /FinOps Report/.test(s.title) && s.scripts === 1 && s.more && s.url === 'blob:', s);
   await np.close();
   const published = fs.readFileSync(dlPath, 'utf8');
   check('downloaded file equals publishedHtml()', published === await p.evaluate(() => window.FinOpsStudio.publishedHtml()));
-  check('downloaded file: zero scripts, no em dash, standalone marker', (published.match(/<script/g) || []).length === 0 && !published.replace(/base64,[A-Za-z0-9+/=]+/g, '').includes('\u2014') && /Studio v1\.3/.test(published));
+  check('downloaded file: one self-contained motion script, no em dash, standalone marker', (published.match(/<script/g) || []).length === 1 && /de-motifs/.test(published) && /addEventListener\('mousemove'/.test(published) && !/FinOpsStudio|\bS\.clouds\b/.test(published.slice(published.indexOf('<script'))) && !published.replace(/base64,[A-Za-z0-9+/=]+/g, '').includes('\u2014') && /Studio v1\.3/.test(published));
   // an edit after the download hides the stale result panel
   await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(100);
   await p.fill('#f-sh', 'We know where every riyal sits, and we manage to it.'); await p.waitForTimeout(400);

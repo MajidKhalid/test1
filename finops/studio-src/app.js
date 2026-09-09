@@ -80,6 +80,10 @@ function sparkList(){return lines(S.clouds.gcp.sparkProjectsText||'').filter(fun
 function inSpark(pid){var L=sparkList(),p=String(pid||'').toLowerCase();return L.some(function(x){return x.slice(-1)==='*'?p.indexOf(x.slice(0,-1))===0:p===x;});}
 function sparkSplit(projRows,map){var tot=zeroDepts(),rows=[],unknown=[];(projRows||[]).forEach(function(r){if(!inSpark(r.pid))return;var b=map[r.pid];if(b==null){unknown.push(r.pid||r.name);return;}tot[b]+=r.net;rows.push({pid:r.pid,name:r.name,dept:b,net:r.net});});
  return {parts:DEPT_ORDER.map(function(k){return {key:k,net:r2(tot[k])};}),rows:rows.sort(byNetDesc),unknown:unknown};}
+function sparkRoster(){var map=parseMap(S.clouds.gcp.projectMapText),seen={},out=[];
+ var P=S.clouds.gcp.periods;Object.keys(P).forEach(function(k){(P[k].projectsRaw||[]).forEach(function(r){
+  if(!inSpark(r.pid)||seen[r.pid])return;seen[r.pid]=1;out.push({pid:r.pid,name:r.name,dept:map[r.pid]||null});});});
+ return out.sort(function(a,b){return a.pid<b.pid?-1:1;});}
 function parseMap(text){var out={};lines(text).forEach(function(l){if(l.charAt(0)==='#')return;var i=l.indexOf('=');if(i<0)return;var k=l.slice(0,i).trim().toLowerCase(),v=l.slice(i+1).trim().toLowerCase();if(k==='[account-level]')k='';if(!DEPT[v]||v==='unmapped')return;out[k]=v;});return out;}
 function accountItsvc(services){return r2(services.filter(function(s){return ACCOUNT_ITSVC.indexOf(s.name)>=0;}).reduce(function(a,s){return a+s.net;},0));}
 function appliances(services){return r2(services.filter(function(s){return APPLIANCE.some(function(p){return s.name.indexOf(p)===0;});}).reduce(function(a,s){return a+s.net;},0));}
@@ -185,19 +189,25 @@ function deptCard(c,p,stack){var L=esc(p.label),LA=esc(p.labelAr),net=p.totals?p
 function deltaChip(p,c){if(p.kind!=='month')return '';var prev=S.clouds[c].periods[prevMonth(p.key)];if(!prev||!prev.totals||!prev.totals.net||!p.totals||!p.totals.net)return '';var d=(p.totals.net-prev.totals.net)/prev.totals.net*100,a=Math.abs(d).toFixed(1)+'%';return ' <span class="delta '+(d>=0?'up':'down')+'"><span aria-hidden="true">'+(d>=0?'&#9650;':'&#9660;')+'</span> '+a+' <i>'+tw('vs '+esc(prev.label),'مقابل '+esc(prev.labelAr))+'</i></span>';}
 /* ---------- rendering: GCP period block ---------- */
 function sparkMark(){return A.spark?'<img class="spark-mark" src="'+A.spark+'" alt="SPARK">':'<b class="spark-word">SPARK</b>';}
-function sparkDeptCard(p){var head='<h3>'+tw('SPARK spend per general department','إنفاق سبارك حسب الإدارة العامة')+'</h3>';
- if(!p.sparkDepts)return '<div class="card">'+head+'<p class="note">'+tw('The by-project export for this period has not been loaded, so the split inside SPARK cannot be read.','لم يُحمَّل تقرير المشاريع لهذه الفترة، فيتعذر قراءة التوزيع داخل سبارك.')+'</p></div>';
- var parts=p.sparkDepts.filter(function(d){return d.net>0;}).sort(byNetDesc),tot=sum(parts,'net')||1;
+function sparkCountCard(){var roster=sparkRoster(),head='<h3>'+tw('SPARK use cases per general department','حالات الاستخدام في سبارك حسب الإدارة العامة')+'</h3>';
+ var known=roster.filter(function(r){return r.dept;});
+ if(!known.length)return '<div class="card">'+head+'<p class="note">'+tw('No by-project export has been loaded, so the projects inside the SPARK folder cannot be counted.','لم يُحمَّل تقرير المشاريع، فيتعذر عدّ المشاريع داخل مجلد سبارك.')+'</p></div>';
+ var cnt=zeroDepts();known.forEach(function(r){cnt[r.dept]+=1;});
+ var parts=DEPT_ORDER.map(function(k){return {key:k,net:cnt[k]};}).filter(function(d){return d.net>0;}).sort(byNetDesc),tot=sum(parts,'net')||1;
  var dparts=parts.map(function(d){return {name:DEPT[d.key].en,net:d.net,share:d.net/tot,color:DEPT[d.key].c};});
- var leg='<ul class="dleg">'+parts.map(function(d){return '<li><span class="dot" style="background:'+DEPT[d.key].c+'"></span><span class="dl-name">'+tw(esc(DEPT[d.key].en),esc(DEPT[d.key].ar))+'</span><span class="dl-val">'+money(d.net,0)+'</span><span class="dl-share">'+pctS(d.net/tot*100)+'</span></li>';}).join('')+'</ul>';
- var chart='<div class="dchart">'+donutSvg(dparts)+'<div class="dcentre"><span class="dc-lab">'+tw('SPARK net spend','صافي إنفاق سبارك')+'</span><span class="dc-val">'+money(tot,0)+'</span></div></div>';
- var det=p.sparkRows&&p.sparkRows.length?details(tw('Every SPARK project and its general department','كل مشروع في سبارك وإدارته العامة'),'<th>'+tw('Project','المشروع')+'</th><th>'+tw('General department','الإدارة العامة')+'</th><th class="n">'+tw('Net spend','صافي الإنفاق')+' '+RS+'</th>',p.sparkRows.map(function(r){var L=GCP_LABELS[r.pid];return '<tr><td>'+(L?tw(esc(L[0]),esc(L[1])):esc(r.name||r.pid))+'</td><td>'+tw(esc(DEPT[r.dept].en),esc(DEPT[r.dept].ar))+'</td><td class="n">'+num(r.net,2)+'</td></tr>';}).join('')):'';
- return '<div class="card">'+head+'<div class="dwrap stack">'+chart+leg+'</div><p class="note">'+tw('Read from the billing project each charge sits in, for the projects inside the SPARK folder. The shared development environment and SPARK Admin are carried by the department that operates the platform.','يُقرأ من مشروع الفوترة الذي يقع تحته كل بند، للمشاريع داخل مجلد سبارك. وتتحمل الإدارة المشغّلة للمنصة بيئة التطوير المشتركة وإدارة سبارك.')+'</p>'+det+'</div>';}
-function sparkBlock(p,t,L,LA){var sb=p.sandbox,C=S.clouds.gcp;
+ var leg='<ul class="dleg">'+parts.map(function(d){return '<li><span class="dot" style="background:'+DEPT[d.key].c+'"></span><span class="dl-name">'+tw(esc(DEPT[d.key].en),esc(DEPT[d.key].ar))+'</span><span class="dl-val">'+num(d.net,0)+'</span><span class="dl-share">'+pctS(d.net/tot*100)+'</span></li>';}).join('')+'</ul>';
+ var chart='<div class="dchart">'+donutSvg(dparts)+'<div class="dcentre"><span class="dc-lab">'+tw('Use cases','حالات الاستخدام')+'</span><span class="dc-val">'+num(tot,0)+'</span></div></div>';
+ var det=details(tw('Every SPARK project and its general department','كل مشروع في سبارك وإدارته العامة'),'<th>'+tw('Project','المشروع')+'</th><th>'+tw('General department','الإدارة العامة')+'</th>',roster.map(function(r){var LB=GCP_LABELS[r.pid];return '<tr><td>'+(LB?tw(esc(LB[0]),esc(LB[1])):esc(r.name||r.pid))+'</td><td>'+(r.dept?tw(esc(DEPT[r.dept].en),esc(DEPT[r.dept].ar)):tw('not mapped','غير مُسند'))+'</td></tr>';}).join(''));
+ return '<div class="card">'+head+'<div class="dwrap stack">'+chart+leg+'</div><p class="note">'+tw('One project inside the SPARK folder is one use case. Counted across every period loaded, so a use case that spent nothing this month still shows. The shared development environment and SPARK Admin are carried by the department that operates the platform.','يُحتسب كل مشروع داخل مجلد سبارك حالة استخدام واحدة، عبر كل الفترات المحمّلة، فتظهر الحالة حتى إن لم تُنفق شيئاً هذا الشهر. وتتحمل الإدارة المشغّلة للمنصة بيئة التطوير المشتركة وإدارة سبارك.')+'</p>'+det+'</div>';}
+function sparkBlock(p,t,L,LA){var sb=p.sandbox,C=S.clouds.gcp,month=p.kind==='month';
+ var kick='<div class="kick">'+tw('04 · SPARK · ','04 · سبارك · ')+'<bdi>'+tw(L,LA)+'</bdi><span class="clar">'+tw('The Ministry\'s AI experimentation platform, inside the SPARK folder of this billing account.','منصة الوزارة لتجارب الذكاء الاصطناعي، داخل مجلد سبارك في حساب الفوترة هذا.')+'</span></div><h2>'+tw('What is running inside SPARK?','ماذا يعمل داخل سبارك؟')+'</h2>';
  var mark='<div class="spark-head">'+sparkMark()+'<span class="spark-cap">'+tw('The Ministry\'s AI experimentation platform','منصة الوزارة لتجارب الذكاء الاصطناعي')+'</span></div>';
- if(!sb)return mark+'<div class="card"><h3>'+tw('SPARK spend','إنفاق سبارك')+'</h3><p class="note">'+tw('The SPARK-filtered export for this period has not been loaded.','لم يُحمَّل تقرير سبارك لهذه الفترة.')+'</p></div>';
+ if(!sb)return kick+mark+'<div class="card"><h3>'+tw('SPARK spend','إنفاق سبارك')+'</h3><p class="note">'+tw('The SPARK-filtered export for this period has not been loaded.','لم يُحمَّل تقرير سبارك لهذه الفترة.')+'</p></div>';
  var share=t.net?sb.net/t.net*100:0,ps=pctS(share);
- var link='<p class="section-link">'+tw('One of those platforms is SPARK. Of the '+money(t.net,0)+' net spend for '+L+', '+money(sb.net,0)+' ('+ps+') sat in SPARK, broken out below by department and by service.','ومن بين تلك المنصات سبارك. فمن أصل '+money(t.net,0)+' صافي الإنفاق خلال '+LA+'، بلغ نصيبها '+money(sb.net,0)+' ('+ps+')، ويُعرض تفصيلها أدناه حسب الإدارة وحسب الخدمة.')+'</p>';
+ var n=sparkRoster().filter(function(r){return r.dept;}).length,d=0,seenD={};sparkRoster().forEach(function(r){if(r.dept&&!seenD[r.dept]){seenD[r.dept]=1;d++;}});
+ var lead=month&&n?tw('For '+L+', SPARK ran '+n+' use cases across '+d+' general departments and spent '+money(sb.net,0)+', which is '+ps+' of total GCP net spend.','خلال '+LA+'، ضمّت سبارك '+n+' حالة استخدام في '+d+' إدارات عامة بإنفاق قدره '+money(sb.net,0)+'، أي '+ps+' من إجمالي صافي الإنفاق على GCP.')
+  :tw('For '+L+', SPARK net spend was '+money(sb.net,0)+', which is '+ps+' of total GCP net spend, on the services below.','خلال '+LA+'، بلغ صافي إنفاق سبارك '+money(sb.net,0)+'، أي '+ps+' من إجمالي صافي الإنفاق على GCP، على الخدمات أدناه.');
+ var link='<p class="lead">'+lead+'</p>';
  var svc='<div class="card"><h3>'+tw('SPARK spend by service','إنفاق سبارك حسب الخدمة')+'</h3>';
  if(r2(sb.net)===0)svc+='<p class="note">'+tw('Every riyal of SPARK usage in '+L+' was covered by credit, so there is no net spend to divide. The service list below shows the usage behind it.','غُطي كل ريال من استهلاك سبارك خلال '+LA+' من الرصيد، فلا يوجد صافي إنفاق يُوزَّع. وتعرض قائمة الخدمات أدناه الاستهلاك الكامن خلفه.')+'</p>';
  else svc+=bars(p.sandboxServices,6);
@@ -205,7 +215,7 @@ function sparkBlock(p,t,L,LA){var sb=p.sandbox,C=S.clouds.gcp;
  var sbh=r2(sb.net)===0?tw('SPARK usage of '+money(sb.gross,0)+' for '+L+' was fully covered by credit, so net spend was nil. Project-level budgets, spend alerts and automated provisioning keep it bounded.','غُطي استهلاك سبارك البالغ '+money(sb.gross,0)+' خلال '+LA+' بالكامل من الرصيد، فلم يكن هناك صافي إنفاق. وتظل المنصة محكومة بميزانيات على مستوى المشاريع وتنبيهات الإنفاق والتجهيز الآلي.')
   :tw('SPARK net spend of '+money(sb.net,0)+' for '+L+' is '+ps+' of total GCP net spend. Project-level budgets, spend alerts and automated provisioning keep it bounded.','بلغ صافي إنفاق سبارك '+money(sb.net,0)+' خلال '+LA+'، أي '+ps+' من إجمالي صافي الإنفاق على GCP. وتظل المنصة محكومة بميزانيات على مستوى المشاريع وتنبيهات الإنفاق والتجهيز الآلي.');
  svc+=insight(tw('Key highlight:','أبرز ملاحظة:'),sbh)+'</div>';
- return link+mark+'<div class="twocol">'+sparkDeptCard(p)+svc+'</div>';}
+ return kick+link+mark+(month?'<div class="twocol">'+sparkCountCard()+svc+'</div>':svc);}
 function gcpBlock(p){var L=esc(p.label),LA=esc(p.labelAr),t=p.totals||{net:0,gross:0,discounts:0},sb=p.sandbox,fx=FX(),C=S.clouds.gcp;
  var kick1='<div class="kick">'+tw('01 · Key figures · ','01 · المؤشرات الرئيسية · ')+'<bdi>'+tw(L,LA)+'</bdi><span class="clar">'+tw('Metered GCP usage in this billing account, after discounts and credits, from 1 October 2025.','الاستهلاك المقاس على GCP في حساب الفوترة هذا، بعد الخصومات والأرصدة، منذ 1 أكتوبر 2025.')+'</span></div>';
  var left={kicker:tw('GCP cloud spend','إنفاق GCP السحابي'),value:money(t.net,0),label:tw('Net spend','صافي الإنفاق')+deltaChip(p,'gcp'),sub:tw('Gross usage before discounts: '+money(t.gross,0),'إجمالي الاستهلاك قبل الخصومات: '+money(t.gross,0)),note:tw('Discounts applied: '+money(t.discounts,0)+' · Riyals at '+fx+' to the US dollar.','إجمالي الخصومات: '+money(t.discounts,0)+' · الريال مقابل الدولار عند '+fx+'.')};
@@ -325,7 +335,7 @@ function periodStrip(c,P){var segs=[];var opts=function(list){return list.map(fu
  if(!segs.length)return '';return '<div class="sw for-'+c+' n'+segs.length+'" role="radiogroup" aria-label="Reporting period">'+segs.join('')+'</div>';}
 function emptyCloud(c){var E=S.edition,name=c==='gcp'?'Google Cloud':'Microsoft Azure';return '<div class="empty studio-only"><b>'+esc(name)+': no period loaded yet.</b><br>Drop the '+esc(monthLabel(E.month))+' exports in the Studio to build this view.</div>';}
 function awaiting(c){var E=S.edition,m=E.month;if(S.clouds[c].periods[m])return '';var name=c==='gcp'?'Google Cloud':'Microsoft Azure';var need=c==='gcp'?'the by-service, by-project and SPARK Reports CSVs':'the by-service and by-subscription Cost analysis CSVs';return '<div class="await for-'+c+' studio-only"><b>'+esc(monthLabel(m))+' data for '+name+' has not been loaded.</b> The preview shows the latest period that has data. Drop '+need+' for '+esc(monthLabel(m))+' in the Studio above; the report cannot be generated until they are in.</div>';}
-function gbar(){return '<div class="gbar"><span class="gmk"><b>FINOPS</b><i class="orb" aria-hidden="true"></i><img class="gdew" src="'+A.gdew+'" alt="Digital Energy"></span><span class="gdesc">'+tw('Cloud Spend Report · IT Strategy &amp; Planning','تقرير الإنفاق السحابي · استراتيجية وتخطيط تقنية المعلومات')+'</span><label class="lsw" for="lang" title="English / العربية"><span class="kn"></span><b>EN</b><b>ع</b></label></div>';}
+function gbar(){return '<div class="gbar"><span class="gmk"><b>FINOPS</b><i class="orb" aria-hidden="true"></i><img class="gdew" src="'+A.gdew+'" alt="Digital Energy"></span><span class="gdesc">'+tw(esc(barName(false))+' · IT Strategy &amp; Planning',esc(barName(true))+' · استراتيجية وتخطيط تقنية المعلومات')+'</span><label class="lsw" for="lang" title="English / العربية"><span class="kn"></span><b>EN</b><b>ع</b></label></div>';}
 function footer(){var E=S.edition,az=S.clouds.azure.enabled;return '<footer class="foot"><div class="init">'+tw('Prepared for the eyes of','أُعد لاطلاع')+'</div><img src="'+A.moe+'" alt="Ministry of Energy"><div>'+tw('Ministry of Energy · Information Technology and Digital Transformation','وزارة الطاقة · تقنية المعلومات والتحول الرقمي')+'</div><div>'+tw('Version v'+esc(E.version)+' · Compiled from Google Cloud Billing'+(az?' and Azure Cost Management':' console')+' exports · Data as of '+esc(E.dataAsOf)+' · Published '+esc(E.published),'الإصدار v'+esc(E.version)+' · مجمّع من تقارير الفوترة في Google Cloud'+(az?' وإدارة التكلفة في Azure':'')+' · البيانات حتى '+esc(E.dataAsOfAr)+' · نُشر في '+esc(E.publishedAr))+'</div><div>'+tw('Prepared and maintained by the IT Strategy &amp; Planning Department','إعداد ومتابعة إدارة استراتيجية وتخطيط تقنية المعلومات')+'</div><div class="studio-only">Preview rendered by FinOps Report Studio v1.3</div></footer>';}
 
 /* ---------- rendering: the whole report ---------- */
@@ -347,12 +357,42 @@ function buildReport(published,sel){sel=sel||{pv:{},p:{}};var E=S.edition,clouds
  var subEn='Prepared by the IT Strategy &amp; Planning Department, this is the recurring monthly report for IT leadership on the Ministry of Energy\'s cloud spend. It presents '+(S.clouds.azure.enabled?'Google Cloud and Microsoft Azure side by side':'Google Cloud')+', explains the key spend figures, and reports in Saudi Riyals at the official rate of '+fx+' Riyals to the US dollar'+(S.clouds.azure.enabled&&sar?'; Google invoices in US dollars and Microsoft in Riyals.':', the currency the provider'+(S.clouds.azure.enabled?'s invoice':' invoices')+' in.');
  var subAr='أعدّت هذا التقرير إدارة استراتيجية وتخطيط تقنية المعلومات، وهو التقرير الشهري الدوري لقيادة تقنية المعلومات عن الإنفاق السحابي لوزارة الطاقة. يعرض '+(S.clouds.azure.enabled?'Google Cloud وMicrosoft Azure جنباً إلى جنب':'Google Cloud')+'، ويشرح أرقام الإنفاق الرئيسية، ويُعرض بالريال السعودي وفق السعر الرسمي '+fx+' ريال للدولار الأمريكي'+(S.clouds.azure.enabled&&sar?'؛ إذ تصدر Google فواتيرها بالدولار وMicrosoft بالريال.':'، وهي العملة التي تصدر بها الفواتير.');
  var chips='<div class="chips"><span class="chip">'+tw('Data as of '+esc(E.dataAsOf),'البيانات حتى '+esc(E.dataAsOfAr))+'</span><span class="chip">'+tw('Published '+esc(E.published),'نُشر في '+esc(E.publishedAr))+'</span><span class="chip">'+tw('All figures in ','جميع المبالغ بـ')+RS+'</span>'+(sample?'<span class="chip sample">'+tw('Sample data: invented figures loaded','بيانات تجريبية: أرقام مُختلقة')+'</span>':'')+'</div>';
- var hero='<header class="hero"><div class="hero-fx" aria-hidden="true"><i class="glow g1"></i><i class="glow g2"></i></div><div class="wrap"><div class="brandrow"><div class="brandmark"><span>FINOPS</span><i class="orb" aria-hidden="true"></i><img class="dew" src="'+A.dew+'" alt="Digital Energy"></div><div class="moewrap"><div class="init">'+tw('ITDT · IT Strategy &amp; Planning','تقنية المعلومات · استراتيجية وتخطيط تقنية المعلومات')+'</div><img src="'+A.moe+'" alt="Ministry of Energy"></div></div><h1>'+tw('Cloud FinOps Report','تقرير الإنفاق السحابي')+'</h1>'+(E.showLead===false?'':'<p class="sub">'+tw(subEn,subAr)+'</p>')+chips+(E.showStatement===false?'':statement())+cloudSwitch()+cards+strips+awaits+'<div class="print-period">'+tw('Reporting period: ','فترة التقرير: ')+pp+'</div></div></header>';
+ var hero='<header class="hero">'+motifs()+'<div class="wrap"><div class="brandrow">'+lockup()+'<div class="moewrap"><div class="init">'+tw('ITDT · IT Strategy &amp; Planning','تقنية المعلومات · استراتيجية وتخطيط تقنية المعلومات')+'</div><img src="'+A.moe+'" alt="Ministry of Energy"></div></div><h1>'+tw(esc(reportName(false)),esc(reportName(true)))+'</h1>'+(E.showLead===false?'':'<p class="sub">'+tw(subEn,subAr)+'</p>')+chips+(E.showStatement===false?'':statement())+cloudSwitch()+cards+strips+awaits+'<div class="print-period">'+tw('Reporting period: ','فترة التقرير: ')+pp+'</div></div></header>';
  return radios+'<style>'+dyn+'</style>'+gbar()+hero+'<main>'+mains+'</main>'+footer();}
+/* ---------- hero: the v20 motion layer, the animated lockup, the report name ---------- */
+function barName(ar){var both=S.clouds.azure.enabled;return ar?(both?'تقرير الإنفاق السحابي':'تقرير الإنفاق على GCP'):(both?'Cloud Spend Report':'GCP Spend Report');}
+function reportName(ar){var both=S.clouds.azure.enabled;return ar?(both?'تقرير الإنفاق السحابي':'تقرير الإنفاق على GCP'):(both?'Cloud FinOps Report':'GCP FinOps Report');}
+function motifs(){var glass='<div class="de-mo__i"><div class="de-glass"><div class="de-glass__glow"></div><div class="de-glass__sheen"></div><div class="de-glass__spec"></div><div class="de-glass__ring"></div></div></div>';
+ return '<div class="de-motifs" aria-hidden="true"><div class="de-motifs__depth"></div><div class="de-motifs__refract"><i></i><i></i><i></i><i></i></div><div class="de-motifs__key"></div>'
+  +['diamond','coral','square','circle'].map(function(k){return '<div class="de-mo de-mo--'+k+'">'+glass+'</div>';}).join('')+'</div>';}
+function lockup(){var still='<img class="dew-static" src="'+A.dew+'" alt="Digital Energy" width="112" height="59">';
+ return '<div class="hero-motion-lockup" aria-label="FINOPS and Digital Energy"><span class="finops-word">FINOPS</span><i class="orb" aria-hidden="true"></i><span class="dew-animation-wrap">'+still
+  +(A.dewm?'<img class="dew-motion dew-motion-image" src="'+A.dewm+'" alt="Digital Energy animated logo" decoding="async" onerror="document.documentElement.classList.add(\'logo-fallback\')">':'')+'</span></div>';}
+/* The pointer lean. Self-contained on purpose: its source is written into the generated report as the one script it carries. */
+function heroMotion(){
+ var hero=document.querySelector('#report .hero')||document.querySelector('.hero');
+ var layer=hero&&hero.querySelector('.de-motifs');
+ if(!hero||!layer)return;
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ if(!window.matchMedia('(hover: hover) and (pointer: fine)').matches)return;
+ var raf=0;
+ hero.addEventListener('mousemove',function(e){
+  if(raf)return;
+  raf=requestAnimationFrame(function(){
+   raf=0;
+   var r=hero.getBoundingClientRect();
+   var nx=(e.clientX-r.left)/r.width-0.5;
+   var ny=(e.clientY-r.top)/r.height-0.5;
+   layer.style.setProperty('--px',(-nx*34).toFixed(2)+'px');
+   layer.style.setProperty('--py',(-ny*22).toFixed(2)+'px');
+  });
+ });
+ hero.addEventListener('mouseleave',function(){layer.style.setProperty('--px','0px');layer.style.setProperty('--py','0px');});
+}
 function currentSelection(){var root=$('#report'),sel={cloud:$('#c-azure',root)&&$('#c-azure',root).checked?'azure':'gcp',lang:!!($('#lang',root)&&$('#lang',root).checked),pv:{},p:{}};
  ['gcp','azure'].forEach(function(c){['m','q','t'].forEach(function(k){var r=$('#pv-'+c+'-'+k,root);if(r&&r.checked)sel.pv[c]=k;});sel.p[c]={};$$('input[name="p-'+c+'-month"]:checked',root).forEach(function(r){sel.p[c].month=r.id.replace('p-'+c+'-','');});$$('input[name="p-'+c+'-quarter"]:checked',root).forEach(function(r){sel.p[c].quarter=r.id.replace('p-'+c+'-','');});});return sel;}
 var focus=null;
 function renderPreview(){var root=$('#report');var sel=root.children.length?currentSelection():null;
  if(focus&&sel){sel.cloud=focus.cloud;sel.pv[focus.cloud]=focus.k;['gcp','azure'].forEach(function(c){sel.p[c]=sel.p[c]||{};var has=S.clouds[c].periods[focus.key];if(focus.k==='m'&&(c===focus.cloud||has))sel.p[c].month=focus.key;if(focus.k==='q'&&(c===focus.cloud||has))sel.p[c].quarter=focus.key;if(c!==focus.cloud&&has)sel.pv[c]=focus.k;});focus=null;}
- root.innerHTML=buildReport(false,sel);}
+ root.innerHTML=buildReport(false,sel);heroMotion();}
 

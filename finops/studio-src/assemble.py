@@ -9,7 +9,7 @@ def r2(v): return round(v+1e-9,2)
 FX=3.75
 fonts=("@font-face{font-family:'Lafet';src:url(data:font/otf;base64,%s) format('opentype');font-weight:400;font-display:swap}" % b64(ASSETS+'/Lafet-Regular.otf')
  + ''.join("@font-face{font-family:'IBM Plex Sans Arabic';src:url(data:font/woff2;base64,%s) format('woff2');font-weight:%s;font-display:swap}" % (b64(ASSETS+'/plex-%s.woff2'%w), w) for w in ('400','600','700')))
-rs=rd(ASSETS+'/rs.css'); report_css=rd(B+'/report.css'); studio_css=rd(B+'/studio.css'); body=rd(B+'/body.html'); app=rd(B+'/app.js')+'\n'+rd(B+'/app-studio.js')
+rs=rd(ASSETS+'/rs.css'); report_css=rd(B+'/report.css')+'\n'+rd(B+'/motion.css'); studio_css=rd(B+'/studio.css'); body=rd(B+'/body.html'); app=rd(B+'/app.js')+'\n'+rd(B+'/app-studio.js')
 gcp=json.load(open(HERE+'/gcp_periods_2026-07.json',encoding='utf-8')); extra=json.load(open(B+'/baseline_extra.json',encoding='utf-8'))
 KEYMAP={'jan':'2026-01','feb':'2026-02','mar':'2026-03','apr':'2026-04','may':'2026-05','jun':'2026-06','jul':'2026-07','q1':'2026-q1','q2':'2026-q2','h1':'2026-h1','td':'td'}
 periods={}
@@ -36,7 +36,7 @@ gcp_cloud=dict(extra['gcp']); gcp_cloud['periods']=periods
 az_cloud=dict(az); az_cloud['periods']=azp
 state={'meta':{'studio':1,'stamp':stamp,'builtFrom':'FinOps_Dashboard_v20 (July 2026) + Q2 2026 quarterly report'},'edition':extra['edition'],'statement':extra['statement'],'clouds':{'gcp':gcp_cloud,'azure':az_cloud}}
 json_text=json.dumps(state,ensure_ascii=False,separators=(',',':')).replace('</','<\\/')
-assets={'spark':'data:image/svg+xml;base64,'+b64(ASSETS+'/spark-lockup-navy.svg'),'gdew':'data:image/png;base64,'+b64(ASSETS+'/de-wordmark.png'),'dew':'data:image/png;base64,'+b64(ASSETS+'/de-lockup.png'),'moe':'data:image/png;base64,'+b64(ASSETS+'/moe-lockup.png')}
+assets={'spark':'data:image/svg+xml;base64,'+b64(ASSETS+'/spark-lockup-navy.svg'),'gdew':'data:image/png;base64,'+b64(ASSETS+'/de-wordmark.png'),'dew':'data:image/png;base64,'+b64(ASSETS+'/de-lockup.png'),'dewm':'data:image/png;base64,'+b64(ASSETS+'/de-lockup-motion.png'),'moe':'data:image/png;base64,'+b64(ASSETS+'/moe-lockup.png')}
 favicon="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%230180E9'/%3E%3Cstop offset='.55' stop-color='%230B8F92'/%3E%3Cstop offset='1' stop-color='%2300AC29'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='7' fill='%23081631'/%3E%3Cpath d='M18 4h6l-8 24h-6z' fill='url(%23b)'/%3E%3C/svg%3E"
 html=('<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<meta name="robots" content="noindex">\n'
  '<title>FinOps Report Studio</title>\n<link rel="icon" href="%s">\n' % favicon
