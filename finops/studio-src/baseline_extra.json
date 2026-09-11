@@ -1,0 +1,196 @@
+{
+ "edition": {
+  "month": "2026-08",
+  "version": 21,
+  "dataAsOf": "31 August 2026",
+  "dataAsOfAr": "31 أغسطس 2026",
+  "published": "7 September 2026",
+  "publishedAr": "7 سبتمبر 2026",
+  "labelEn": "September 2026 edition · August 2026 data",
+  "labelAr": "إصدار سبتمبر 2026 · بيانات أغسطس 2026",
+  "fx": 3.75,
+  "azureCurrency": "USD",
+  "showQuarter": true,
+  "showLead": false,
+  "showStatement": false,
+  "ledgerCurrency": "USD",
+  "ledgerConfirmed": false,
+  "versionManual": false,
+  "publishedManual": false
+ },
+ "statement": {
+  "headEn": "We know where every riyal sits, and we are now managing to that.",
+  "headAr": "نعرف أين يقع كل ريال، ونُدير الإنفاق على هذا الأساس.",
+  "bodyEn": "{{month}} closed with GCP net spend of {{gcp.net}} after {{gcp.discounts}} of discounts on {{gcp.gross}} of usage, {{gcp.change}} on {{prevMonth}}. Every charge is read from the billing project it sits in, so each general department sees its own number rather than a share of a pool.\nThe purchase-order balance stands at {{gcp.credit.remaining}}, {{gcp.credit.pct}} of the starting credit, and the migration credit is fully consumed. From here spend runs at negotiated contract rates, so the run-rate, not the credit, is the number to manage.\nAzure joins this edition for the first time: {{azure.net}} for the month, {{azure.top.share}} of it {{azure.top.name}}. One report, both clouds, the same basis, every month.\nWe are also closing the gap between the credit consumed and the spend reported. It is explained, not mysterious: enhanced support, VAT and four months the billing account cannot see. One invoice settles it, and we have asked for it.",
+  "bodyAr": "أُغلق {{month}} بصافي إنفاق على GCP قدره {{gcp.net}} بعد خصومات بلغت {{gcp.discounts}} على استهلاك إجمالي قدره {{gcp.gross}}، {{gcp.change}} عن {{prevMonth}}. يُقرأ كل بند من مشروع الفوترة الذي يقع تحته، فترى كل إدارة عامة رقمها الخاص لا حصة من وعاء مشترك.\nيبلغ رصيد أوامر الشراء {{gcp.credit.remaining}}، أي {{gcp.credit.pct}} من الرصيد الابتدائي، وقد استُهلك رصيد الترحيل بالكامل. ومن هنا يجري الإنفاق وفق الأسعار التعاقدية المتفق عليها، فيصبح معدل الإنفاق الشهري، لا الرصيد، هو الرقم الذي نُديره.\nتنضم Azure إلى هذا الإصدار للمرة الأولى: {{azure.net}} خلال الشهر، منها {{azure.top.share}} لخدمة {{azure.top.name}}. تقرير واحد، ومنصتان، وعلى الأساس نفسه، كل شهر.\nونعمل كذلك على إغلاق الفجوة بين الائتمان المستهلك والإنفاق المعروض. فهي فجوة مفسَّرة لا غامضة: الدعم المتقدم، وضريبة القيمة المضافة، وأربعة أشهر لا يراها حساب الفوترة. وتحسمها فاتورة واحدة، وقد طلبناها.",
+  "dirEn": "Both clouds in one report, on the same basis, every month, with the quarter view in quarter-end editions.\nEvery Azure subscription and every GCP project mapped to a general department by the October edition, with nothing left unattributed.\nThe credit position reconciled to the invoice, support and VAT included, so the balance on this page and the ledger never disagree again.",
+  "dirAr": "المنصتان في تقرير واحد، وعلى الأساس نفسه، كل شهر، مع عرض الربع في إصدارات نهاية الربع.\nربط كل اشتراك في Azure وكل مشروع في GCP بإدارة عامة بحلول إصدار أكتوبر، دون أي بند غير منسوب.\nمطابقة الرصيد الائتماني مع الفاتورة، شاملاً الدعم وضريبة القيمة المضافة، حتى لا يختلف الرصيد في هذه الصفحة عن السجل مرة أخرى.",
+  "signEn": "IT Strategy & Planning Department · Information Technology and Digital Transformation",
+  "signAr": "إدارة استراتيجية وتخطيط تقنية المعلومات · تقنية المعلومات والتحول الرقمي"
+ },
+ "gcp": {
+  "enabled": true,
+  "tdLabelEn": "October 2025 to August 2026",
+  "tdLabelAr": "أكتوبر 2025 إلى أغسطس 2026",
+  "credit": {
+   "purchaseOrders": [
+    {
+     "name": "PO 1",
+     "nameAr": "أمر الشراء 1",
+     "sar": 102359.88,
+     "usd": 89008.59,
+     "status": "full"
+    },
+    {
+     "name": "PO 2 (inc. Enhanced Support)",
+     "nameAr": "أمر الشراء 2 (شامل الدعم المتقدم)",
+     "sar": 2867779.1,
+     "usd": 2493720.96,
+     "status": "live"
+    }
+   ],
+   "fixed": [
+    {
+     "name": "Enhanced Support",
+     "nameAr": "الدعم المتقدم",
+     "usd": 235520.0,
+     "noteEn": "Support drawn from PO 2; not visible in billing dashboards",
+     "noteAr": "دعم مسحوب من أمر الشراء 2؛ لا يظهر في لوحات الفوترة"
+    },
+    {
+     "name": "Log Optimization and Customer Success",
+     "nameAr": "تحسين السجلات ونجاح العملاء",
+     "usd": 128517.64,
+     "noteEn": "One-time payment, fully paid, not visible in billing dashboards",
+     "noteAr": "دفعة واحدة مسددة بالكامل، لا تظهر في لوحات الفوترة"
+    }
+   ],
+   "commitments": [
+    {
+     "name": "SecOps",
+     "nameAr": "SecOps",
+     "usd": 914135.0,
+     "services": [
+      "Chronicle"
+     ],
+     "noteEn": "Paid monthly as the service is used",
+     "noteAr": "يُدفع شهرياً بحسب الاستخدام"
+    },
+    {
+     "name": "Security Command Center",
+     "nameAr": "Security Command Center",
+     "usd": 81672.81,
+     "services": [
+      "Security Command Center"
+     ],
+     "noteEn": "Paid monthly as the service is used",
+     "noteAr": "يُدفع شهرياً بحسب الاستخدام"
+    }
+   ],
+   "incentives": [
+    {
+     "name": "GCP credits (NotebookLM)",
+     "nameAr": "أرصدة GCP (NotebookLM)",
+     "usd": 450000.0,
+     "status": "full"
+    }
+   ]
+  },
+  "notes": {
+   "creditsEn": "No credits remain available at the end of the period. The migration credit is fully consumed, so spend now reflects negotiated contract rates. Figures are converted from the US dollars Google bills at the official rate of 3.75 Riyals to the US dollar.",
+   "creditsAr": "لا تتبقى أرصدة متاحة بنهاية الفترة. وقد تم استهلاك رصيد الترحيل بالكامل، وبالتالي يعكس الإنفاق الآن الأسعار التعاقدية المتفق عليها. وتم تحويل المبالغ من الدولار الأمريكي الذي تصدر به Google الفواتير وفق السعر الرسمي 3.75 ريال للدولار."
+  },
+  "highlights": {
+   "m": "",
+   "q": "",
+   "t": ""
+  },
+  "projectMapText": "# project id = cyber | itsvc | dtgd | dea | business | other\n# [account-level] is the bucket [Charges not specific to a project]; it is split by service.\n[account-level] = cyber\nmoe-secops-484408 = cyber\nprj-moenergy-prd-security-kms = itsvc\nprj-moenergy-dev-security-kms = itsvc\nprj-moenergy-prd-hub = itsvc\nprj-moenergy-dmz-host = itsvc\nprj-moenergy-dmz-srv = itsvc\nprj-moenergy-prd-host = itsvc\nprj-moenergy-dev-host = itsvc\nprj-moenergy-bootstrap = itsvc\nprj-moenergy-billexp = itsvc\nprj-moenergy-prd-bc-centlogs = itsvc\nprj-moenergy-dev-centlogs = itsvc\nprj-moenergy-iw-sb-development = dea\nprj-moenergy-iw-spark-admin = dea\nprj-moenergy-prd-bc-website = business\nprj-moenergy-migration-host-hq = business\nprj-moenergy-prd-data-dbs = business\nprj-moenergy-dev-data-dbs = business\nprj-moenergy-prd-bs-devops = dtgd\nprj-moenergy-dev-bs-devops = dtgd\nprj-moenergy-prd-infra-mngeng = business\nprj-moenergy-test-host = business\nmoe-notebooklm = other\nprj-moenergy-iw-it-eagd-ea-nf = dea\nprj-moenergy-iw-it-dtgd-ad-ne = dtgd\nprj-moenergy-iw-it-dtgd-et-fs = dtgd\nprj-moenergy-preprd-bc-websit = business\nprj-moenergy-dev-bc-website = business\nprj-moenergy-test-bc-website = business\nprj-moenergy-pre-prd-data-dbss = business\nprj-moenergy-test-data-dbss = business\nprj-moenergy-prd-bc-labware = business\nprj-moenergy-dev-bc-labware = business\nprj-moenergy-pre-prd-host = itsvc\n",
+  "sparkProjectsText": "# project ids inside the SPARK folder (969004756048). A trailing * matches a prefix.\nprj-moenergy-iw-*\n",
+  "sparkUseCasesText": "# One line per SPARK use case: Name | billing project id = department.\n# The project id is optional, so a use case with no billing project yet still counts.\n# prj-moenergy-iw-sb-development is the shared platform everyone builds on, not a use\n# case, so it is not listed here; its spend still counts towards SPARK and towards DEA.\nNawaf | prj-moenergy-iw-it-eagd-ea-nf = dea\nSPARK Admin | prj-moenergy-iw-spark-admin = dea\nprj-moenergy-iw-it-dtgd-et-fs | prj-moenergy-iw-it-dtgd-et-fs = dtgd\nprj-moenergy-iw-it-dtgd-ad-ne | prj-moenergy-iw-it-dtgd-ad-ne = dtgd\nAssisted Testing = dtgd\nDashboard Testing = dtgd\nGoogle DevOps Testing = dtgd\n"
+ },
+ "azure": {
+  "enabled": false,
+  "tdLabelEn": "Contract start to 31 August 2026",
+  "tdLabelAr": "من بداية العقد إلى 31 أغسطس 2026",
+  "credit": {
+   "starting": null,
+   "remaining": 383182.5,
+   "expiry": "",
+   "labelEn": "Microsoft credit balance available as at 30 July 2026",
+   "labelAr": "رصيد Microsoft المتاح حتى 30 يوليو 2026",
+   "descEn": "USD 102,182 at 3.75, as stated in the Q2 2026 quarterly report. The Microsoft agreement states the credit as a three-year total, so the annualised line understates later years by design.",
+   "descAr": "102,182 دولاراً بسعر 3.75، كما ورد في تقرير الربع الثاني 2026. ينص اتفاق Microsoft على الرصيد كإجمالي لثلاث سنوات، ولذلك يُقلّل الخط السنوي من السنوات اللاحقة بطبيعته.",
+   "clarEn": "Refresh each month from Cost Management + Billing > Credits (MCA) or Enrollment > Prepayment (EA). The starting balance and the expiry date are requested for the October edition.",
+   "clarAr": "يُحدَّث شهرياً من إدارة التكلفة والفوترة > الأرصدة (MCA) أو التسجيل > الدفع المسبق (EA). والرصيد الابتدائي وتاريخ الانتهاء مطلوبان لإصدار أكتوبر.",
+   "footEn": "Contract-year consumption to 30 July 2026: 935K Riyals against an annualised line of 785K (119%), flagged in the Q2 report as context, not as an overrun of contract.",
+   "footAr": "استهلاك سنة العقد حتى 30 يوليو 2026: 935 ألف ريال مقابل خط سنوي قدره 785 ألفاً (119%)، وقد أُشير إليه في تقرير الربع الثاني للسياق لا بوصفه تجاوزاً للعقد."
+  },
+  "notes": {
+   "servicesEn": "Actual cost as reported by Cost analysis after Microsoft credits, converted from the US dollars Microsoft invoices at the official rate of 3.75 Riyals to the US dollar.",
+   "servicesAr": "التكلفة الفعلية كما يعرضها تحليل التكلفة بعد أرصدة Microsoft، محوّلة من الدولار الأمريكي الذي تصدر به Microsoft فواتيرها وفق السعر الرسمي 3.75 ريال للدولار."
+  },
+  "highlights": {
+   "m": "",
+   "q": "",
+   "t": ""
+  },
+  "subMapText": "# subscription name or id = cyber | itsvc | dtgd | dea | business | other\n# Fill this in from the by-subscription export. Matching is case-insensitive on the name or the id.\n# Example of the shape (not real subscriptions):\n#   MOE-SEC-PRD = cyber\n#   MOE-INFRA-HUB = itsvc\n#   MOE-BUSINESS-APPS = business\n",
+  "h1_usd": {
+   "services": [
+    {
+     "name": "Microsoft Defender for Cloud",
+     "usd": 90654.0
+    },
+    {
+     "name": "Azure Bastion",
+     "usd": 2844.0
+    },
+    {
+     "name": "Storage",
+     "usd": 2223.0
+    },
+    {
+     "name": "Others",
+     "usd": 892.41
+    },
+    {
+     "name": "VPN Gateway",
+     "usd": 871.86
+    },
+    {
+     "name": "Azure Arc Enabled DB",
+     "usd": 623.7
+    },
+    {
+     "name": "Windows Virtual Desktop",
+     "usd": 605.05
+    }
+   ],
+   "regions": [
+    {
+     "name": "EU West",
+     "usd": 75145
+    },
+    {
+     "name": "Unknown",
+     "usd": 19745
+    },
+    {
+     "name": "US East",
+     "usd": 2387
+    },
+    {
+     "name": "EU North",
+     "usd": 1391
+    },
+    {
+     "name": "AE North",
+     "usd": 45
+    }
+   ],
+   "noteEn": "Bars follow the Azure console breakdown for H1 2026 and sum to the half-year total within a few dollars of console rounding. Source: the Q2 2026 FinOps quarterly report, data as of 30 July 2026.",
+   "noteAr": "تتبع الأعمدة توزيع لوحة Azure للنصف الأول 2026 ويبلغ مجموعها إجمالي نصف السنة في حدود بضعة دولارات من تقريب اللوحة. المصدر: تقرير الربع الثاني 2026، البيانات حتى 30 يوليو 2026."
+  }
+ }
+}
