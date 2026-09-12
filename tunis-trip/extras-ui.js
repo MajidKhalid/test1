@@ -52,4 +52,5 @@ function observeStays(){
 }
 
 renderFlights();observeStays();
+document.querySelector('#restoreBtn')?.addEventListener('click',()=>{selectedFlight=D.flights?.[0]?.id||'';localStorage.setItem(flightKey,selectedFlight);renderFlights()});
 })();
