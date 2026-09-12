@@ -12,84 +12,85 @@
 <body>
 <header class="topbar">
   <a class="brand" href="#top">TUNISIA · 18–25 SEP</a>
-  <nav><a href="#stays">Stays</a><a href="#days">Days</a><a href="#map">Map</a><a href="#choose">Choose</a></nav>
+  <nav><a href="#map">Map</a><a href="#calendar">Calendar</a><a href="#configure">Configure</a></nav>
 </header>
+
 <main id="top">
-  <section class="hero">
-    <div class="hero-copy">
-      <div class="eyebrow">3 adults · private-home first · multi-city</div>
-      <h1>Two stay experiences.<br>One moving trip.</h1>
-      <p>You get a real <strong>dar / riad-style home</strong> in Tunis, a <strong>private beach-home experience</strong> in Hammamet, then a final <strong>hybrid sea-view Tunisian home</strong> near Carthage and Sidi Bou Said. Hotels are fallbacks, not the default.</p>
-      <div class="hero-actions"><a class="btn primary" href="#stays">Choose stays</a><a class="btn" href="#map">Open route map</a></div>
+  <section class="trip-summary">
+    <div>
+      <div class="eyebrow">3 adults · Riyadh → Tunisia · 7 nights</div>
+      <h1>Your Tunisia trip.</h1>
+      <p>Explore the route first, then the calendar. Change stays and activities only when you want to customize the plan.</p>
     </div>
-    <div class="hero-card">
-      <div class="bigline"><span>18–19 SEP</span><b>Tunis Medina</b><small>Private dar / whole home</small></div>
-      <div class="arrow">↓</div>
-      <div class="bigline"><span>20–22 SEP</span><b>Hammamet</b><small>Beach house · hybrid dar + sea</small></div>
-      <div class="arrow">↓</div>
-      <div class="bigline"><span>23–24 SEP</span><b>Sidi Bou Said / Tunis</b><small>Sea-view traditional home or Medina return</small></div>
+    <div class="summary-route">
+      <span>🏠 Tunis Medina</span><b>→</b><span>🌊 Hammamet</span><b>→</b><span>🏡 Sidi Bou Said / Tunis</span>
     </div>
   </section>
 
-  <section class="sticky-days" aria-label="Trip day map filters">
+  <section class="sticky-days" aria-label="Trip map filters">
     <div class="day-strip" id="topDays"></div>
-    <button class="tiny-toggle active" id="routesToggle">Routes</button>
-    <button class="tiny-toggle active" id="pinsToggle">Pins</button>
+    <button class="tiny-toggle active" id="routesToggle" title="Show or hide routes">Routes</button>
+    <button class="tiny-toggle active" id="pinsToggle" title="Show or hide activity pins">Pins</button>
   </section>
 
-  <section class="section intro-cards">
-    <article class="soft-card"><span class="icon">🏠</span><div><b>Private-first</b><p>Whole homes, villas and independent apartments are ranked ahead of conventional hotels.</p></div></article>
-    <article class="soft-card"><span class="icon">🌊</span><div><b>Best “both at once”</b><p>Hammamet has private traditional houses around 80–100 m from the sea — the closest match to dar + beach in parallel.</p></div></article>
-    <article class="soft-card"><span class="icon">↔</span><div><b>Swipe to choose</b><p>Stay options scroll sideways. Pick one and the schedule plus map update instantly on this device.</p></div></article>
-  </section>
-
-  <section class="section" id="stays">
-    <div class="section-title">
-      <div class="eyebrow">Your stay story</div>
-      <h2>Swipe. Compare. Choose.</h2>
-      <p>Each overnight block has its own horizontal shortlist. <strong>DAR + SEA</strong> means authentic Tunisian character and beach access in the same private stay.</p>
-    </div>
-    <div id="staySegments"></div>
-  </section>
-
-  <section class="section" id="days">
-    <div class="section-title">
-      <div class="eyebrow">Compact itinerary</div>
-      <h2>Your week, without the wall of text.</h2>
-      <p>Tap a day to expand details. Your stay and activity choices feed this schedule automatically.</p>
-    </div>
-    <div id="schedule"></div>
-  </section>
-
-  <section class="section map-section" id="map">
-    <div class="section-title">
-      <div class="eyebrow">Interactive route</div>
-      <h2>See the trip move.</h2>
-      <p>Use the day chips above. Icons distinguish history, food, shopping, leisure, airport and your selected stays. Routes and pins can be hidden independently.</p>
+  <section class="section map-section map-first" id="map">
+    <div class="section-title compact-title">
+      <div class="eyebrow">01 · Route map</div>
+      <h2>Follow the trip geographically.</h2>
+      <p>Choose <strong>Overall</strong> or a specific day above. Routes, activities and your selected stays update automatically when you change the plan.</p>
     </div>
     <div class="legend"><span>🏛 History</span><span>🍽 Food</span><span>🛍 Shopping</span><span>🎭 Leisure</span><span>🛏 Stay</span><span>✈ Airport</span><span>🚗 Transfer</span></div>
     <div id="tripMap"></div>
   </section>
 
-  <section class="section" id="choose">
-    <div class="section-title">
-      <div class="eyebrow">Build the days</div>
-      <h2>History or leisure.</h2>
-      <p>Recommended choices are already on. Turn anything off and it disappears from both itinerary and map. Every option has swipeable photos.</p>
+  <section class="section" id="calendar">
+    <div class="section-title compact-title">
+      <div class="eyebrow">02 · Activity calendar</div>
+      <h2>What happens each day.</h2>
+      <p>This is the trip you are actually following. Tap any day to expand its activities, transfers and overnight stay.</p>
     </div>
-    <div class="chooser-head">
-      <div class="tabs"><button class="tab active" data-tab="history">🏛 Historical</button><button class="tab" data-tab="leisure">🎭 Leisure · dining · shopping</button></div>
-      <div class="chooser-actions"><button id="recommendedBtn" class="ghost-btn">Recommended only</button><button id="restoreBtn" class="ghost-btn">Reset plan</button></div>
+    <div id="schedule"></div>
+  </section>
+
+  <section class="section config-section" id="configure">
+    <div class="section-title compact-title">
+      <div class="eyebrow">03 · Configuration</div>
+      <h2>Change the plan only when you need to.</h2>
+      <p>Your selections are saved on this device. Any change here immediately updates both the map and the calendar above.</p>
     </div>
-    <div id="historyList" class="choice-list"></div>
-    <div id="leisureList" class="choice-list hidden"></div>
+
+    <div class="config-block" id="configure-stays">
+      <div class="config-head">
+        <div>
+          <span class="config-number">A</span>
+          <h3>Configure stays</h3>
+          <p>Swipe sideways through private dars, beach homes and hybrid dar + sea options. Choose one stay for each overnight block.</p>
+        </div>
+      </div>
+      <div id="staySegments"></div>
+    </div>
+
+    <div class="config-block" id="configure-activities">
+      <div class="config-head activity-config-head">
+        <div>
+          <span class="config-number">B</span>
+          <h3>Configure activities</h3>
+          <p>Historical places are separate from leisure, dining and shopping. Add or remove anything and the calendar and map recalculate instantly.</p>
+        </div>
+        <div class="chooser-actions"><button id="recommendedBtn" class="ghost-btn">Recommended only</button><button id="restoreBtn" class="ghost-btn">Reset plan</button></div>
+      </div>
+      <div class="tabs config-tabs"><button class="tab active" data-tab="history">🏛 Historical</button><button class="tab" data-tab="leisure">🎭 Leisure · dining · shopping</button></div>
+      <div id="historyList" class="choice-list"></div>
+      <div id="leisureList" class="choice-list hidden"></div>
+    </div>
   </section>
 
   <section class="section sources-section">
     <details><summary>Research notes & sources</summary><div id="sources"></div></details>
   </section>
 </main>
-<nav class="bottom-nav"><a href="#stays"><b>⌂</b>Stays</a><a href="#days"><b>☷</b>Days</a><a href="#map"><b>⌖</b>Map</a><a href="#choose"><b>✓</b>Choose</a></nav>
+
+<nav class="bottom-nav simple-bottom"><a href="#map"><b>⌖</b>Map</a><a href="#calendar"><b>☷</b>Calendar</a><a href="#configure"><b>⚙</b>Configure</a></nav>
 <footer>Updated 12 Sep 2026. Availability and prices change quickly; verify exact dates, accessibility and cancellation terms before paying.</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data.js"></script>
