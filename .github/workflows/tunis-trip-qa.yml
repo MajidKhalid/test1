@@ -1,0 +1,40 @@
+name: Tunis Trip QA
+
+on:
+  push:
+    paths:
+      - 'tunis-trip/**'
+      - '.github/workflows/tunis-trip-qa.yml'
+  workflow_dispatch:
+
+jobs:
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm install --save-dev @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start local site
+        run: |
+          python3 -m http.server 4173 >/tmp/tunis-http.log 2>&1 &
+          echo $! >/tmp/tunis-http.pid
+          sleep 2
+      - name: Run planner QA
+        run: npx playwright test tunis-trip/qa.spec.js --reporter=line
+      - name: Upload QA report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tunis-trip-qa-report
+          path: |
+            playwright-report
+            test-results
+            /tmp/tunis-http.log
+          if-no-files-found: ignore
