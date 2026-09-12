@@ -162,11 +162,12 @@ test('14 external action links are safe and valid', async ({page})=>{
   expect(bad).toEqual([]);
 });
 
-test('15 DOM IDs are unique and rendered images have alt text', async ({page})=>{
+test('15 DOM IDs are unique and site-owned rendered images have alt text', async ({page})=>{
   await ready(page);
   await page.locator('#recommendedBtn').click();
   const duplicateIds=await page.evaluate(()=>{const ids=[...document.querySelectorAll('[id]')].map(e=>e.id);return [...new Set(ids.filter((id,i)=>ids.indexOf(id)!==i))]});
   expect(duplicateIds).toEqual([]);
-  const missingAlt=await page.locator('img').evaluateAll(imgs=>imgs.filter(i=>!i.getAttribute('alt')?.trim()).map(i=>i.outerHTML));
+  // Leaflet's raster map tiles are decorative and intentionally use alt=""; test only site-owned content imagery.
+  const missingAlt=await page.locator('img:not(.leaflet-tile)').evaluateAll(imgs=>imgs.filter(i=>!i.getAttribute('alt')?.trim()).map(i=>i.outerHTML));
   expect(missingAlt).toEqual([]);
 });
