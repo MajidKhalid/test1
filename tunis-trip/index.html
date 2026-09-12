@@ -11,91 +11,86 @@
 </head>
 <body>
 <header class="topbar">
-  <div class="topbar-inner">
-    <a class="brand" href="#plan">TUNISIA · SEP 18–25</a>
-    <nav class="desktop-nav">
-      <a href="#plan">Plan</a><a href="#stays">Stays</a><a href="#schedule">Schedule</a><a href="#map-section">Map</a><a href="#activities">Activities</a><a href="#shopping">Shopping</a>
-    </nav>
-  </div>
+  <a class="brand" href="#top">TUNISIA · 18–25 SEP</a>
+  <nav><a href="#stays">Stays</a><a href="#days">Days</a><a href="#map">Map</a><a href="#choose">Choose</a></nav>
 </header>
-
-<section class="hero" id="plan">
-  <div>
-    <div class="eyebrow">Riyadh → Tunis · 3 adults · multi-city road trip</div>
-    <h1>More ground.<br>More Tunisia.</h1>
-    <p class="hero-lede">A faster-moving family itinerary built around <strong>history + leisure</strong>: Tunis, Carthage, Sidi Bou Said, Hammamet, Nabeul, Kairouan, Sousse and El Jem — with real overnight stays outside Tunis and a dedicated local-clothing shopping spree for your mother.</p>
-    <div class="hero-actions"><a class="button primary" href="#map-section">Open interactive map</a><a class="button" href="#activities">Customize activities</a></div>
-  </div>
-  <aside class="hero-summary">
-    <div class="summary-grid"><div><small>Nights</small><b>7</b></div><div><small>Bases</small><b>3 cities</b></div><div><small>History stops</small><b>13+</b></div><div><small>Shopping focus</small><b>Local clothing</b></div></div>
-    <p><b>Base pattern:</b> Tunis 2 nights → Hammamet 2 → Sousse 1 → Tunis 2.</p>
-  </aside>
-</section>
-
-<section class="trip-control-shell">
-  <div class="trip-control" id="tripControl">
-    <div class="day-scroll" id="topDayButtons"></div>
-    <div class="switches">
-      <label><input id="toggleRoutes" type="checkbox" checked> Routes</label>
-      <label><input id="toggleActivities" type="checkbox" checked> Activity pins</label>
+<main id="top">
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">3 adults · private-home first · multi-city</div>
+      <h1>Two stay experiences.<br>One moving trip.</h1>
+      <p>You get a real <strong>dar / riad-style home</strong> in Tunis, a <strong>private beach-home experience</strong> in Hammamet, then a final <strong>hybrid sea-view Tunisian home</strong> near Carthage and Sidi Bou Said. Hotels are fallbacks, not the default.</p>
+      <div class="hero-actions"><a class="btn primary" href="#stays">Choose stays</a><a class="btn" href="#map">Open route map</a></div>
     </div>
-  </div>
-</section>
-
-<section class="section compact">
-  <div class="grid">
-    <article class="card span8"><div class="eyebrow">New route philosophy</div><h2>We are not sleeping in one place.</h2><p>The plan now uses <b>three bases</b>. You get the deep-Medina experience in Tunis, a genuine stay in Hammamet, then one night inside/next to Sousse’s historic core before returning to Tunis for the final two nights and the flight home.</p></article>
-    <article class="card span4"><div class="eyebrow">Mother-friendly rule</div><h3>Move cities, not luggage every morning.</h3><p>We change hotels only three times. Private driver days carry the luggage, while the most uneven sites have shorter walking windows and café breaks.</p></article>
-  </div>
-</section>
-
-<section class="section" id="stays">
-  <div class="section-head"><div class="eyebrow">Choose one stay in each base</div><h2>Authentic stays, ranked for your trip.</h2><p>Pick a radio option. Your selected hotel immediately becomes the overnight point in the schedule and on the map.</p></div>
-  <div id="stayChooser"></div>
-</section>
-
-<section class="section" id="schedule">
-  <div class="section-head"><div class="eyebrow">Live itinerary</div><h2>Your schedule updates as you choose activities.</h2><p>Uncheck an activity below and it disappears here and from the map. Add it back and the day route recalculates.</p></div>
-  <div id="liveSchedule" class="schedule-grid"></div>
-</section>
-
-<section class="section" id="map-section">
-  <div class="section-head"><div class="eyebrow">Routes + category markers + photos</div><h2>Interactive trip map.</h2><p>Use the day buttons to isolate one route. Marker icons distinguish history, food, shopping, leisure, airport and hotels. Clicking a marker opens a photo, explanation, its place in the schedule and historical context where relevant.</p></div>
-  <div class="map-toolbar">
-    <div class="day-scroll" id="mapDayButtons"></div>
-    <div class="switches">
-      <label><input id="toggleRoutes2" type="checkbox" checked> Routes</label>
-      <label><input id="toggleActivities2" type="checkbox" checked> Activity pins</label>
+    <div class="hero-card">
+      <div class="bigline"><span>18–19 SEP</span><b>Tunis Medina</b><small>Private dar / whole home</small></div>
+      <div class="arrow">↓</div>
+      <div class="bigline"><span>20–22 SEP</span><b>Hammamet</b><small>Beach house · hybrid dar + sea</small></div>
+      <div class="arrow">↓</div>
+      <div class="bigline"><span>23–24 SEP</span><b>Sidi Bou Said / Tunis</b><small>Sea-view traditional home or Medina return</small></div>
     </div>
-  </div>
-  <div class="legend">
-    <span><i>🏛️</i> History</span><span><i>🎭</i> Leisure</span><span><i>🍽️</i> Food</span><span><i>🛍️</i> Shopping</span><span><i>🛏️</i> Stay</span><span><i>✈️</i> Airport</span><span><i>🚗</i> Transfer</span>
-  </div>
-  <div id="tripMap"></div>
-  <p class="micro">Driving routes use the public OSRM routing service when available; if it fails, the site falls back to a direct line between stops. Medina walking routes are schematic.</p>
-</section>
+  </section>
 
-<section class="section" id="activities">
-  <div class="section-head"><div class="eyebrow">Two activity types only</div><h2>1. Historical places · 2. Leisure activities.</h2><p>The history list explains <em>what each place relates to</em>. The leisure list covers dining, seaside time, hammam, shopping and local crafts.</p></div>
-  <div class="activity-tabs"><button class="tab active" data-tab="history">🏛️ Historical places</button><button class="tab" data-tab="leisure">🎭 Leisure · dining · shopping</button></div>
-  <div class="activity-tools"><input id="activitySearch" placeholder="Search activities, city, dynasty, shopping…"><button id="selectRecommended" class="mini-btn">Restore recommended plan</button></div>
-  <div id="historyList" class="activity-list"></div>
-  <div id="leisureList" class="activity-list hidden"></div>
-</section>
+  <section class="sticky-days" aria-label="Trip day map filters">
+    <div class="day-strip" id="topDays"></div>
+    <button class="tiny-toggle active" id="routesToggle">Routes</button>
+    <button class="tiny-toggle active" id="pinsToggle">Pins</button>
+  </section>
 
-<section class="section" id="shopping">
-  <div class="section-head"><div class="eyebrow">Dedicated shopping mission</div><h2>Your mother’s local-clothing spree.</h2><p>Priority is locally made textiles, garments, leather, shoes and craft pieces — not generic mall shopping.</p></div>
-  <div id="shoppingPlan" class="shopping-grid"></div>
-</section>
+  <section class="section intro-cards">
+    <article class="soft-card"><span class="icon">🏠</span><div><b>Private-first</b><p>Whole homes, villas and independent apartments are ranked ahead of conventional hotels.</p></div></article>
+    <article class="soft-card"><span class="icon">🌊</span><div><b>Best “both at once”</b><p>Hammamet has private traditional houses around 80–100 m from the sea — the closest match to dar + beach in parallel.</p></div></article>
+    <article class="soft-card"><span class="icon">↔</span><div><b>Swipe to choose</b><p>Stay options scroll sideways. Pick one and the schedule plus map update instantly on this device.</p></div></article>
+  </section>
 
-<section class="section sources">
-  <div class="section-head"><div class="eyebrow">Research basis</div><h2>History and shopping references.</h2></div>
-  <div id="sourceList" class="source-list"></div>
-</section>
+  <section class="section" id="stays">
+    <div class="section-title">
+      <div class="eyebrow">Your stay story</div>
+      <h2>Swipe. Compare. Choose.</h2>
+      <p>Each overnight block has its own horizontal shortlist. <strong>DAR + SEA</strong> means authentic Tunisian character and beach access in the same private stay.</p>
+    </div>
+    <div id="staySegments"></div>
+  </section>
 
-<footer>Planning version updated 12 Sep 2026. Reconfirm attraction hours, hotel availability, driver quotes and airline timing before paying. The interactive choices are saved locally in your browser.</footer>
+  <section class="section" id="days">
+    <div class="section-title">
+      <div class="eyebrow">Compact itinerary</div>
+      <h2>Your week, without the wall of text.</h2>
+      <p>Tap a day to expand details. Your stay and activity choices feed this schedule automatically.</p>
+    </div>
+    <div id="schedule"></div>
+  </section>
 
-<nav class="bottom-nav"><a href="#plan"><b>⌂</b>Plan</a><a href="#schedule"><b>☷</b>Days</a><a href="#map-section"><b>⌖</b>Map</a><a href="#activities"><b>✓</b>Choose</a><a href="#shopping"><b>🛍</b>Shop</a></nav>
+  <section class="section map-section" id="map">
+    <div class="section-title">
+      <div class="eyebrow">Interactive route</div>
+      <h2>See the trip move.</h2>
+      <p>Use the day chips above. Icons distinguish history, food, shopping, leisure, airport and your selected stays. Routes and pins can be hidden independently.</p>
+    </div>
+    <div class="legend"><span>🏛 History</span><span>🍽 Food</span><span>🛍 Shopping</span><span>🎭 Leisure</span><span>🛏 Stay</span><span>✈ Airport</span><span>🚗 Transfer</span></div>
+    <div id="tripMap"></div>
+  </section>
+
+  <section class="section" id="choose">
+    <div class="section-title">
+      <div class="eyebrow">Build the days</div>
+      <h2>History or leisure.</h2>
+      <p>Recommended choices are already on. Turn anything off and it disappears from both itinerary and map. Every option has swipeable photos.</p>
+    </div>
+    <div class="chooser-head">
+      <div class="tabs"><button class="tab active" data-tab="history">🏛 Historical</button><button class="tab" data-tab="leisure">🎭 Leisure · dining · shopping</button></div>
+      <div class="chooser-actions"><button id="recommendedBtn" class="ghost-btn">Recommended only</button><button id="restoreBtn" class="ghost-btn">Reset plan</button></div>
+    </div>
+    <div id="historyList" class="choice-list"></div>
+    <div id="leisureList" class="choice-list hidden"></div>
+  </section>
+
+  <section class="section sources-section">
+    <details><summary>Research notes & sources</summary><div id="sources"></div></details>
+  </section>
+</main>
+<nav class="bottom-nav"><a href="#stays"><b>⌂</b>Stays</a><a href="#days"><b>☷</b>Days</a><a href="#map"><b>⌖</b>Map</a><a href="#choose"><b>✓</b>Choose</a></nav>
+<footer>Updated 12 Sep 2026. Availability and prices change quickly; verify exact dates, accessibility and cancellation terms before paying.</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data.js"></script>
 <script src="app.js"></script>
