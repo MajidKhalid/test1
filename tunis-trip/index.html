@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="layout-v2.css">
+<link rel="stylesheet" href="options-v3.css">
 </head>
 <body>
 <header class="topbar">
@@ -21,10 +22,10 @@
     <div>
       <div class="eyebrow">3 adults · Riyadh → Tunisia · 7 nights</div>
       <h1>Your Tunisia trip.</h1>
-      <p>Explore the route first, then the calendar. Change stays and activities only when you want to customize the plan.</p>
+      <p>Follow the map first, then the calendar. Use Configuration only to choose the flight, stays and activities you want.</p>
     </div>
     <div class="summary-route">
-      <span>🏠 Tunis Medina</span><b>→</b><span>🌊 Hammamet</span><b>→</b><span>🏡 Sidi Bou Said / Tunis</span>
+      <span>✈ Riyadh</span><b>→</b><span>🏠 Tunis Medina</span><b>→</b><span>🌊 Hammamet</span><b>→</b><span>🏡 Sidi Bou Said / Tunis</span>
     </div>
   </section>
 
@@ -56,25 +57,40 @@
   <section class="section config-section" id="configure">
     <div class="section-title compact-title">
       <div class="eyebrow">03 · Configuration</div>
-      <h2>Change the plan only when you need to.</h2>
-      <p>Your selections are saved on this device. Any change here immediately updates both the map and the calendar above.</p>
+      <h2>Choose the pieces of the trip.</h2>
+      <p>Your selections are saved on this device. Any stay or activity change immediately updates the map and calendar.</p>
+    </div>
+
+    <div class="config-block" id="configure-flights">
+      <div class="config-head">
+        <div>
+          <span class="config-number">A</span>
+          <h3>Configure flights</h3>
+          <p>20 route/timing candidates for Riyadh → Tunis on Friday 18 September. The ranking favors a departure <strong>after Jumu’ah prayer</strong>, then shorter journey time and better value.</p>
+        </div>
+      </div>
+      <div class="flight-note">🕌 <strong>Timing preference:</strong> we score departures from roughly 15:00 onward highest, leaving a practical buffer after Friday prayer and before airport check-in. Confirm your mosque’s actual Jumu’ah time before booking.</div>
+      <div id="flightSelected"></div>
+      <div id="flightOptions" class="flight-rail"></div>
+      <p class="micro-note">Flight prices shown are planning benchmarks or live-check prompts, not locked quotes. Mixed-carrier/self-connect options require extra care with baggage and missed-connection protection.</p>
     </div>
 
     <div class="config-block" id="configure-stays">
       <div class="config-head">
         <div>
-          <span class="config-number">A</span>
+          <span class="config-number">B</span>
           <h3>Configure stays</h3>
-          <p>Swipe sideways through private dars, beach homes and hybrid dar + sea options. Choose one stay for each overnight block.</p>
+          <p>Each date block now has <strong>20 ranked stay options</strong>. Best fit appears first. Every option shows Experience, Privacy and Price scores.</p>
         </div>
       </div>
+      <div class="stay-score-key"><span>✨ Experience = how special/Tunisian the stay feels</span><span>🔒 Privacy = exclusivity of the space</span><span>💰 Price = relative value; 10/10 is better value</span></div>
       <div id="staySegments"></div>
     </div>
 
     <div class="config-block" id="configure-activities">
       <div class="config-head activity-config-head">
         <div>
-          <span class="config-number">B</span>
+          <span class="config-number">C</span>
           <h3>Configure activities</h3>
           <p>Historical places are separate from leisure, dining and shopping. Add or remove anything and the calendar and map recalculate instantly.</p>
         </div>
@@ -92,9 +108,11 @@
 </main>
 
 <nav class="bottom-nav simple-bottom"><a href="#map"><b>⌖</b>Map</a><a href="#calendar"><b>☷</b>Calendar</a><a href="#configure"><b>⚙</b>Configure</a></nav>
-<footer>Updated 12 Sep 2026. Availability and prices change quickly; verify exact dates, accessibility and cancellation terms before paying.</footer>
+<footer>Updated 12 Sep 2026. Availability, fares and rental inventory change quickly; verify exact dates, accessibility, baggage and cancellation terms before paying.</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data.js"></script>
+<script src="planner-options.js"></script>
 <script src="app.js"></script>
+<script src="extras-ui.js"></script>
 </body>
 </html>
