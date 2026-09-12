@@ -102,7 +102,7 @@ test('08 activity tabs, add/remove, calendar update and reset work', async ({pag
 
 test('09 activity imagery is item-specific rather than one reused city image', async ({page})=>{
   await ready(page);
-  await page.locator('#recommendedBtn').click(); // show all
+  await page.locator('#recommendedBtn').click();
   const imgs=page.locator('#historyList .choice-card .photo-rail img, #leisureList .choice-card .photo-rail img');
   const srcs=await imgs.evaluateAll(xs=>xs.map(x=>x.src));
   expect(srcs.length).toBeGreaterThan(20);
@@ -127,4 +127,46 @@ test('11 no uncaught JavaScript errors during core interactions', async ({page})
   await page.locator('#recommendedBtn').click();
   await page.waitForTimeout(1000);
   expect(errors).toEqual([]);
+});
+
+test('12 verified top imagery renders successfully', async ({page})=>{
+  await ready(page);
+  const checks=[
+    page.locator('#carOptions .car-card').nth(0).locator('.car-photo'),
+    page.locator('#carOptions .car-card').nth(1).locator('.car-photo'),
+    page.locator('#staySegments .stay-card').filter({hasText:'Dar Nabiha'}).first().locator('img').first(),
+    page.locator('#historyList .choice-card').filter({hasText:'El Jem Amphitheatre'}).locator('img').first()
+  ];
+  for(const img of checks){
+    await expect(img).toBeAttached();
+    await img.scrollIntoViewIfNeeded();
+    await expect.poll(async()=>img.evaluate(el=>el.complete&&el.naturalWidth>0),{timeout:15000}).toBeTruthy();
+  }
+});
+
+test('13 map has markers and clicking a marker opens a useful popup', async ({page})=>{
+  await ready(page);
+  await page.locator('#topDays .day-chip[data-day="D3"]').click();
+  await expect.poll(async()=>page.locator('#tripMap .emoji-marker').count(),{timeout:10000}).toBeGreaterThan(2);
+  await page.locator('#tripMap .emoji-marker').first().click({force:true});
+  await expect(page.locator('.leaflet-popup-content')).toBeVisible();
+  const text=(await page.locator('.leaflet-popup-content').innerText()).trim();
+  expect(text.length).toBeGreaterThan(10);
+});
+
+test('14 external action links are safe and valid', async ({page})=>{
+  await ready(page);
+  const links=page.locator('a[target="_blank"]');
+  expect(await links.count()).toBeGreaterThan(20);
+  const bad=await links.evaluateAll(as=>as.filter(a=>!/^https:\/\//i.test(a.href)||a.rel.split(/\s+/).indexOf('noopener')<0).map(a=>a.outerHTML));
+  expect(bad).toEqual([]);
+});
+
+test('15 DOM IDs are unique and rendered images have alt text', async ({page})=>{
+  await ready(page);
+  await page.locator('#recommendedBtn').click();
+  const duplicateIds=await page.evaluate(()=>{const ids=[...document.querySelectorAll('[id]')].map(e=>e.id);return [...new Set(ids.filter((id,i)=>ids.indexOf(id)!==i))]});
+  expect(duplicateIds).toEqual([]);
+  const missingAlt=await page.locator('img').evaluateAll(imgs=>imgs.filter(i=>!i.getAttribute('alt')?.trim()).map(i=>i.outerHTML));
+  expect(missingAlt).toEqual([]);
 });
