@@ -22,10 +22,10 @@
     <div>
       <div class="eyebrow">3 adults · Riyadh → Tunisia · 7 nights</div>
       <h1>Your Tunisia trip.</h1>
-      <p>Follow the map first, then the calendar. Use Configuration only to choose the flight, stays and activities you want.</p>
+      <p>Follow the map first, then the calendar. Use Configuration only to choose the flight, car, stays and activities you want.</p>
     </div>
     <div class="summary-route">
-      <span>✈ Riyadh</span><b>→</b><span>🏠 Tunis Medina</span><b>→</b><span>🌊 Hammamet</span><b>→</b><span>🏡 Sidi Bou Said / Tunis</span>
+      <span>✈ Riyadh</span><b>→</b><span>🚙 Tunisia road trip</span><b>→</b><span>🏠 Tunis Medina</span><b>→</b><span>🌊 Hammamet</span><b>→</b><span>🏡 Sidi Bou Said / Tunis</span>
     </div>
   </section>
 
@@ -75,10 +75,24 @@
       <p class="micro-note">Flight prices shown are planning benchmarks or live-check prompts, not locked quotes. Mixed-carrier/self-connect options require extra care with baggage and missed-connection protection.</p>
     </div>
 
-    <div class="config-block" id="configure-stays">
+    <div class="config-block" id="configure-cars">
       <div class="config-head">
         <div>
           <span class="config-number">B</span>
+          <h3>Configure the road-trip car</h3>
+          <p>The recommended order is <strong>Jetour first</strong>, then a <strong>Škoda SUV</strong>. The ranking below favors comfort for three adults, luggage space, long-road suitability and value.</p>
+        </div>
+      </div>
+      <div class="car-note">🚙 <strong>Top recommendation:</strong> Jetour T2 if an agency can guarantee the exact model. <strong>Second choice:</strong> Škoda Kushaq / Karoq-class SUV. Airport rental inventory often uses “or similar”, so get the exact model confirmed in writing if the vehicle itself matters to you.</div>
+      <div id="carSelected"></div>
+      <div id="carOptions" class="car-rail"></div>
+      <p class="micro-note">For this itinerary, prioritize automatic transmission, unlimited mileage, full-to-full fuel, comprehensive insurance, a second driver if needed, and enough boot space for three adults’ luggage. Exact models and rates change by supplier.</p>
+    </div>
+
+    <div class="config-block" id="configure-stays">
+      <div class="config-head">
+        <div>
+          <span class="config-number">C</span>
           <h3>Configure stays</h3>
           <p>Each date block now has <strong>20 ranked stay options</strong>. Best fit appears first. Every option shows Experience, Privacy and Price scores.</p>
         </div>
@@ -90,7 +104,7 @@
     <div class="config-block" id="configure-activities">
       <div class="config-head activity-config-head">
         <div>
-          <span class="config-number">C</span>
+          <span class="config-number">D</span>
           <h3>Configure activities</h3>
           <p>Historical places are separate from leisure, dining and shopping. Add or remove anything and the calendar and map recalculate instantly.</p>
         </div>
@@ -108,11 +122,12 @@
 </main>
 
 <nav class="bottom-nav simple-bottom"><a href="#map"><b>⌖</b>Map</a><a href="#calendar"><b>☷</b>Calendar</a><a href="#configure"><b>⚙</b>Configure</a></nav>
-<footer>Updated 12 Sep 2026. Availability, fares and rental inventory change quickly; verify exact dates, accessibility, baggage and cancellation terms before paying.</footer>
+<footer>Updated 12 Sep 2026. Availability, fares and rental inventory change quickly; verify exact dates, accessibility, baggage, vehicle model and cancellation terms before paying.</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="data.js"></script>
 <script src="planner-options.js"></script>
 <script src="app.js"></script>
 <script src="extras-ui.js"></script>
+<script src="cars-ui.js"></script>
 </body>
 </html>
