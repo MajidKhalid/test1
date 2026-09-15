@@ -11,12 +11,17 @@
 <link rel="stylesheet" href="layout-v2.css">
 <link rel="stylesheet" href="options-v3.css">
 <link rel="stylesheet" href="image-fixes.css">
+<link rel="stylesheet" href="i18n.css">
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="#top">TUNISIA · 18–25 SEP</a>
-  <nav><a href="#map">Map</a><a href="#calendar">Calendar</a><a href="#configure">Configure</a></nav>
+  <div class="topbar-actions">
+    <nav><a href="#map">Map</a><a href="#calendar">Calendar</a><a href="#configure">Configure</a></nav>
+    <button class="lang-toggle" type="button" data-language-toggle aria-label="التبديل إلى العربية">العربية</button>
+  </div>
 </header>
+<div class="mobile-lang-bar"><button class="lang-toggle" type="button" data-language-toggle aria-label="التبديل إلى العربية">العربية</button></div>
 
 <main id="top">
   <section class="trip-summary">
@@ -133,5 +138,6 @@
 <script src="cars-ui.js"></script>
 <script src="car-images-ui.js"></script>
 <script src="hardening.js"></script>
+<script src="i18n.js"></script>
 </body>
 </html>
