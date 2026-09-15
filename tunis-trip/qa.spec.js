@@ -112,6 +112,7 @@ test('09 activity imagery is item-specific rather than one reused city image', a
 test('10 mobile view has no body overflow and primary navigation remains usable', async ({page})=>{
   await page.setViewportSize({width:390,height:844}); await ready(page);
   await expect(page.locator('.bottom-nav')).toBeVisible(); await expect(page.locator('.bottom-nav a')).toHaveCount(3);
+  await expect(page.locator('.mobile-lang-bar [data-language-toggle]')).toBeVisible();
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(2);
   await page.locator('.bottom-nav a').nth(2).click(); await expect(page.locator('#configure')).toBeInViewport();
@@ -167,7 +168,28 @@ test('15 DOM IDs are unique and site-owned rendered images have alt text', async
   await page.locator('#recommendedBtn').click();
   const duplicateIds=await page.evaluate(()=>{const ids=[...document.querySelectorAll('[id]')].map(e=>e.id);return [...new Set(ids.filter((id,i)=>ids.indexOf(id)!==i))]});
   expect(duplicateIds).toEqual([]);
-  // Leaflet's raster map tiles are decorative and intentionally use alt=""; test only site-owned content imagery.
   const missingAlt=await page.locator('img:not(.leaflet-tile)').evaluateAll(imgs=>imgs.filter(i=>!i.getAttribute('alt')?.trim()).map(i=>i.outerHTML));
   expect(missingAlt).toEqual([]);
+});
+
+test('16 Arabic switcher changes language, RTL layout and persists after reload', async ({page})=>{
+  await ready(page);
+  const toggle=page.locator('.topbar [data-language-toggle]');
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveText('العربية');
+  await toggle.click();
+  await expect(page.locator('html')).toHaveAttribute('lang','ar');
+  await expect(page.locator('html')).toHaveAttribute('dir','rtl');
+  await expect(page.locator('h1')).toContainText('رحلتكم إلى تونس');
+  await expect(page.locator('#configure-flights h3')).toContainText('اختيار الرحلات الجوية');
+  await expect(page.locator('#historyList .choice-card').first().locator('h3')).toContainText('مدينة تونس');
+  await expect(toggle).toHaveText('EN');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await expect(page.locator('html')).toHaveAttribute('lang','ar');
+  await expect(page.locator('html')).toHaveAttribute('dir','rtl');
+  await expect(page.locator('.topbar [data-language-toggle]')).toHaveText('EN');
+  await page.locator('.topbar [data-language-toggle]').click();
+  await expect(page.locator('html')).toHaveAttribute('lang','en');
+  await expect(page.locator('html')).toHaveAttribute('dir','ltr');
+  await expect(page.locator('h1')).toContainText('Your Tunisia trip.');
 });
