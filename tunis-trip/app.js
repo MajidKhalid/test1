@@ -16,26 +16,32 @@
     addingTo: ['Adding to', 'الإضافة إلى'], done: ['Done', 'تم'], addTo: ['Add to a day', 'إضافة إلى يوم'], moveTo: ['Move to another day', 'نقل إلى يوم آخر'],
     timeOfDay: ['Time of day', 'وقت اليوم'], removeFrom: ['Remove from', 'إزالة من'], addedTo: ['Added to', 'أُضيف إلى'], removed: ['Removed', 'أُزيل'],
     view: ['View', 'عرض'], undo: ['Undo', 'تراجع'], flights: ['Flights', 'الرحلات الجوية'],
-    stays: ['Stays', 'الإقامات'], staysLead: ['One home per leg. The list is the researched shortlist; add the group’s suggestions below each block.', 'بيت واحد لكل مرحلة. القائمة مدروسة؛ أضيفوا اقتراحات المجموعة أسفل كل مرحلة.'],
+    route: ['Route', 'المسار'], routeLead: ['Six nights. Tap a night to change where you sleep; the stays, drives and each day’s plan follow.', 'ست ليالٍ. اضغطوا على ليلة لتغيير مكان المبيت؛ تتبعها الإقامات والمسافات وخطة كل يوم.'],
+    presets: ['Presets', 'خطط جاهزة'], night: ['Night', 'ليلة'], chooseBase: ['Where do you sleep this night?', 'أين تبيتون هذه الليلة؟'],
+    nightsIn: ['nights', 'ليالٍ'], checkOut: ['Check out of', 'تسجيل الخروج من'], drive: ['Drive', 'قيادة'], checkIn: ['check in at', 'وتسجيل الدخول في'],
+    arriveIn: ['Arrive · first day in', 'الوصول · اليوم الأول في'], toAirport: ['→ airport → Jeddah → Riyadh', '← المطار ← جدة ← الرياض'],
+    land: ['Land at Tunis–Carthage · bags, car, then', 'الهبوط في مطار تونس قرطاج · الحقائب والسيارة ثم'], to: ['to', 'إلى'],
+    leaveFor: ['for Tunis–Carthage · Terminal M, be there by 08:40', 'إلى مطار تونس قرطاج · المبنى M، الوصول قبل 08:40'], leave: ['Leave', 'الانطلاق من'],
+    stays: ['Stays', 'الإقامات'], staysLead: ['One home per stop. Photos are the listing’s own where available, otherwise a live preview of the listing page. Add the group’s suggestions under each stop.', 'بيت واحد لكل محطة. الصور من الإعلان نفسه حيث توفرت، وإلا فمعاينة حية لصفحة الإعلان. أضيفوا اقتراحات المجموعة أسفل كل محطة.'],
     experience: ['Experience', 'التجربة'], privacy: ['Privacy', 'الخصوصية'], value: ['Value', 'القيمة'], chosen: ['Chosen', 'المختار'], choose: ['Choose', 'اختيار'],
-    openListing: ['Open listing', 'فتح الإعلان'], otherOptions: ['Other options', 'خيارات أخرى'], hide: ['Hide options', 'إخفاء الخيارات'],
+    openListing: ['Open listing', 'فتح الإعلان'], options: ['options', 'خيارات'], showOptions: ['Show all options', 'عرض كل الخيارات'], hide: ['Hide options', 'إخفاء الخيارات'],
     suggestName: ['Name of the place', 'اسم المكان'], suggestUrl: ['Link (optional)', 'الرابط (اختياري)'], addSuggestion: ['Add suggestion', 'إضافة اقتراح'],
     suggested: ['Group suggestion', 'اقتراح المجموعة'], car: ['Car', 'السيارة'],
     carLead: ['One SUV for the whole trip. Confirm automatic, unlimited km and full cover in writing.', 'سيارة واحدة للرحلة كلها. أكدوا الأوتوماتيك والكيلومترات غير المحدودة والتأمين الكامل كتابةً.'],
     luxury: ['Luxury', 'الفخامة'], comfort: ['Comfort', 'الراحة'], checkRentals: ['Check rentals', 'تحقق من التأجير'],
-    reservations: ['Reservations', 'ما يلزم حجزه'], reservationsLead: ['Built from your plan. Tick things off as you book them.', 'مبنية من خطتكم. علّموا ما حجزتموه.'],
+    reservations: ['Reservations', 'ما يلزم حجزه'], reservationsLead: ['Built from your route and plan. Tick things off as you book them.', 'مبنية من مساركم وخطتكم. علّموا ما حجزتموه.'],
     nothingToBook: ['Nothing in your plan needs a reservation yet.', 'لا شيء في خطتكم يحتاج حجزًا بعد.'],
     share: ['Share plan', 'مشاركة الخطة'], copySummary: ['Copy summary', 'نسخ الملخص'], linkCopied: ['Link copied. Send it in the family group.', 'تم نسخ الرابط. أرسلوه في مجموعة العائلة.'],
     copied: ['Copied', 'تم النسخ'], planLoaded: ['Plan loaded from the shared link', 'تم تحميل الخطة من الرابط'], goodToKnow: ['Good to know', 'معلومات مفيدة'],
-    reset: ['Reset to recommended plan', 'إعادة الخطة المقترحة'], resetConfirm: ['Replace your plan with the recommended one?', 'هل تريدون استبدال خطتكم بالخطة المقترحة؟'],
+    reset: ['Reset to recommended plan', 'إعادة الخطة المقترحة'], resetConfirm: ['Replace your plan with the recommended one for this route?', 'هل تريدون استبدال خطتكم بالخطة المقترحة لهذا المسار؟'],
     mapOff: ['Map unavailable right now. Every place still opens in Maps.', 'الخريطة غير متاحة الآن. كل مكان يفتح في الخرائط.'],
-    nights: ['nights', 'ليالٍ'], flight: ['Flight', 'طيران'], drive: ['Drive', 'قيادة'],
-    reserve: ['Reserve', 'احجزوا'], tickets: ['Tickets', 'تذاكر'], travelers: ['3 adults', '3 بالغين'], places: ['places', 'أماكن'],
-    bookTitle: ['Book', 'الحجوزات'], bookLead: ['What is left to book: the three homes, the car, and the tables and tickets your plan needs.', 'المتبقي للحجز: البيوت الثلاثة والسيارة والطاولات والتذاكر التي تحتاجها خطتكم.'],
-    shareLead: ['One link carries the whole plan and your choices. Everyone who opens it sees the same thing.', 'رابط واحد يحمل الخطة كلها واختياراتكم. كل من يفتحه يرى الشيء نفسه.'],
-    overviewLead: ['Tap a day to open it.', 'اضغطوا على يوم لفتحه.'], nightsIn: ['nights in', 'ليالٍ في'],
-    exploreLead: ['Everything worth your time, by mood and by place. Add anything to any day.', 'كل ما يستحق وقتكم، حسب المزاج والمكان. أضيفوا أي شيء إلى أي يوم.'],
-    inPlan: ['in your plan', 'في خطتكم']
+    flight: ['Flight', 'طيران'], reserve: ['Reserve', 'احجزوا'], tickets: ['Tickets', 'تذاكر'], travelers: ['3 adults', '3 بالغين'],
+    bookTitle: ['Book', 'الحجوزات'], bookLead: ['Decide the route, pick a home for each stop, the car, and the tables and tickets your plan needs.', 'حددوا المسار، واختاروا بيتًا لكل محطة، والسيارة، والطاولات والتذاكر التي تحتاجها خطتكم.'],
+    shareLead: ['One link carries the route, the stays and every pick. Everyone who opens it sees the same thing.', 'رابط واحد يحمل المسار والإقامات وكل الاختيارات. كل من يفتحه يرى الشيء نفسه.'],
+    overviewLead: ['Tap a day to open it.', 'اضغطوا على يوم لفتحه.'], min: ['min', 'دقيقة'],
+    relatesTo: ['Relates to', 'يرتبط بـ'], history: ['The history behind it', 'الخلفية التاريخية'], fromWikipedia: ['Read more on Wikipedia', 'المزيد على ويكيبيديا'],
+    pins: ['Places', 'الأماكن'], fDar: ['Riad · dar', 'دار · رياض'], fBeach: ['Beach', 'شاطئ'], fBoth: ['Dar + beach', 'دار + شاطئ'], fPrivate: ['Private homes only', 'بيوت خاصة فقط'],
+    inPlanOn: ['In your plan', 'في خطتكم'], notInPlan: ['Not in your plan yet', 'ليس في خطتكم بعد'], noMatch: ['No stay matches this filter.', 'لا إقامة تطابق هذا الفلتر.']
   };
   const t = k => (UI[k] || [k, k])[S.lang === 'ar' ? 1 : 0];
   const tx = (o, k = 'n') => (S.lang === 'ar' && o[k + 'a']) || o[k];
@@ -60,34 +66,56 @@
     plan: '<rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/>',
     explore: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 14 14l-5.5 1.5L10 10z"/>',
     book: '<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/>',
-    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', move: '<path d="M5 12h14M13 6l6 6-6 6"/>',
-    trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'
+    move: '<path d="M5 12h14M13 6l6 6-6 6"/>', trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'
   };
   const icon = n => `<span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true">${I[n] || ''}</svg></span>`;
   const catColor = c => `var(--${c})`;
 
+  /* ───────── Wikipedia lead image + summary (fetched once, cached on this device) ───────── */
+  const WK = 'tunisia-wiki'; let wikiCache = {}; try { wikiCache = JSON.parse(localStorage.getItem(WK) || '{}'); } catch (e) { }
+  const wikiPending = {};
+  const wikiInfo = title => {
+    if (!title) return Promise.resolve(null);
+    if (wikiCache[title]) return Promise.resolve(wikiCache[title]);
+    if (wikiPending[title]) return wikiPending[title];
+    return wikiPending[title] = fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`).then(r => r.ok ? r.json() : null).then(j => {
+      const thumb = j && j.thumbnail && j.thumbnail.source; const info = { img: thumb ? thumb.replace(/\/(\d+)px-/, '/720px-') : null, thumb: thumb || null, text: (j && j.type === 'standard' && j.extract) || '', url: (j && j.content_urls && j.content_urls.desktop && j.content_urls.desktop.page) || null };
+      wikiCache[title] = info; try { localStorage.setItem(WK, JSON.stringify(wikiCache)); } catch (e) { } return info;
+    }).catch(() => null);
+  };
+  const hydrate = root => { if (!root) return; root.querySelectorAll('[data-wiki]').forEach(el => wikiInfo(el.dataset.wiki).then(info => { if (!info || !el.isConnected) return; if (el.tagName === 'IMG') { const box = el.closest('.photo, .cardPhoto, .thumb'); if (!info.img) { if (box && box.classList.contains('thumb')) { box.classList.add('glyph'); box.innerHTML = icon('pin'); } return; } if (!el.getAttribute('src')) { el.onerror = () => { if (info.thumb && el.src !== info.thumb) el.src = info.thumb; else if (box) { if (box.classList.contains('thumb')) { box.classList.add('glyph'); box.innerHTML = icon('pin'); } else box.hidden = true; } }; el.src = info.img; if (box) box.hidden = false; } } else if (info.text) { el.textContent = info.text; el.hidden = false; const a = el.parentNode.querySelector('[data-wiki-link]'); if (a && info.url) { a.href = info.url; a.hidden = false; } } })); };
+  const wikiPhoto = (p, big) => p.wiki ? `<div class="photo${big ? ' big' : ''}" hidden><img data-wiki="${esc(p.wiki)}" alt="${esc(p.n)}"></div>` : '';
+  const detailHtml = p => `${wikiPhoto(p, true)}<p class="lead">${esc(tx(p, 'b'))}</p>${p.rel ? `<div class="rel"><b>${esc(t('relatesTo'))}</b> ${esc(tx(p, 'rel'))}</div>` : ''}${p.wiki ? `<div class="hist"><b>${esc(t('history'))}</b><p data-wiki="${esc(p.wiki)}" hidden></p><a data-wiki-link hidden target="_blank" rel="noopener noreferrer">${esc(t('fromWikipedia'))} ↗</a></div>` : ''}`;
+
   /* ───────── state ───────── */
   const byId = Object.fromEntries(T.places.map(p => [p.id, p]));
   const dayById = Object.fromEntries(T.days.map(d => [d.id, d]));
-  const stayBlock = id => T.stays.find(s => s.id === id);
-  const defaultPlan = () => Object.fromEntries(Object.entries(T.defaultPlan).map(([d, ids]) => [d, ids.map(p => ({ p, s: T.defaultSlots[`${d}:${p}`] || byId[p].slot }))]));
+  const BASES = Object.keys(T.bases);
+  const validRoute = r => Array.isArray(r) && r.length === T.nights.length && r.every(b => BASES.includes(b));
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } };
   const saved = load() || {};
-  const S = {
-    lang: saved.lang === 'ar' ? 'ar' : 'en', view: 'plan', day: null, cat: 'food', area: 'all', q: '', addingTo: null,
-    plan: saved.plan || defaultPlan(), stays: saved.stays || Object.fromEntries(T.stays.map(s => [s.id, s.def])), car: saved.car || T.cars[0].id,
-    checks: saved.checks || {}, suggestions: saved.suggestions || [], open: {}
-  };
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ lang: S.lang, plan: S.plan, stays: S.stays, car: S.car, checks: S.checks, suggestions: S.suggestions })); } catch (e) { } };
+  const S = { lang: saved.lang === 'ar' ? 'ar' : 'en', view: 'plan', day: null, cat: 'food', area: 'all', q: '', addingTo: null, plan: null, route: validRoute(saved.route) ? saved.route : [...T.defaultRoute], stays: {}, car: saved.car || T.cars[0].id, checks: saved.checks || {}, suggestions: saved.suggestions || [], closed: {}, carOpen: false, showRoute: true, showPins: true, stayFilter: {}, stayPrivate: {} };
+  // stays: one chosen option per base (an older version keyed a "central" block; map it to its pool)
+  const oldStays = saved.stays || {};
+  Object.entries(oldStays).forEach(([k, v]) => { if (BASES.includes(k)) S.stays[k] = v; else BASES.forEach(b => { if (T.stayPools[b].some(o => o.id === v)) S.stays[b] = v; }); });
+  BASES.forEach(b => { if (!S.stays[b]) S.stays[b] = T.stayPools[b][0].id; });
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ lang: S.lang, plan: S.plan, route: S.route, stays: S.stays, car: S.car, checks: S.checks, suggestions: S.suggestions })); } catch (e) { } };
+
+  /* ───────── route → plan ───────── */
+  const tuples = route => { let n = 0, prev = null; return route.map(b => { n = b === prev ? n + 1 : 0; prev = b; return `${b}:${n}`; }); };
+  const templateRows = key => { const [b, n] = key.split(':'); const tpl = T.templates[b]; return tpl[Number(n) % tpl.length].map(x => { const [p, s] = x.split('@'); return { p, s: s || byId[p].slot }; }); };
+  const defaultPlan = route => { const plan = {}; T.days.forEach(d => plan[d.id] = []); tuples(route).forEach((k, i) => plan[T.nights[i]] = templateRows(k)); return plan; };
+  S.plan = saved.plan || defaultPlan(S.route);
+  const setRoute = route => { const before = tuples(S.route), after = tuples(route); after.forEach((k, i) => { if (k !== before[i]) S.plan[T.nights[i]] = templateRows(k); }); S.route = route; save(); };
 
   // shared link → state
   const b64e = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   const b64d = s => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
   const importHash = () => {
     const m = location.hash.match(/^#s=([A-Za-z0-9_-]+)/); if (!m) return false;
-    try { const d = JSON.parse(b64d(m[1])); if (d.plan) S.plan = d.plan; if (d.stays) S.stays = d.stays; if (d.car) S.car = d.car; if (d.suggestions) S.suggestions = d.suggestions; save(); history.replaceState(null, '', location.pathname); return true; } catch (e) { return false; }
+    try { const d = JSON.parse(b64d(m[1])); if (validRoute(d.route)) S.route = d.route; if (d.plan) S.plan = d.plan; if (d.stays) Object.assign(S.stays, d.stays); if (d.car) S.car = d.car; if (d.suggestions) S.suggestions = d.suggestions; save(); history.replaceState(null, '', location.pathname); return true; } catch (e) { return false; }
   };
-  const shareUrl = () => `${location.origin}${location.pathname}#s=${b64e(JSON.stringify({ plan: S.plan, stays: S.stays, car: S.car, suggestions: S.suggestions }))}`;
+  const shareUrl = () => `${location.origin}${location.pathname}#s=${b64e(JSON.stringify({ route: S.route, plan: S.plan, stays: S.stays, car: S.car, suggestions: S.suggestions }))}`;
 
   /* ───────── helpers ───────── */
   const todayIso = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
@@ -95,13 +123,31 @@
   const slotIndex = s => T.slots.findIndex(x => x.id === s);
   const longDate = d => new Intl.DateTimeFormat(S.lang === 'ar' ? 'ar-u-nu-latn' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(d.date + 'T12:00:00'));
   const areaLabel = a => L2(T.areas[a]);
+  const baseLabel = b => L2(T.bases[b]);
   const mapsUrl = p => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.q || `${p.n.replace(/ · /g, ', ')}, ${T.areas[p.area].en.split(' · ')[0]}, Tunisia`)}`;
   const rowsOf = d => (S.plan[d] || []);
   const inDays = pid => T.days.filter(d => rowsOf(d.id).some(r => r.p === pid)).map(d => d.id);
-  const fixedTime = f => f.time || '';
   const dur = p => S.lang === 'ar' ? p.dur.replace(/\bh\b/g, 'س').replace(/min/g, 'د').replace('Full day', 'يوم كامل').replace('Half day', 'نصف يوم') : p.dur;
-  const stayFor = block => { const b = stayBlock(block); if (!b) return null; const id = S.stays[block]; return b.options.find(o => o.id === id) || S.suggestions.find(x => x.id === id) || b.options[0]; };
   const dayLabel = d => L2({ en: d.en, ar: d.ar });
+  const fmtH = h => { const H = Math.floor(h), m = Math.round((h - H) * 60); if (S.lang === 'ar') { const hs = H === 0 ? '' : H === 1 ? 'ساعة' : H === 2 ? 'ساعتان' : `${H} ساعات`; return [hs, m ? `${m} دقيقة` : ''].filter(Boolean).join(' و'); } return H ? `${H} h${m ? ` ${m}` : ''}` : `${m} min`; };
+  const hhmm = mins => `${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`;
+  const driveH = (a, b) => T.driveHours[`${a}-${b}`] ?? T.driveHours[`${b}-${a}`] ?? 1;
+  const arrow = S => S.lang === 'ar' ? '←' : '→';
+
+  const dayBase = d => { const i = dayIndex(d.id); return i === 0 ? null : i === T.days.length - 1 ? S.route[T.nights.length - 1] : S.route[i - 1]; };
+  const prevBase = d => { const i = dayIndex(d.id); return i >= 2 && i <= T.nights.length ? S.route[i - 2] : null; };
+  const dayAreas = d => { const b = dayBase(d), p = prevBase(d); return b ? [...T.bases[b].areas, ...(p && p !== b ? T.bases[p].areas : [])] : []; };
+  const dayTitle = d => { const i = dayIndex(d.id), b = dayBase(d), p = prevBase(d); if (i === 0) return L2({ en: d.ten, ar: d.tar }); if (i === 1) return `${t('arriveIn')} ${baseLabel(b)}`; if (i === T.days.length - 1) return `${baseLabel(b)} ${t('toAirport')}`; return p && p !== b ? `${baseLabel(p)} ${arrow(S)} ${baseLabel(b)}` : baseLabel(b); };
+  const poolOf = b => [...T.stayPools[b], ...S.suggestions.filter(x => x.block === b)];
+  const stayFor = b => { const pool = poolOf(b); return pool.find(o => o.id === S.stays[b]) || pool[0]; };
+  const blocks = () => { const out = []; S.route.forEach((b, i) => { const last = out[out.length - 1]; if (last && last.base === b && last.end === i - 1) { last.end = i; last.nights++; } else out.push({ base: b, start: i, end: i, nights: 1 }); }); return out.map(x => ({ ...x, from: dayById[T.nights[x.start]], to: dayById[T.days[dayIndex(T.nights[x.end]) + 1].id], label: `${baseLabel(x.base)} · ${dayLabel(dayById[T.nights[x.start]])} – ${dayLabel(dayById[T.days[dayIndex(T.nights[x.end]) + 1].id])} · ${x.nights} ${t('nightsIn')}` })); };
+  const fixedRows = d => {
+    const i = dayIndex(d.id), b = dayBase(d), p = prevBase(d), rows = [...d.fixed];
+    if (i === 1 && b) { const st = stayFor(b); rows.push({ slot: 'morning', time: '09:00', en: `${UI.land[0]} ~${fmtH(T.bases[b].airport)} ${UI.to[0]} ${st.n}`, ar: `${UI.land[1]} ~${fmtH(T.bases[b].airport)} ${UI.to[1]} ${st.n}`, ll: [36.8510, 10.2272], kind: 'flight' }); }
+    if (p && p !== b) { const h = driveH(p, b), from = stayFor(p), to = stayFor(b); rows.push({ slot: 'morning', time: '', en: `${UI.checkOut[0]} ${from.n}`, ar: `${UI.checkOut[1]} ${from.n}`, kind: 'stay' }); rows.push({ slot: 'afternoon', time: '', en: `${UI.drive[0]} ${T.bases[p].en} → ${T.bases[b].en} · ~${fmtH(h)} · ${UI.checkIn[0]} ${to.n}`, ar: `${UI.drive[1]} ${T.bases[p].ar} ← ${T.bases[b].ar} · ~${fmtH(h)} · ${UI.checkIn[1]} ${to.n}`, ll: to.ll, kind: 'drive' }); }
+    if (i === T.days.length - 1 && b) { const h = T.bases[b].airport, st = stayFor(b); rows.unshift({ slot: 'morning', time: hhmm(8 * 60 + 40 - Math.round(h * 60) - 15), en: `${UI.leave[0]} ${st.n} ${UI.leaveFor[0]} · ~${fmtH(h)}`, ar: `${UI.leave[1]} ${st.n} ${UI.leaveFor[1]} · ~${fmtH(h)}`, kind: 'drive' }); }
+    return rows;
+  };
 
   /* ───────── plan mutations ───────── */
   const addToDay = (pid, day, slot) => { const rows = S.plan[day] = rowsOf(day); if (rows.some(r => r.p === pid)) return false; rows.push({ p: pid, s: slot || byId[pid].slot }); save(); return true; };
@@ -116,15 +162,17 @@
   const sheet = $('#sheet');
   const openSheet = (html, bind) => { sheet.innerHTML = `<div class="sheetIn">${html}</div><button class="sheetClose" type="button" aria-label="Close">${icon('x')}</button>`; $('.sheetClose', sheet).onclick = () => sheet.close(); if (bind) bind(sheet); if (!sheet.open) sheet.showModal(); };
   sheet.addEventListener('click', e => { if (e.target === sheet) sheet.close(); });
-  const dayMenu = (pid, onPick) => { const p = byId[pid]; const present = inDays(pid); return `<ul class="menu">${T.days.filter(d => d.id !== 'D1').map(d => { const here = present.includes(d.id); const match = d.areas.includes(p.area); return `<li><button type="button" data-day="${d.id}" data-here="${here ? 1 : 0}">${icon(here ? 'check' : (match ? 'pin' : 'plan'))}<span><b>${esc(dayLabel(d))}</b> · ${esc(L2({ en: d.ten, ar: d.tar }))}</span>${here ? `<span class="sub">${esc(t('added'))}</span>` : (match ? `<span class="sub">${esc(areaLabel(p.area).split(' · ')[0])}</span>` : '')}</button></li>`; }).join('')}</ul>`; };
+  const dayMenu = pid => { const p = byId[pid]; const present = inDays(pid); return `<ul class="menu">${T.days.filter(d => d.id !== 'D1').map(d => { const here = present.includes(d.id); const match = dayAreas(d).includes(p.area); return `<li><button type="button" data-day="${d.id}" data-here="${here ? 1 : 0}">${icon(here ? 'check' : (match ? 'pin' : 'plan'))}<span><b>${esc(dayLabel(d))}</b> · ${esc(dayTitle(d))}</span>${here ? `<span class="sub">${esc(t('added'))}</span>` : (match ? `<span class="sub">${esc(areaLabel(p.area).split(' · ')[0])}</span>` : '')}</button></li>`; }).join('')}</ul>`; };
 
-  const placeSheet = pid => { const p = byId[pid]; openSheet(`<h2>${esc(tx(p))}</h2><div class="sub">${esc(t('addTo'))}</div>${dayMenu(pid)}`, sh => { sh.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { const d = b.dataset.day; if (b.dataset.here === '1') { removeFromDay(pid, d); toast(`${t('removed')} · ${dayLabel(dayById[d])}`, { label: t('undo'), fn: () => { addToDay(pid, d); render(); } }); } else { addToDay(pid, d); toast(`${t('addedTo')} ${dayLabel(dayById[d])}`, { label: t('view'), fn: () => { S.day = d; setView('plan'); } }); } sh.close(); render(); }); }); };
+  const placeSheet = pid => { const p = byId[pid]; const days = inDays(p.id); openSheet(`<h2>${esc(tx(p))}</h2><div class="sub">${esc(areaLabel(p.area))}${p.dur ? ` · ${esc(dur(p))}` : ''}${p.price ? ` · ${p.price}` : ''}</div>${detailHtml(p)}<div class="tags">${p.tags.map(g => `<span class="tag">${esc(L2(T.tags[g]))}</span>`).join('')}</div><div class="eyebrow" style="margin-top:14px">${esc(days.length ? `${t('inPlanOn')} · ${days.map(d => dayLabel(dayById[d])).join(', ')}` : t('notInPlan'))} · ${esc(t('addTo'))}</div>${dayMenu(pid)}<ul class="menu">${p.ll ? `<li><a href="${mapsUrl(p)}" target="_blank" rel="noopener noreferrer">${icon('pin')}${esc(t('directions'))}${icon('link')}</a></li>` : ''}${p.url ? `<li><a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${icon('link')}${esc(t('website'))}</a></li>` : ''}</ul>`, sh => { hydrate(sh); sh.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { const d = b.dataset.day; if (b.dataset.here === '1') { removeFromDay(pid, d); toast(`${t('removed')} · ${dayLabel(dayById[d])}`, { label: t('undo'), fn: () => { addToDay(pid, d); render(); } }); } else { addToDay(pid, d); toast(`${t('addedTo')} ${dayLabel(dayById[d])}`, { label: t('view'), fn: () => { S.day = d; setView('plan'); } }); } sh.close(); render(); }); }); };
 
-  const rowSheet = (pid, day) => { const p = byId[pid]; const r = rowsOf(day).find(x => x.p === pid); if (!r) return; openSheet(`<h2>${esc(tx(p))}</h2><div class="sub">${esc(areaLabel(p.area))}${p.dur ? ` · ${esc(dur(p))}` : ''}${p.price ? ` · ${p.price}` : ''}</div><div class="eyebrow">${esc(t('timeOfDay'))}</div><div class="seg" role="tablist">${T.slots.map(s => `<button type="button" role="tab" aria-selected="${s.id === r.s}" data-slot="${s.id}">${esc(L2(s))}</button>`).join('')}</div><ul class="menu"><li><a href="${mapsUrl(p)}" target="_blank" rel="noopener noreferrer">${icon('pin')}${esc(t('directions'))}${icon('link')}</a></li>${p.url ? `<li><a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${icon('link')}${esc(t('website'))}</a></li>` : ''}<li><button type="button" data-move>${icon('move')}${esc(t('moveTo'))}</button></li><li><button type="button" class="danger" data-remove>${icon('trash')}${esc(t('remove'))}</button></li></ul>`, sh => {
+  const rowSheet = (pid, day) => { const p = byId[pid]; const r = rowsOf(day).find(x => x.p === pid); if (!r) return; openSheet(`<h2>${esc(tx(p))}</h2><div class="sub">${esc(areaLabel(p.area))}${p.dur ? ` · ${esc(dur(p))}` : ''}${p.price ? ` · ${p.price}` : ''}</div>${detailHtml(p)}<div class="eyebrow">${esc(t('timeOfDay'))}</div><div class="seg" role="tablist">${T.slots.map(s => `<button type="button" role="tab" aria-selected="${s.id === r.s}" data-slot="${s.id}">${esc(L2(s))}</button>`).join('')}</div><ul class="menu"><li><a href="${mapsUrl(p)}" target="_blank" rel="noopener noreferrer">${icon('pin')}${esc(t('directions'))}${icon('link')}</a></li>${p.url ? `<li><a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${icon('link')}${esc(t('website'))}</a></li>` : ''}<li><button type="button" data-move>${icon('move')}${esc(t('moveTo'))}</button></li><li><button type="button" class="danger" data-remove>${icon('trash')}${esc(t('remove'))}</button></li></ul>`, sh => { hydrate(sh);
     sh.querySelectorAll('[data-slot]').forEach(b => b.onclick = () => { setSlot(pid, day, b.dataset.slot); sh.querySelectorAll('[data-slot]').forEach(x => x.setAttribute('aria-selected', x === b)); render(); });
     $('[data-remove]', sh).onclick = () => { removeFromDay(pid, day); sh.close(); render(); toast(t('removed'), { label: t('undo'), fn: () => { addToDay(pid, day, r.s); render(); } }); };
     $('[data-move]', sh).onclick = () => openSheet(`<h2>${esc(tx(p))}</h2><div class="sub">${esc(t('moveTo'))}</div>${dayMenu(pid)}`, sh2 => sh2.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { const d = b.dataset.day; if (d !== day && b.dataset.here !== '1') { removeFromDay(pid, day); addToDay(pid, d, r.s); toast(`${t('addedTo')} ${dayLabel(dayById[d])}`); } sh2.close(); render(); }));
   }); };
+
+  const nightSheet = i => { const d = dayById[T.nights[i]]; openSheet(`<h2>${esc(t('night'))} ${i + 1} · ${esc(dayLabel(d))}</h2><div class="sub">${esc(t('chooseBase'))}</div><ul class="menu">${BASES.map(b => `<li><button type="button" data-base="${b}">${icon(S.route[i] === b ? 'check' : 'stay')}<span><b>${esc(baseLabel(b))}</b></span><span class="sub">${esc(stayFor(b).n)}</span></button></li>`).join('')}</ul>`, sh => sh.querySelectorAll('[data-base]').forEach(b => b.onclick = () => { const r = [...S.route]; r[i] = b.dataset.base; setRoute(r); sh.close(); render(); })); };
 
   /* ───────── views ───────── */
   const VIEWS = ['plan', 'explore', 'book'];
@@ -152,48 +200,51 @@
   };
 
   const rowHtml = (p, r, day) => `<button type="button" class="row" data-row="${esc(p.id)}" data-day="${day}"><span class="glyph" style="--c:${catColor(p.cat)}">${icon(p.cat)}</span><span><b>${esc(tx(p))}</b><small>${esc(areaLabel(p.area))}${p.dur ? ` · ${esc(dur(p))}` : ''}${p.book ? ` · ${esc(t(p.book))}` : ''}</small></span><span class="chev">${icon('chevron')}</span></button>`;
-  const fixedHtml = f => { const tm = fixedTime(f); return `<div class="row fixed"><span class="glyph">${icon(f.kind === 'flight' ? 'flight' : 'drive')}</span><span><b>${esc(L2(f))}</b><small>${esc(t(f.kind))}</small></span><span class="time">${esc(tm)}</span></div>`; };
+  const fixedHtml = f => `<div class="row fixed"><span class="glyph">${icon(f.kind === 'flight' ? 'flight' : f.kind === 'stay' ? 'stay' : 'drive')}</span><span><b>${esc(L2(f))}</b><small>${esc(t(f.kind))}</small></span><span class="time">${esc(f.time || '')}</span></div>`;
 
   const renderDayPanel = () => {
     const host = $('#dayPanel');
     if (S.day === 'trip') {
-      host.innerHTML = `<header class="dayHead"><div class="eyebrow">${esc(t('travelers'))} · ${esc(t('dates'))}</div><h1>${esc(t('trip'))}</h1><p class="stayLine">${esc(t('overviewLead'))}</p></header><ol class="overview">${T.days.map((d, i) => { const st = d.stay ? stayFor(d.stay) : null; const n = rowsOf(d.id).length; return `<li><button type="button" data-day="${d.id}"><span class="d">${esc(dayLabel(d))}<small>${esc(t('day'))} ${i + 1}</small></span><span><b>${esc(L2({ en: d.ten, ar: d.tar }))}</b><small>${st ? `${icon('stay')} ${esc(st.n)}` : esc(t('noStay'))}</small></span>${n ? `<span class="badge">${n}</span>` : ''}</button></li>`; }).join('')}</ol>`;
+      host.innerHTML = `<header class="dayHead"><div class="eyebrow">${esc(t('travelers'))} · ${esc(t('dates'))}</div><h1>${esc(t('trip'))}</h1><p class="stayLine">${esc(t('overviewLead'))}</p></header><ol class="overview">${T.days.map((d, i) => { const b = dayBase(d); const st = b ? stayFor(b) : null; const n = rowsOf(d.id).length; return `<li><button type="button" data-day="${d.id}"><span class="d">${esc(dayLabel(d))}<small>${esc(t('day'))} ${i + 1}</small></span><span><b>${esc(dayTitle(d))}</b><small>${st ? `${icon('stay')} ${esc(st.n)}` : esc(t('noStay'))}</small></span>${n ? `<span class="badge">${n}</span>` : ''}</button></li>`; }).join('')}</ol>`;
       host.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { S.day = b.dataset.day; render(); });
       return;
     }
-    const d = dayById[S.day]; const st = d.stay ? stayFor(d.stay) : null; const block = d.stay ? stayBlock(d.stay) : null;
-    const items = [...d.fixed.map(f => ({ f, s: f.slot, k: 0 })), ...rowsOf(d.id).map((r, i) => ({ r, s: r.s, k: 1 + i }))].sort((a, b) => slotIndex(a.s) - slotIndex(b.s) || a.k - b.k);
-    let html = `<header class="dayHead"><div class="eyebrow">${esc(t('day'))} ${dayIndex(d.id) + 1} · ${esc(longDate(d))}</div><h1>${esc(L2({ en: d.ten, ar: d.tar }))}</h1><p class="stayLine">${icon('stay')} ${st ? `<span>${esc(st.n)} · ${esc(L2({ en: block.n, ar: block.na }))}</span><a href="#book" data-view-link="book">${esc(t('change'))}</a>` : `<span>${esc(t('noStay'))}</span>`}</p></header>`;
+    const d = dayById[S.day]; const b = dayBase(d); const st = b ? stayFor(b) : null;
+    const items = [...fixedRows(d).map((f, i) => ({ f, s: f.slot, k: i - 100 })), ...rowsOf(d.id).map((r, i) => ({ r, s: r.s, k: i }))].sort((a, b2) => slotIndex(a.s) - slotIndex(b2.s) || a.k - b2.k);
+    let html = `<header class="dayHead"><div class="eyebrow">${esc(t('day'))} ${dayIndex(d.id) + 1} · ${esc(longDate(d))}</div><h1>${esc(dayTitle(d))}</h1><p class="stayLine">${icon('stay')} ${st ? `<span>${esc(st.n)}${st.n.includes(T.bases[b].en.split(' · ')[0]) ? '' : ` · ${esc(baseLabel(b))}`}</span><a href="#book" data-view-link="book">${esc(t('change'))}</a>` : `<span>${esc(t('noStay'))}</span>`}</p></header>`;
     if (!items.length) html += `<p class="empty">${esc(t('nothingPlanned'))}</p>`;
     else { let cur = null; html += '<ol class="timeline">'; items.forEach(it => { if (it.s !== cur) { cur = it.s; html += `<li class="slotHead">${esc(L2(T.slots[slotIndex(cur)]))}</li>`; } html += '<li>' + (it.f ? fixedHtml(it.f) : rowHtml(byId[it.r.p], it.r, d.id)) + '</li>'; }); html += '</ol>'; }
     if (d.id !== 'D1') html += `<button type="button" class="addBtn" id="addFrom">${icon('plus')}${esc(t('addFromExplore'))}</button>`;
     html += `<div class="footnote"><button type="button" class="link" id="resetPlan">${esc(t('reset'))}</button></div>`;
     host.innerHTML = html;
-    host.querySelectorAll('[data-row]').forEach(b => b.onclick = () => rowSheet(b.dataset.row, b.dataset.day));
-    const add = $('#addFrom'); if (add) add.onclick = () => { S.addingTo = d.id; S.area = d.areas[0] || 'all'; S.q = ''; setView('explore'); };
-    $('#resetPlan').onclick = () => { if (confirm(t('resetConfirm'))) { S.plan = defaultPlan(); save(); render(); } };
+    host.querySelectorAll('[data-row]').forEach(x => x.onclick = () => rowSheet(x.dataset.row, x.dataset.day));
+    const add = $('#addFrom'); if (add) add.onclick = () => { S.addingTo = d.id; S.area = dayAreas(d)[0] || 'all'; S.q = ''; setView('explore'); };
+    $('#resetPlan').onclick = () => { if (confirm(t('resetConfirm'))) { S.plan = defaultPlan(S.route); save(); render(); } };
     host.querySelectorAll('[data-view-link]').forEach(a => a.onclick = e => { e.preventDefault(); setView(a.dataset.viewLink); });
   };
 
   /* ── Map ── */
-  let map, layer, tiles;
+  let map, layer;
   const DAYC = ['#86868b', '#2563eb', '#0d9488', '#e8590c', '#c026d3', '#7c3aed', '#d97706', '#dc2626'];
   const ensureMap = () => {
     const el = $('#map'); if (map) return true;
     if (typeof L === 'undefined') { el.classList.add('off'); el.textContent = t('mapOff'); return false; }
     map = L.map(el, { scrollWheelZoom: false, zoomSnap: .5 });
     const dark = matchMedia('(prefers-color-scheme: dark)').matches;
-    tiles = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, { subdomains: 'abcd', maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>' }).addTo(map);
+    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, { subdomains: 'abcd', maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>' }).addTo(map);
     layer = L.layerGroup().addTo(map); map.setView([36.3, 10.4], 8);
     return true;
   };
+  const pinIcon = (kind, hex) => L.divIcon({ className: 'pinWrap', html: `<div class="pinIcon" style="--c:${hex}">${icon(kind)}</div>`, iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -14] });
+  const renderMapTools = () => { const el = $('#mapTools'); if (!el) return; if (typeof L === 'undefined') { el.hidden = true; return; } el.hidden = false; el.innerHTML = `<button type="button" class="tool" data-tool="route" aria-pressed="${S.showRoute}">${esc(t('route'))}</button><button type="button" class="tool" data-tool="pins" aria-pressed="${S.showPins}">${esc(t('pins'))}</button>`; el.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => { if (b.dataset.tool === 'route') S.showRoute = !S.showRoute; else S.showPins = !S.showPins; renderMap(); }); };
   const renderMap = () => {
+    renderMapTools();
     if (!ensureMap()) return; layer.clearLayers();
     const pts = [];
-    const dayPts = d => { const rows = [...d.fixed.filter(f => f.ll).map(f => ({ ll: f.ll, s: f.slot, k: 0, name: L2(f), sub: t(f.kind), color: 'var(--fixed)', hex: '#86868b' })), ...rowsOf(d.id).map((r, i) => { const p = byId[r.p]; return p.ll ? { ll: p.ll, s: r.s, k: 1 + i, name: tx(p), sub: areaLabel(p.area), url: mapsUrl(p), color: catColor(p.cat), hex: getComputedStyle(document.documentElement).getPropertyValue('--' + p.cat).trim() || '#0071e3', p } : null; }).filter(Boolean)]; return rows.sort((a, b) => slotIndex(a.s) - slotIndex(b.s) || a.k - b.k); };
-    if (S.day === 'trip') T.days.forEach((d, i) => dayPts(d).forEach(x => pts.push({ ...x, hex: DAYC[i], day: d }))); else pts.push(...dayPts(dayById[S.day]));
-    if (pts.length > 1) L.polyline(pts.map(x => x.ll), { color: '#86868b', weight: 2, opacity: .55, dashArray: '4 6' }).addTo(layer);
-    pts.forEach((x, i) => { const m = L.circleMarker(x.ll, { radius: 8, color: '#fff', weight: 2, fillColor: x.hex, fillOpacity: 1, className: 'pin' }).addTo(layer); m.bindPopup(`<b>${esc(x.name)}</b>${esc(x.sub)}${x.day ? ` · ${esc(dayLabel(x.day))}` : ''}${x.url ? `<br><a href="${x.url}" target="_blank" rel="noopener noreferrer">${esc(t('directions'))} ↗</a>` : ''}`); if (S.day !== 'trip') m.bindTooltip(`<span>${i + 1}</span>`, { permanent: true, direction: 'top', className: 'pinLabel', offset: [0, -8] }); });
+    const dayPts = d => { const rows = [...fixedRows(d).filter(f => f.ll).map((f, i) => ({ ll: f.ll, s: f.slot, k: i - 100, name: L2(f), sub: `${dayLabel(d)} · ${L2(T.slots[slotIndex(f.slot)])}`, kind: f.kind, hex: '#86868b' })), ...rowsOf(d.id).map((r, i) => { const p = byId[r.p]; return p.ll ? { ll: p.ll, s: r.s, k: i, p, name: tx(p), sub: `${dayLabel(d)} · ${L2(T.slots[slotIndex(r.s)])} · ${areaLabel(p.area)}`, kind: p.cat, url: mapsUrl(p), hex: getComputedStyle(document.documentElement).getPropertyValue('--' + p.cat).trim() || '#0071e3' } : null; }).filter(Boolean)]; return rows.sort((a, b) => slotIndex(a.s) - slotIndex(b.s) || a.k - b.k); };
+    if (S.day === 'trip') T.days.forEach(d => dayPts(d).forEach(x => pts.push(x))); else pts.push(...dayPts(dayById[S.day]));
+    if (S.showRoute && pts.length > 1) L.polyline(pts.map(x => x.ll), { color: '#86868b', weight: 2.5, opacity: .6, dashArray: '4 6', className: 'routeLine' }).addTo(layer);
+    if (S.showPins) pts.forEach(x => { const m = L.marker(x.ll, { icon: pinIcon(x.kind, x.hex) }).addTo(layer); m.bindPopup(`<div class="pop">${x.p ? wikiPhoto(x.p) : ''}<b>${esc(x.name)}</b><small>${esc(x.sub)}</small>${x.p ? `<p>${esc(tx(x.p, 'b'))}</p>` : ''}${x.url ? `<a href="${x.url}" target="_blank" rel="noopener noreferrer">${esc(t('directions'))} ↗</a>` : ''}</div>`, { maxWidth: 280, minWidth: 220 }); m.on('popupopen', e => hydrate(e.popup.getElement())); });
     if (pts.length) { const b = L.latLngBounds(pts.map(x => x.ll)); map.fitBounds(b.pad(.25), { maxZoom: S.day === 'trip' ? 8 : 13, animate: false }); } else map.setView([36.3, 10.4], 8);
     setTimeout(() => map.invalidateSize(), 30);
   };
@@ -203,7 +254,7 @@
     $('#catTabs').innerHTML = T.cats.map(c => `<button type="button" role="tab" aria-selected="${S.cat === c.id}" data-cat="${c.id}" style="--c:${catColor(c.id)}">${icon(c.id)}${esc(L2(c))}</button>`).join('');
     $('#catTabs').querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { S.cat = b.dataset.cat; render(); });
     const banner = $('#addingBanner');
-    if (S.addingTo) { const d = dayById[S.addingTo]; banner.hidden = false; banner.innerHTML = `<span>${esc(t('addingTo'))} <b>${esc(dayLabel(d))}</b> · ${esc(L2({ en: d.ten, ar: d.tar }))}</span><button type="button" class="btn" id="doneAdding">${esc(t('done'))}</button>`; $('#doneAdding').onclick = () => { const d = S.addingTo; S.addingTo = null; S.day = d; setView('plan'); }; } else banner.hidden = true;
+    if (S.addingTo) { const d = dayById[S.addingTo]; banner.hidden = false; banner.innerHTML = `<span>${esc(t('addingTo'))} <b>${esc(dayLabel(d))}</b> · ${esc(dayTitle(d))}</span><button type="button" class="btn" id="doneAdding">${esc(t('done'))}</button>`; $('#doneAdding').onclick = () => { const d2 = S.addingTo; S.addingTo = null; S.day = d2; setView('plan'); }; } else banner.hidden = true;
     const inCat = T.places.filter(p => p.cat === S.cat);
     const areas = Object.keys(T.areas).filter(a => inCat.some(p => p.area === a));
     if (S.area !== 'all' && !areas.includes(S.area)) S.area = 'all';
@@ -211,36 +262,49 @@
     $('#areaChips').querySelectorAll('[data-area]').forEach(b => b.onclick = () => { S.area = b.dataset.area; render(); });
     const q = S.q.trim().toLowerCase();
     const list = inCat.filter(p => (S.area === 'all' || p.area === S.area) && (!q || `${p.n} ${p.na} ${p.b} ${p.ba} ${T.areas[p.area].en} ${T.areas[p.area].ar}`.toLowerCase().includes(q)));
-    $('#placeGrid').innerHTML = list.length ? list.map(p => { const days = inDays(p.id); const on = S.addingTo ? days.includes(S.addingTo) : days.length > 0; const label = on ? `${t('added')}${!S.addingTo && days.length ? ` · ${days.map(d => dayLabel(dayById[d])).join(', ')}` : ''}` : t('add'); return `<article class="card"><div class="cardTop"><span class="glyph" style="--c:${catColor(p.cat)}">${icon(p.cat)}</span><span>${esc(areaLabel(p.area))}</span>${p.price ? `<span class="price">${p.price}</span>` : ''}</div><h3>${esc(tx(p))}</h3><p>${esc(tx(p, 'b'))}</p><div class="tags">${p.dur ? `<span class="tag">${esc(dur(p))}</span>` : ''}${p.tags.map(g => `<span class="tag${g === 'friday' || g === 'closedMon' ? ' warn' : ''}">${esc(L2(T.tags[g]))}</span>`).join('')}</div><div class="actions"><button type="button" class="btn${on ? ' on' : ''}" data-add="${p.id}">${icon(on ? 'check' : 'plus')}${esc(label)}</button>${p.ll ? `<a class="btn ghost" href="${mapsUrl(p)}" target="_blank" rel="noopener noreferrer">${icon('pin')}${esc(t('directions'))}</a>` : ''}${p.url ? `<a class="ext" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${esc(t('website'))} ↗</a>` : ''}</div></article>`; }).join('') : `<p class="noResults">${esc(t('noResults'))}</p>`;
+    $('#placeGrid').innerHTML = list.length ? list.map(p => { const days = inDays(p.id); const on = S.addingTo ? days.includes(S.addingTo) : days.length > 0; const label = on ? `${t('added')}${!S.addingTo && days.length ? ` · ${days.map(d => dayLabel(dayById[d])).join(', ')}` : ''}` : t('add'); return `<article class="card"><div class="cardTop"><span class="glyph" style="--c:${catColor(p.cat)}">${icon(p.cat)}</span><span>${esc(areaLabel(p.area))}</span>${p.price ? `<span class="price">${p.price}</span>` : ''}</div>${p.wiki ? `<div class="cardPhoto" hidden><img data-wiki="${esc(p.wiki)}" alt="${esc(p.n)}" loading="lazy"></div>` : ''}<h3><button type="button" class="titleBtn" data-open="${p.id}">${esc(tx(p))}</button></h3><p>${esc(tx(p, 'b'))}</p><div class="tags">${p.dur ? `<span class="tag">${esc(dur(p))}</span>` : ''}${p.tags.map(g => `<span class="tag${g === 'friday' || g === 'closedMon' ? ' warn' : ''}">${esc(L2(T.tags[g]))}</span>`).join('')}</div><div class="actions"><button type="button" class="btn${on ? ' on' : ''}" data-add="${p.id}">${icon(on ? 'check' : 'plus')}${esc(label)}</button>${p.ll ? `<a class="btn ghost" href="${mapsUrl(p)}" target="_blank" rel="noopener noreferrer">${icon('pin')}${esc(t('directions'))}</a>` : ''}${p.url ? `<a class="ext" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${esc(t('website'))} ↗</a>` : ''}</div></article>`; }).join('') : `<p class="noResults">${esc(t('noResults'))}</p>`;
     $('#placeGrid').querySelectorAll('[data-add]').forEach(b => b.onclick = () => { const pid = b.dataset.add; if (S.addingTo) { const d = S.addingTo; if (inDays(pid).includes(d)) { removeFromDay(pid, d); toast(t('removed')); } else { addToDay(pid, d); toast(`${t('addedTo')} ${dayLabel(dayById[d])}`, { label: t('view'), fn: () => { S.addingTo = null; S.day = d; setView('plan'); } }); } render(); } else placeSheet(pid); });
+    $('#placeGrid').querySelectorAll('[data-open]').forEach(b => b.onclick = () => placeSheet(b.dataset.open));
+    hydrate($('#placeGrid'));
   };
 
   /* ── Book ── */
-  const scoreRow = (o, keys) => `<div class="scores">${keys.map(([k, lab]) => `<div>${esc(t(lab))}<b>${o[k] ?? '—'}</b></div>`).join('')}${o.tier ? `<div>${esc(t('value'))}<b>${esc(o.tier)}</b></div>` : ''}</div>`;
+  const photo = (o, big) => { const imgs = o.img || []; return `<div class="photo${big ? ' big' : ''}${imgs.length > 1 ? ' rail' : ''}${imgs.length ? '' : ' none'}">${imgs.map(u => `<img loading="lazy" src="${esc(u)}" alt="${esc(o.n)}">`).join('')}<span class="photoFallback">${icon('stay')}</span></div>`; };
+  const stayFilters = base => { const f = S.stayFilter[base] || 'all', pv = !!S.stayPrivate[base]; return `<div class="chips stayFilters">${[['all', 'all'], ['dar', 'fDar'], ['beach', 'fBeach'], ['both', 'fBoth']].map(([id, k]) => `<button type="button" class="chip" aria-selected="${f === id}" data-filter="${id}" data-base="${base}">${esc(t(k))}</button>`).join('')}<button type="button" class="chip" aria-selected="${pv}" data-private="${base}">${esc(t('fPrivate'))}</button></div>`; };
+  const filteredPool = base => { const f = S.stayFilter[base] || 'all', pv = !!S.stayPrivate[base]; return poolOf(base).filter(o => (f === 'all' || o.x === f) && (!pv || o.priv8 || o.suggested)); };
+  const stayCard = (o, base, chosen) => `<article class="stayCard${chosen ? ' chosen' : ''}">${photo(o)}<div class="stayBody"><h4>${esc(o.n)}${o.suggested ? ` <span class="badge">${esc(t('suggested'))}</span>` : ''}</h4><small>${esc([o.type, o.guests, o.rating].filter(Boolean).join(' · '))}</small>${o.exp != null ? `<div class="mini"><span>${esc(t('experience'))} <b>${o.exp}</b></span><span>${esc(t('privacy'))} <b>${o.priv}</b></span><span>${esc(t('value'))} <b>${esc(o.tier || o.val)}</b></span></div>` : ''}<div class="actions"><button type="button" class="btn${chosen ? ' on' : ''}" data-stay="${base}" data-opt="${esc(o.id)}">${chosen ? icon('check') + esc(t('chosen')) : esc(t('choose'))}</button>${o.url ? `<a class="ext" href="${esc(o.url)}" target="_blank" rel="noopener noreferrer">${esc(t('openListing'))} ↗</a>` : ''}</div></div></article>`;
+  const shotOf = u => u && /^https?:\/\//i.test(u) && !/google\.com/.test(u) ? `https://s.wordpress.com/mshots/v1/${encodeURIComponent(u)}?w=400` : null;
+  const thumb = x => x.img ? `<span class="thumb"><img loading="lazy" src="${esc(x.img)}" alt=""></span>` : x.wiki ? `<span class="thumb"><img data-wiki="${esc(x.wiki)}" alt=""></span>` : `<span class="thumb glyph" style="--c:${x.color || 'var(--fixed)'}">${icon(x.kind || 'stay')}</span>`;
   const reservations = () => {
     const out = [];
-    T.stays.forEach(b => { const st = stayFor(b.id); if (st) out.push({ key: `stay:${b.id}`, b: st.n, s: `${L2({ en: b.n, ar: b.na })} · ${S.lang === 'ar' ? b.nightsAr : b.nights}`, url: st.url }); });
-    const car = T.cars.find(c => c.id === S.car) || T.cars[0]; out.push({ key: 'car', b: car.n, s: t('car'), url: car.link });
-    T.days.forEach(d => rowsOf(d.id).forEach(r => { const p = byId[r.p]; if (p.book) out.push({ key: `p:${d.id}:${p.id}`, b: tx(p), s: `${dayLabel(d)} · ${L2(T.slots[slotIndex(r.s)])} · ${t(p.book)}`, url: p.url || mapsUrl(p) }); }));
+    blocks().forEach(b => { const st = stayFor(b.base); out.push({ key: `stay:${b.base}:${b.start}`, b: st.n, s: b.label, url: st.url, img: (st.img || [])[0] || null, kind: 'stay' }); });
+    const car = T.cars.find(c => c.id === S.car) || T.cars[0]; out.push({ key: 'car', b: car.n, s: t('car'), url: car.link, wiki: car.wiki, kind: 'drive' });
+    T.days.forEach(d => rowsOf(d.id).forEach(r => { const p = byId[r.p]; if (p.book) out.push({ key: `p:${d.id}:${p.id}`, b: tx(p), s: `${dayLabel(d)} · ${L2(T.slots[slotIndex(r.s)])} · ${t(p.book)}`, url: p.url || mapsUrl(p), wiki: p.wiki, img: p.wiki ? null : shotOf(p.url), kind: p.cat, color: catColor(p.cat) }); }));
     return out;
   };
-  const summary = () => { const lines = [`Tunisia · ${t('dates')} · ${t('travelers')}`, `${t('flights')}: ${L2(T.flight.out)}`, `${t('flights')}: ${L2(T.flight.back)}`, ...T.stays.map(b => `${L2({ en: b.n, ar: b.na })}: ${stayFor(b.id)?.n || '—'}`), `${t('car')}: ${(T.cars.find(c => c.id === S.car) || T.cars[0]).n}`, '']; T.days.forEach(d => { lines.push(`${dayLabel(d)} · ${L2({ en: d.ten, ar: d.tar })}`); [...d.fixed.map(f => ({ s: f.slot, k: 0, txt: `${fixedTime(f) || '--:--'} ${L2(f)}` })), ...rowsOf(d.id).map((r, i) => ({ s: r.s, k: 1 + i, txt: `${L2(T.slots[slotIndex(r.s)])} · ${tx(byId[r.p])}` }))].sort((a, b) => slotIndex(a.s) - slotIndex(b.s) || a.k - b.k).forEach(x => lines.push('  ' + x.txt)); }); return lines.join('\n'); };
+  const summary = () => { const lines = [`Tunisia · ${t('dates')} · ${t('travelers')}`, `${t('flights')}: ${L2(T.flight.out)}`, `${t('flights')}: ${L2(T.flight.back)}`, `${t('route')}: ${blocks().map(b => `${baseLabel(b.base)} ${b.nights}`).join(' · ')}`, ...blocks().map(b => `${b.label}: ${stayFor(b.base).n}`), `${t('car')}: ${(T.cars.find(c => c.id === S.car) || T.cars[0]).n}`, '']; T.days.forEach(d => { lines.push(`${dayLabel(d)} · ${dayTitle(d)}`); [...fixedRows(d).map((f, i) => ({ s: f.slot, k: i - 100, txt: `${f.time || '--:--'} ${L2(f)}` })), ...rowsOf(d.id).map((r, i) => ({ s: r.s, k: i, txt: `${L2(T.slots[slotIndex(r.s)])} · ${tx(byId[r.p])}` }))].sort((a, b) => slotIndex(a.s) - slotIndex(b.s) || a.k - b.k).forEach(x => lines.push('  ' + x.txt)); }); return lines.join('\n'); };
   const copy = async (text, ok) => { try { await navigator.clipboard.writeText(text); toast(ok); } catch (e) { prompt(ok, text); } };
 
   const renderBook = () => {
-    const host = $('#bookPanel'); const car = T.cars.find(c => c.id === S.car) || T.cars[0]; const res = reservations();
-    const optRow = (o, block, chosen) => `<li><span><b>${esc(o.n)}${o.suggested ? ` <span class="badge">${esc(t('suggested'))}</span>` : ''}</b><small>${esc([o.type, o.guests, o.rating, o.tag].filter(Boolean).join(' · '))}${o.exp != null ? ` · ${t('experience')} ${o.exp} · ${t('privacy')} ${o.priv} · ${t('value')} ${o.val}` : ''}</small></span><button type="button" class="btn${chosen ? ' on' : ' ghost'}" data-stay="${block}" data-opt="${esc(o.id)}">${chosen ? icon('check') + esc(t('chosen')) : esc(t('choose'))}</button></li>`;
+    const host = $('#bookPanel'); const car = T.cars.find(c => c.id === S.car) || T.cars[0]; const res = reservations(); const bl = blocks();
     host.innerHTML = `<header class="bookHead"><h1>${esc(t('bookTitle'))}</h1><p>${esc(t('bookLead'))}</p></header>
-    <section class="section" id="staysSection"><h2>${esc(t('stays'))}</h2><p class="lead">${esc(t('staysLead'))}</p>${T.stays.map(b => { const st = stayFor(b.id); const opts = [...b.options, ...S.suggestions.filter(x => x.block === b.id)]; const open = S.open[b.id]; return `<div class="panel" data-block="${b.id}"><div class="eyebrow">${esc(L2({ en: b.n, ar: b.na }))} · ${esc(S.lang === 'ar' ? b.nightsAr : b.nights)}</div><h3>${esc(st.n)}</h3><p class="note">${esc([st.type, st.guests, st.rating].filter(Boolean).join(' · '))}</p>${st.exp != null ? scoreRow(st, [['exp', 'experience'], ['priv', 'privacy']]) : ''}${st.note ? `<p class="note">${esc(st.note)}</p>` : ''}<div class="actions">${st.url ? `<a class="btn" href="${esc(st.url)}" target="_blank" rel="noopener noreferrer">${esc(t('openListing'))}${icon('link')}</a>` : ''}<button type="button" class="btn ghost" data-toggle="${b.id}">${esc(open ? t('hide') : t('otherOptions'))} · ${opts.length}</button></div>${open ? `<ul class="optList">${opts.map(o => optRow(o, b.id, o.id === st.id)).join('')}</ul><form class="suggest" data-suggest="${b.id}"><input name="n" placeholder="${esc(t('suggestName'))}" required maxlength="120"><input name="u" type="url" placeholder="${esc(t('suggestUrl'))}"><button type="submit" class="btn ghost">${icon('plus')}${esc(t('addSuggestion'))}</button></form>` : ''}</div>`; }).join('')}</section>
-    <section class="section" id="carSection"><h2>${esc(t('car'))}</h2><p class="lead">${esc(t('carLead'))}</p><div class="panel"><h3>${esc(car.n)}</h3><p class="note">${esc(car.type)} · ${esc(car.avail)}</p><div class="scores"><div>${esc(t('luxury'))}<b>${car.lux}</b></div><div>${esc(t('comfort'))}<b>${car.comfort}</b></div><div>${esc(t('value'))}<b>${car.val}</b></div></div><p class="note">${esc(car.note)} ${esc(car.price)}.</p><div class="actions"><a class="btn" href="${esc(car.link)}" target="_blank" rel="noopener noreferrer">${esc(t('checkRentals'))}${icon('link')}</a><button type="button" class="btn ghost" data-toggle="car">${esc(S.open.car ? t('hide') : t('otherOptions'))} · ${T.cars.length}</button></div>${S.open.car ? `<ul class="optList">${T.cars.map(c => `<li><span><b>${esc(c.n)}</b><small>${esc(c.type)} · ${esc(c.tag)} · ${t('luxury')} ${c.lux} · ${t('comfort')} ${c.comfort} · ${t('value')} ${c.val}</small></span><button type="button" class="btn${c.id === car.id ? ' on' : ' ghost'}" data-car="${c.id}">${c.id === car.id ? icon('check') + esc(t('chosen')) : esc(t('choose'))}</button></li>`).join('')}</ul>` : ''}</div></section>
-    <section class="section" id="resSection"><h2>${esc(t('reservations'))}</h2><p class="lead">${esc(t('reservationsLead'))}</p>${res.length ? `<ul class="checks">${res.map(x => `<li class="${S.checks[x.key] ? 'done' : ''}"><input type="checkbox" data-check="${esc(x.key)}" ${S.checks[x.key] ? 'checked' : ''} aria-label="${esc(x.b)}"><span><b>${esc(x.b)}</b><small>${esc(x.s)}</small></span>${x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${esc(t('website'))} ↗</a>` : ''}</li>`).join('')}</ul>` : `<p class="note">${esc(t('nothingToBook'))}</p>`}</section>
+    <section class="section" id="routeSection"><h2>${esc(t('route'))}</h2><p class="lead">${esc(t('routeLead'))}</p><div class="nights">${S.route.map((b, i) => `<button type="button" class="nightCell" data-night="${i}"><small>${esc(dayLabel(dayById[T.nights[i]]))}</small><b>${esc(baseLabel(b))}</b></button>`).join('')}</div><div class="eyebrow">${esc(t('presets'))}</div><div class="presets">${T.routePresets.map((p, i) => `<button type="button" class="chip" aria-selected="${p.route.join() === S.route.join()}" data-preset="${i}">${esc(L2(p))}</button>`).join('')}</div></section>
+    <section class="section" id="staysSection"><h2>${esc(t('stays'))}</h2><p class="lead">${esc(t('staysLead'))}</p>${bl.map(b => { const st = stayFor(b.base); const pool = poolOf(b.base); const closed = S.closed[b.base]; return `<div class="panel stayPanel" data-block="${b.base}"><div class="eyebrow">${esc(b.label)}</div><article class="stayCard hero">${photo(st, true)}<div class="stayBody"><h3>${esc(st.n)}${st.suggested ? ` <span class="badge">${esc(t('suggested'))}</span>` : ''}</h3><small>${esc([st.type, st.guests, st.rating].filter(Boolean).join(' · '))}</small>${st.exp != null ? `<div class="scores"><div>${esc(t('experience'))}<b>${st.exp}</b></div><div>${esc(t('privacy'))}<b>${st.priv}</b></div><div>${esc(t('value'))}<b>${esc(st.tier || st.val)}</b></div></div>` : ''}${st.note ? `<p class="note">${esc(st.note)}</p>` : ''}<div class="actions">${st.url ? `<a class="btn" href="${esc(st.url)}" target="_blank" rel="noopener noreferrer">${esc(t('openListing'))}${icon('link')}</a>` : ''}<button type="button" class="btn ghost" data-toggle="${b.base}">${esc(closed ? t('showOptions') : t('hide'))} · ${pool.length}</button></div></div></article>${closed ? '' : `${stayFilters(b.base)}<div class="stayRail">${filteredPool(b.base).map(o => stayCard(o, b.base, o.id === st.id)).join('') || `<p class="note">${esc(t('noMatch'))}</p>`}</div><form class="suggest" data-suggest="${b.base}"><input name="n" placeholder="${esc(t('suggestName'))}" required maxlength="120"><input name="u" type="url" placeholder="${esc(t('suggestUrl'))}"><button type="submit" class="btn ghost">${icon('plus')}${esc(t('addSuggestion'))}</button></form>`}</div>`; }).join('')}</section>
+    <section class="section" id="carSection"><h2>${esc(t('car'))}</h2><p class="lead">${esc(t('carLead'))}</p><div class="panel"><article class="stayCard hero">${car.wiki ? `<div class="photo big" hidden><img data-wiki="${esc(car.wiki)}" alt="${esc(car.n)}"></div>` : ''}<div class="stayBody"><h3>${esc(car.n)}</h3><p class="note">${esc(car.type)} · ${esc(car.avail)}</p><div class="scores"><div>${esc(t('luxury'))}<b>${car.lux}</b></div><div>${esc(t('comfort'))}<b>${car.comfort}</b></div><div>${esc(t('value'))}<b>${car.val}</b></div></div><p class="note">${esc(car.note)} ${esc(car.price)}.</p><div class="actions"><a class="btn" href="${esc(car.link)}" target="_blank" rel="noopener noreferrer">${esc(t('checkRentals'))}${icon('link')}</a><button type="button" class="btn ghost" data-toggle="car">${esc(S.carOpen ? t('hide') : t('showOptions'))} · ${T.cars.length}</button></div></div></article>${S.carOpen ? `<ul class="optList">${T.cars.map(c => `<li>${thumb({ wiki: c.wiki, kind: 'drive' })}<span><b>${esc(c.n)}</b><small>${esc(c.type)} · ${esc(c.tag)} · ${t('luxury')} ${c.lux} · ${t('comfort')} ${c.comfort} · ${t('value')} ${c.val}</small></span><button type="button" class="btn${c.id === car.id ? ' on' : ' ghost'}" data-car="${c.id}">${c.id === car.id ? icon('check') + esc(t('chosen')) : esc(t('choose'))}</button></li>`).join('')}</ul>` : ''}</div></section>
+    <section class="section" id="resSection"><h2>${esc(t('reservations'))}</h2><p class="lead">${esc(t('reservationsLead'))}</p>${res.length ? `<ul class="checks">${res.map(x => `<li class="${S.checks[x.key] ? 'done' : ''}"><input type="checkbox" data-check="${esc(x.key)}" ${S.checks[x.key] ? 'checked' : ''} aria-label="${esc(x.b)}">${thumb(x)}<span><b>${esc(x.b)}</b><small>${esc(x.s)}</small></span>${x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${esc(t('website'))} ↗</a>` : ''}</li>`).join('')}</ul>` : `<p class="note">${esc(t('nothingToBook'))}</p>`}</section>
     <section class="section"><h2>${esc(t('share'))}</h2><p class="lead">${esc(t('shareLead'))}</p><div class="share"><button type="button" class="btn" id="shareBtn">${icon('share')}${esc(t('share'))}</button><button type="button" class="btn ghost" id="copyBtn">${icon('copy')}${esc(t('copySummary'))}</button></div><pre class="brief" id="brief">${esc(summary())}</pre></section>
     <section class="section"><h2>${esc(t('goodToKnow'))}</h2><ul class="tips">${T.goodToKnow.map(g => { const s = L2(g); const i = s.indexOf(':'); return `<li>${i > 0 ? `<b>${esc(s.slice(0, i + 1))}</b>${esc(s.slice(i + 1))}` : esc(s)}</li>`; }).join('')}</ul></section>`;
-    host.querySelectorAll('[data-toggle]').forEach(b => b.onclick = () => { S.open[b.dataset.toggle] = !S.open[b.dataset.toggle]; render(); });
+    host.querySelectorAll('[data-night]').forEach(b => b.onclick = () => nightSheet(Number(b.dataset.night)));
+    host.querySelectorAll('[data-preset]').forEach(b => b.onclick = () => { setRoute([...T.routePresets[Number(b.dataset.preset)].route]); render(); });
+    host.querySelectorAll('[data-toggle]').forEach(b => b.onclick = () => { if (b.dataset.toggle === 'car') S.carOpen = !S.carOpen; else S.closed[b.dataset.toggle] = !S.closed[b.dataset.toggle]; render(); });
     host.querySelectorAll('[data-stay]').forEach(b => b.onclick = () => { S.stays[b.dataset.stay] = b.dataset.opt; save(); render(); });
+    host.querySelectorAll('[data-filter]').forEach(b => b.onclick = () => { S.stayFilter[b.dataset.base] = b.dataset.filter; render(); });
+    host.querySelectorAll('[data-private]').forEach(b => b.onclick = () => { S.stayPrivate[b.dataset.private] = !S.stayPrivate[b.dataset.private]; render(); });
     host.querySelectorAll('[data-car]').forEach(b => b.onclick = () => { S.car = b.dataset.car; save(); render(); });
     host.querySelectorAll('[data-check]').forEach(c => c.onchange = () => { S.checks[c.dataset.check] = c.checked; save(); render(); });
-    host.querySelectorAll('[data-suggest]').forEach(f => f.onsubmit = e => { e.preventDefault(); const n = f.n.value.trim(); if (!n) return; const u = f.u.value.trim(); const id = `sug-${Date.now().toString(36)}`; S.suggestions.push({ id, block: f.dataset.suggest, n, url: /^https?:\/\//i.test(u) ? u : null, type: t('suggested'), suggested: true }); S.stays[f.dataset.suggest] = id; save(); render(); });
+    host.querySelectorAll('[data-suggest]').forEach(f => f.onsubmit = e => { e.preventDefault(); const n = f.n.value.trim(); if (!n) return; const u = f.u.value.trim(); const ok = /^https?:\/\//i.test(u); const id = `sug-${Date.now().toString(36)}`; S.suggestions.push({ id, block: f.dataset.suggest, n, url: ok ? u : null, type: t('suggested'), suggested: true, img: ok ? [`https://s.wordpress.com/mshots/v1/${encodeURIComponent(u)}?w=1000`] : [] }); S.stays[f.dataset.suggest] = id; save(); render(); });
+    host.querySelectorAll('.photo img:not([data-wiki])').forEach(img => { const fail = () => { const box = img.parentNode; img.remove(); if (box && !box.querySelector('img')) box.classList.add('none'); }; img.onerror = fail; if (img.complete && img.naturalWidth === 0 && img.src) setTimeout(() => { if (img.isConnected && img.complete && img.naturalWidth === 0) fail(); }, 0); });
+    hydrate(host);
     $('#shareBtn').onclick = () => copy(shareUrl(), t('linkCopied'));
     $('#copyBtn').onclick = () => copy(summary(), t('copied'));
   };
@@ -262,5 +326,5 @@
   window.addEventListener('hashchange', () => { const v = location.hash.replace('#', ''); if (VIEWS.includes(v) && v !== S.view) setView(v); });
   render();
   if (loaded) toast(t('planLoaded'));
-  window.TRIP_APP = { S, render, addToDay, removeFromDay, setView, shareUrl, summary };
+  window.TRIP_APP = { S, render, addToDay, removeFromDay, setView, setRoute, shareUrl, summary, dayAreas: id => dayAreas(dayById[id]), blocks, placeSheet, wikiInfo };
 })();
