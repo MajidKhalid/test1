@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b6b62">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Tunisia Family Trip · Urgent Booking Planner</title>
+<title>Tunisia Family Trip · 18–25 Sep 2026</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="layout-v2.css">
@@ -16,7 +16,7 @@
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="#top">TUNISIA · URGENT PLAN</a>
+  <a class="brand" href="#top">TUNISIA · 18–25 SEP</a>
   <div class="topbar-actions">
     <nav><a href="#map">Map</a><a href="#calendar">Calendar</a><a href="#book-now">Book now</a><a href="#configure">Configure</a></nav>
     <button class="lang-toggle" type="button" data-language-toggle aria-label="التبديل إلى العربية">العربية</button>
@@ -24,22 +24,124 @@
 </header>
 <div class="mobile-lang-bar"><button class="lang-toggle" type="button" data-language-toggle aria-label="التبديل إلى العربية">العربية</button></div>
 <main id="top">
-  <section class="trip-summary urgent-summary"><div><div class="eyebrow">3 adults · departure date must be confirmed before payment</div><h1>Tunis first.<br>Central Tunisia next.</h1><p>Two nights in Tunis, two nights in Sousse/Kairouan, two beach nights in Hammamet, then one final night near Sidi Bou Said or Tunis.</p></div><div class="summary-route"><span>✈ Riyadh ~16:00</span><b>→</b><span>🏠 Tunis · 2 nights</span><b>→</b><span>🕌 Sousse/Kairouan · 2 nights</span><b>→</b><span>🌊 Hammamet · 2 nights</span><b>→</b><span>🏡 Tunis/Sidi · 1 night</span></div></section>
-  <section class="sticky-days" aria-label="Trip map filters"><div class="day-strip" id="topDays"></div><button class="tiny-toggle active" id="routesToggle" title="Show or hide routes">Routes</button><button class="tiny-toggle active" id="pinsToggle" title="Show or hide activity pins">Pins</button></section>
-  <section class="section map-section map-first" id="map"><div class="section-title compact-title"><div class="eyebrow">01 · Route map</div><h2>Follow the trip geographically.</h2><p>Choose the full route or a specific day. Your selected stays and timeslot choices update this map automatically.</p></div><div class="legend"><span>🏛 History</span><span>🍽 Food</span><span>🛍 Shopping</span><span>🎭 Leisure</span><span>🛏 Stay</span><span>✈ Airport</span><span>🚗 Transfer</span></div><div id="tripMap"></div></section>
-  <section class="section" id="calendar"><div class="section-title compact-title"><div class="eyebrow">02 · Activity calendar</div><h2>The selected plan, day by day.</h2><p>Tap a day to expand it. Every activity timeslot pulls one choice from the three alternatives in Configuration.</p></div><div id="schedule"></div></section>
-  <section class="section urgent-booking-section" id="book-now"><div class="section-title compact-title"><div class="eyebrow">03 · Booking control center</div><h2>Turn the plan into reservations.</h2><p>Choose the actual departure dates first, then lock the flight, first stay and SUV before working through the remaining checklist.</p></div><div id="urgentBooking"></div></section>
-  <section class="section config-section" id="configure"><div class="section-title compact-title"><div class="eyebrow">04 · Configuration</div><h2>Choose each piece of the trip.</h2><p>Your selections are saved on this device and immediately feed the calendar, map and booking brief.</p></div>
-    <div class="config-block" id="configure-flights"><div class="config-head"><div><span class="config-number">A</span><h3>Configure flights</h3><p>20 route patterns ranked around your preferred <strong>~16:00 Riyadh departure</strong>, shortest journey time, and preferred hubs: Istanbul, Doha and Jeddah.</p></div></div><div class="flight-note">⚠ <strong>Fastest time-fit:</strong> the 16:05 Flynas flight to Istanbul can connect to a 21:50 Turkish flight to Tunis, but it may be a self-connect. A protected one-ticket itinerary is safer when booking at the last minute.</div><div id="flightSelected"></div><div id="flightOptions" class="flight-rail"></div><p class="micro-note">Schedules and fares are live-check prompts, not locked inventory. Confirm terminal, baggage transfer, connection protection and final arrival date at checkout.</p></div>
-    <div class="config-block" id="configure-cars"><div class="config-head"><div><span class="config-number">B</span><h3>Configure the luxury SUV</h3><p>20 premium SUVs ranked for luxury, comfort, luggage space and realistic Tunisian availability. The selected vehicle is intended for the full stay.</p></div></div><div class="car-note">🚙 <strong>Recommended first:</strong> BMW X5 or similar. Then Range Rover Sport, Mercedes GLE, Audi Q7 and Volvo XC90. Get the exact model, automatic transmission, unlimited mileage and full insurance confirmed in writing.</div><div id="carSelected"></div><div id="carOptions" class="car-rail"></div><p class="micro-note">“Or similar” does not guarantee the model pictured. Confirm boot size for three adults’ luggage, deposit, excess, second driver and cross-city drop-off rules.</p></div>
-    <div class="config-block" id="configure-whatsapp"><div class="config-head"><div><span class="config-number">C</span><h3>Import the WhatsApp group suggestions</h3><p>Paste the latest stay suggestions and links from the group. They are preserved as group-sourced options and added to the appropriate stay block without replacing the researched shortlist.</p></div></div><div id="whatsAppImporter"></div></div>
-    <div class="config-block" id="configure-stays"><div class="config-head"><div><span class="config-number">D</span><h3>Configure stays</h3><p>Four stay blocks: Tunis, Sousse/Kairouan, Hammamet and the final Tunis/Sidi night. Each researched block contains at least 20 ranked options, plus any WhatsApp imports.</p></div></div><div class="stay-score-key"><span>✨ Experience = how memorable/local the stay feels</span><span>🔒 Privacy = how exclusively the space is yours</span><span>💰 Price = relative value; 10/10 is better value</span></div><div id="staySegments"></div></div>
-    <div class="config-block" id="configure-activities"><div class="config-head activity-config-head"><div><span class="config-number">E</span><h3>Configure activities</h3><p><strong>28 timeslots · 3 alternatives per slot · 84 image-backed choices.</strong> Select one option in each slot or skip the slot. The calendar and map recalculate instantly.</p></div><div class="chooser-actions"><button id="recommendedBtn" class="ghost-btn">Show recommended only</button><button id="restoreBtn" class="ghost-btn">Reset plan</button></div></div><div class="tabs config-tabs"><button class="tab active" data-tab="history">🏛 Historical & cultural</button><button class="tab" data-tab="leisure">🎭 Dining · shopping · leisure</button></div><div id="historyList" class="choice-list"></div><div id="leisureList" class="choice-list hidden"></div></div>
+  <section class="trip-summary urgent-summary">
+    <div>
+      <div class="eyebrow">3 adults · Fri 18 Sep → Fri 25 Sep · booking immediately</div>
+      <h1>Tunis first.<br>Sousse &amp; Kairouan next.</h1>
+      <p>Two nights in Tunis, two nights covering Sousse and Kairouan, two beach nights in Hammamet, then one final night near Sidi Bou Said or Tunis before the return flight.</p>
+    </div>
+    <div class="summary-route">
+      <span>✈ Riyadh ~16:00</span><b>→</b><span>🏠 Tunis · 2 nights</span><b>→</b><span>🕌 Sousse/Kairouan · 2 nights</span><b>→</b><span>🌊 Hammamet · 2 nights</span><b>→</b><span>🏡 Tunis/Sidi · 1 night</span>
+    </div>
   </section>
-  <section class="section sources-section"><details><summary>Research notes & sources</summary><div id="sources"></div></details></section>
+
+  <section class="research-strip" aria-label="Research status">
+    <strong>Research refreshed 17 Sep 2026.</strong>
+    <span>Flight patterns, central-Tunisia stays and premium SUVs were rechecked. WhatsApp suggestions still require a connected browser tool or manual paste into the importer.</span>
+  </section>
+
+  <section class="sticky-days" aria-label="Trip map filters">
+    <div class="day-strip" id="topDays"></div>
+    <button class="tiny-toggle active" id="routesToggle" title="Show or hide routes">Routes</button>
+    <button class="tiny-toggle active" id="pinsToggle" title="Show or hide activity pins">Pins</button>
+  </section>
+
+  <section class="section map-section map-first" id="map">
+    <div class="section-title compact-title">
+      <div class="eyebrow">01 · Route map</div>
+      <h2>Follow the trip geographically.</h2>
+      <p>Choose the full route or a specific day. Your selected stays and timeslot choices update this map automatically.</p>
+    </div>
+    <div class="legend"><span>🏛 History</span><span>🍽 Food</span><span>🛍 Shopping</span><span>🎭 Leisure</span><span>🛏 Stay</span><span>✈ Airport</span><span>🚗 Transfer</span></div>
+    <div id="tripMap"></div>
+  </section>
+
+  <section class="section" id="calendar">
+    <div class="section-title compact-title">
+      <div class="eyebrow">02 · Activity calendar</div>
+      <h2>The selected plan, day by day.</h2>
+      <p>Tap a day to expand it. Every activity timeslot pulls one choice from three alternatives in Configuration.</p>
+    </div>
+    <div id="schedule"></div>
+  </section>
+
+  <section class="section urgent-booking-section" id="book-now">
+    <div class="section-title compact-title">
+      <div class="eyebrow">03 · Booking control center</div>
+      <h2>Turn the plan into reservations.</h2>
+      <p>Lock the flight, first Tunis stay and full-trip SUV first. Then reserve the two central-Tunisia nights, Hammamet beach stay and final Tunis/Sidi night.</p>
+    </div>
+    <div id="urgentBooking"></div>
+  </section>
+
+  <section class="section config-section" id="configure">
+    <div class="section-title compact-title">
+      <div class="eyebrow">04 · Configuration</div>
+      <h2>Choose each piece of the trip.</h2>
+      <p>Your selections are saved on this device and immediately feed the calendar, map and booking brief.</p>
+    </div>
+
+    <div class="config-block" id="configure-flights">
+      <div class="config-head"><div><span class="config-number">A</span><h3>Configure flights</h3><p>20 route patterns ranked around your preferred <strong>~16:00 Riyadh departure</strong>, shortest journey time, and preferred hubs: Istanbul, Doha and Jeddah.</p></div></div>
+      <div class="flight-note">⚠ <strong>Best timing match:</strong> RUH 16:05 → IST 19:55, then IST 21:50 → TUN 22:45. Use it only when the full Flynas/Turkish itinerary is issued on one protected ticket/PNR with baggage through-checked.</div>
+      <div id="flightSelected"></div>
+      <div id="flightOptions" class="flight-rail"></div>
+      <p class="micro-note">Schedules and fares are live-check prompts, not held inventory. Confirm terminal, baggage transfer, one-ticket protection and the final arrival date at checkout.</p>
+    </div>
+
+    <div class="config-block" id="configure-cars">
+      <div class="config-head"><div><span class="config-number">B</span><h3>Configure the luxury SUV</h3><p>20 premium SUVs ranked for luxury, comfort, luggage space and realistic Tunisian availability. The selected vehicle is intended for the full stay.</p></div></div>
+      <div class="car-note">🚙 <strong>Overall recommendation:</strong> BMW X5 if the exact model is available. Range Rover Sport is the prestige upgrade. Toyota Land Cruiser Prado 2025 is the strongest currently surfaced full-size local option for a next-day booking.</div>
+      <div id="carSelected"></div>
+      <div id="carOptions" class="car-rail"></div>
+      <p class="micro-note">“Or similar” does not guarantee the pictured model. Confirm automatic transmission, unlimited mileage, full insurance, deposit/excess, second driver and boot capacity for three adults’ luggage.</p>
+    </div>
+
+    <div class="config-block" id="configure-whatsapp">
+      <div class="config-head"><div><span class="config-number">C</span><h3>Import the WhatsApp group suggestions</h3><p>Paste the newest stay names and links from the group. They remain labeled as group-sourced options and are added to the correct stay block without replacing the researched shortlist.</p></div></div>
+      <div id="whatsAppImporter"></div>
+    </div>
+
+    <div class="config-block" id="configure-stays">
+      <div class="config-head"><div><span class="config-number">D</span><h3>Configure stays</h3><p>Four stay blocks: Tunis, Sousse/Kairouan, Hammamet and the final Tunis/Sidi night. Each researched block contains at least 20 ranked options, plus imported WhatsApp suggestions.</p></div></div>
+      <div class="stay-score-key"><span>✨ Experience = how memorable/local the stay feels</span><span>🔒 Privacy = how exclusively the space is yours</span><span>💰 Price = relative value; 10/10 is better value</span></div>
+      <div id="staySegments"></div>
+    </div>
+
+    <div class="config-block" id="configure-activities">
+      <div class="config-head activity-config-head"><div><span class="config-number">E</span><h3>Configure activities</h3><p><strong>28 timeslots · 3 alternatives per slot · 84 image-backed choices.</strong> Select one option in each slot or skip the slot. The calendar and map recalculate instantly.</p></div><div class="chooser-actions"><button id="recommendedBtn" class="ghost-btn">Show recommended only</button><button id="restoreBtn" class="ghost-btn">Reset plan</button></div></div>
+      <div class="tabs config-tabs"><button class="tab active" data-tab="history">🏛 Historical &amp; cultural</button><button class="tab" data-tab="leisure">🎭 Dining · shopping · leisure</button></div>
+      <div id="historyList" class="choice-list"></div>
+      <div id="leisureList" class="choice-list hidden"></div>
+    </div>
+  </section>
+
+  <section class="section sources-section"><details><summary>Research notes &amp; sources</summary><div id="sources"></div></details></section>
 </main>
 <nav class="bottom-nav urgent-bottom"><a href="#map"><b>⌖</b>Map</a><a href="#calendar"><b>☷</b>Calendar</a><a href="#book-now"><b>✓</b>Book</a><a href="#configure"><b>⚙</b>Configure</a></nav>
-<footer>Urgent planning version. Verify exact dates, live inventory, entry requirements, baggage, connection protection, accessibility and cancellation terms before paying.</footer>
+<footer>Research refreshed 17 Sep 2026. Verify exact dates, live inventory, entry requirements, baggage, connection protection, accessibility and cancellation terms before paying.</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="data.js"></script><script src="planner-options.js"></script><script src="image-corrections.js"></script><script src="urgent-plan.js"></script><script src="urgent-activities-1.js"></script><script src="urgent-activities-2.js"></script><script src="urgent-activities-3.js"></script><script src="urgent-activities-4.js"></script><script src="urgent-flights.js"></script><script src="urgent-central-stays.js"></script><script src="urgent-finalize.js"></script><script src="app.js"></script><script src="extras-ui.js"></script><script src="luxury-cars.js"></script><script src="cars-ui.js"></script><script src="car-images-ui.js"></script><script src="urgent-support.js"></script><script src="hardening.js"></script><script src="i18n.js"></script><script src="i18n-urgent.js"></script>
-</body></html>
+<script src="data.js"></script>
+<script src="planner-options.js"></script>
+<script src="image-corrections.js"></script>
+<script src="urgent-plan.js"></script>
+<script src="urgent-activities-1.js"></script>
+<script src="urgent-activities-2.js"></script>
+<script src="urgent-activities-3.js"></script>
+<script src="urgent-activities-4.js"></script>
+<script src="urgent-flights.js"></script>
+<script src="urgent-flights-latest.js"></script>
+<script src="urgent-central-stays.js"></script>
+<script src="urgent-finalize.js"></script>
+<script src="app.js"></script>
+<script src="extras-ui.js"></script>
+<script src="luxury-cars.js"></script>
+<script src="luxury-cars-latest.js"></script>
+<script src="cars-ui.js"></script>
+<script src="car-images-ui.js"></script>
+<script src="urgent-support.js"></script>
+<script src="hardening.js"></script>
+<script src="i18n.js"></script>
+<script src="i18n-urgent.js"></script>
+</body>
+</html>
