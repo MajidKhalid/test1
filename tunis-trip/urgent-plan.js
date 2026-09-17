@@ -1,7 +1,7 @@
 (()=>{const D=window.TRIP_DATA;if(!D)return;
 window.URGENT_BUILD={obj:(k,r)=>Object.fromEntries(k.map((x,i)=>[x,r[i]])),shot:u=>`https://image.thum.io/get/width/900/crop/650/noanimate/${encodeURIComponent(u)}`,activityRows:[],flightRows:[],centralRows:[]};
 D.datePresets=[
- {id:'exact',label:'Primary trip · depart Fri 18 Sep, return Fri 25 Sep',start:'2026-09-18',end:'2026-09-25'},
+ {id:'original',label:'Primary trip · depart Fri 18 Sep, return Fri 25 Sep',start:'2026-09-18',end:'2026-09-25'},
  {id:'backup',label:'One-day fallback · depart Sat 19 Sep, return Sat 26 Sep',start:'2026-09-19',end:'2026-09-26'}
 ];
 D.days=[
