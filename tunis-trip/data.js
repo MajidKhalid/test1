@@ -340,14 +340,23 @@ window.TRIP = (() => {
   const driveHours = { 'tunis-carthage': 0.5, 'tunis-kairouan': 2, 'tunis-sousse': 1.75, 'tunis-hammamet': 1, 'carthage-kairouan': 2.25, 'carthage-sousse': 2, 'carthage-hammamet': 1.25, 'kairouan-sousse': 1, 'kairouan-hammamet': 1.5, 'sousse-hammamet': 1 };
   // Six nights: Sat 19 → Thu 24. Friday 25 is the flight home.
   const nights = ['D2', 'D3', 'D4', 'D5', 'D6', 'D7'];
-  const defaultRoute = ['tunis', 'tunis', 'kairouan', 'sousse', 'hammamet', 'hammamet'];
+  const defaultRoute = ['tunis', 'tunis', 'sousse', 'sousse', 'hammamet', 'hammamet'];
+  const routeVersion = 2;
   const routePresets = [
-    { en: 'Tunis 2 · Kairouan 1 · Sousse 1 · Hammamet 2', ar: 'تونس 2 · القيروان 1 · سوسة 1 · الحمامات 2', route: ['tunis', 'tunis', 'kairouan', 'sousse', 'hammamet', 'hammamet'] },
-    { en: 'Carthage 3 · Hammamet 3', ar: 'قرطاج 3 · الحمامات 3', route: ['carthage', 'carthage', 'carthage', 'hammamet', 'hammamet', 'hammamet'] },
     { en: 'Tunis 2 · Sousse 2 · Hammamet 2', ar: 'تونس 2 · سوسة 2 · الحمامات 2', route: ['tunis', 'tunis', 'sousse', 'sousse', 'hammamet', 'hammamet'] },
+    { en: 'Carthage 3 · Hammamet 3', ar: 'قرطاج 3 · الحمامات 3', route: ['carthage', 'carthage', 'carthage', 'hammamet', 'hammamet', 'hammamet'] },
+    { en: 'Tunis 2 · Kairouan 1 · Sousse 1 · Hammamet 2', ar: 'تونس 2 · القيروان 1 · سوسة 1 · الحمامات 2', route: ['tunis', 'tunis', 'kairouan', 'sousse', 'hammamet', 'hammamet'] },
     { en: 'Carthage 2 · Kairouan 1 · Sousse 1 · Hammamet 2', ar: 'قرطاج 2 · القيروان 1 · سوسة 1 · الحمامات 2', route: ['carthage', 'carthage', 'kairouan', 'sousse', 'hammamet', 'hammamet'] },
     { en: 'Hammamet 3 · Carthage 3', ar: 'الحمامات 3 · قرطاج 3', route: ['hammamet', 'hammamet', 'hammamet', 'carthage', 'carthage', 'carthage'] }
   ];
+  // Drive days with a stop on the way: plan and hours for the day the base changes from A to B.
+  const transitions = {
+    'tunis>sousse': { h: 3, en: 'via Kairouan', ar: 'عبر القيروان', plan: ['great-mosque', 'aghlabid-basins', 'dar-koraich', 'kairouan-medina', 'makroudh', 'sousse-medina@evening', 'dar-antonia-dinner'] },
+    'carthage>sousse': { h: 3.25, en: 'via Kairouan', ar: 'عبر القيروان', plan: ['great-mosque', 'aghlabid-basins', 'dar-koraich', 'kairouan-medina', 'makroudh', 'sousse-medina@evening', 'dar-antonia-dinner'] },
+    'sousse>hammamet': { h: 3, en: 'via El Jem', ar: 'عبر الجم', plan: ['eljem-amphitheatre', 'eljem-museum', 'eljem-lunch', 'hammamet-medina@evening', 'hammamet-kasbah@evening', 'barberousse'] },
+    'tunis>hammamet': { h: 1.5, en: 'via Takrouna', ar: 'عبر تكرونة', plan: ['takrouna', 'hammamet-medina@evening', 'hammamet-kasbah@evening', 'barberousse'] },
+    'carthage>hammamet': { h: 1.75, en: 'via Takrouna', ar: 'عبر تكرونة', plan: ['takrouna', 'hammamet-medina@evening', 'hammamet-kasbah@evening', 'barberousse'] }
+  };
   // Day templates per base: the n-th consecutive day in a base uses template[n]. 'id@slot' overrides the place's default slot.
   const templates = {
     tunis: [
@@ -367,14 +376,14 @@ window.TRIP = (() => {
       ['barber-mosque', 'bir-barrouta', 'three-doors', 'la-kasbah-lunch', 'raqqada', 'kairouan-souks', 'kairouan-evening']
     ],
     sousse: [
-      ['sousse-ribat', 'sousse-mosque', 'le-lido', 'sousse-medina', 'dar-antonia-dinner'],
-      ['sousse-museum', 'kantaoui-marina-lunch', 'kantaoui-beach', 'monastir-ribat', 'monastir-marina-lunch@evening'],
+      ['sousse-ribat', 'sousse-mosque', 'sousse-museum', 'le-lido', 'sousse-medina', 'kantaoui-beach', 'dar-antonia-dinner'],
+      ['kantaoui-marina-lunch', 'kantaoui-boat', 'monastir-ribat', 'bourguiba-mausoleum', 'monastir-marina-lunch@evening'],
       ['skifa-kahla', 'borj-el-kebir', 'mahdia-port-grills', 'mahdia-beach', 'boujaffar-promenade'],
       ['eljem-amphitheatre', 'eljem-museum', 'eljem-lunch', 'bora-bora']
     ],
     hammamet: [
-      ['hammamet-medina@evening', 'hammamet-kasbah@evening', 'barberousse'],
       ['nabeul-pottery', 'nabeul-souk', 'chez-achour', 'hammamet-beach', 'bio-azur', 'sidi-bou-hdid@evening'],
+      ['dar-sebastian', 'hammamet-beach', 'hammamet-medina@evening', 'hammamet-kasbah@evening', 'barberousse'],
       ['kerkouane', 'kelibia-fort', 'kelibia-beach', 'yasmine-marina-dinner'],
       ['dar-sebastian', 'hammamet-beach', 'hasdrubal-thalassa', 'villa-dinner']
     ]
@@ -396,5 +405,5 @@ window.TRIP = (() => {
     back: { en: 'Fri 25 Sep · Saudia · SV366 Tunis 11:40 → Jeddah 18:05 · SV1046 20:00 → Riyadh 21:45', ar: 'الجمعة 25 سبتمبر · السعودية · SV366 تونس 11:40 ← جدة 18:05 · SV1046 الساعة 20:00 ← الرياض 21:45' }
   };
 
-  return { start: '2026-09-18', travelers: 3, flight, places: P, stayPools, bases, driveHours, nights, defaultRoute, routePresets, templates, cars, days, areas, cats, slots, tags, goodToKnow };
+  return { start: '2026-09-18', travelers: 3, flight, places: P, stayPools, bases, driveHours, nights, defaultRoute, routeVersion, routePresets, templates, transitions, cars, days, areas, cats, slots, tags, goodToKnow };
 })();
