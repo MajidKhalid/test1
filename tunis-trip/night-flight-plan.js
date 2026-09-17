@@ -23,7 +23,7 @@ if(h)Object.assign(h,{label:'Hammamet · Wednesday and Thursday nights',dates:'N
 D.staySegments=[t,c,h].filter(Boolean);
 
 D.fixed=[
- {id:'depart-ruh',day:'D1',time:'20:15',order:1,name:'Depart Riyadh at night',category:'airport',lat:null,lng:null,description:'Preferred pattern: Royal Jordanian RJ737 from Riyadh at 20:15, connecting in Amman to RJ553 and arriving Tunis at 02:15 Saturday. Confirm the full itinerary is issued on one protected ticket.'},
+ {id:'depart-ruh',day:'D1',time:'20:15',order:1,name:'Depart Riyadh at night',category:'airport',description:'Preferred pattern: Royal Jordanian RJ737 from Riyadh at 20:15, connecting in Amman to RJ553 and arriving Tunis at 02:15 Saturday. Confirm the full itinerary is issued on one protected ticket.'},
  {id:'arrive-tun',day:'D2',time:'02:15',order:1,name:'Tunis–Carthage Airport arrival',category:'airport',lat:36.851,lng:10.2272,description:'Early Saturday arrival. Use a pre-booked driver, check in immediately and keep the morning light.'},
  {id:'airport-to-tunis',day:'D2',time:'03:00',order:2,name:'Airport → Tunis stay',category:'transfer',lat:36.799,lng:10.171,description:'Transfer directly to the selected Tunis stay. Confirm late-night reception or self check-in before paying.'},
  {id:'to-kairouan',day:'D4',time:'08:00',order:1,name:'Tunis → Kairouan',category:'transfer',lat:35.681,lng:10.102,description:'Check out after two Tunis nights and drive south with luggage in the selected luxury SUV.'},
@@ -45,13 +45,16 @@ D.activities.forEach(a=>{
 });
 
 const currentFlight=localStorage.getItem('tn-flight-v1');
-if(!currentFlight||['turkey-1605','qatar-midday-mix','qatar-unsafe-1540'].includes(currentFlight))localStorage.setItem('tn-flight-v1','rj-evening');
+const allowedNightFlights=['rj-evening','turkish-protected-0145','jeddah-overnight','egyptair-cairo'];
+if(!allowedNightFlights.includes(currentFlight))localStorage.setItem('tn-flight-v1','rj-evening');
 
 const sources=[
  ['Royal Jordanian RJ737 · Riyadh to Amman','https://www.flight.info/RJ737'],
  ['Royal Jordanian RJ553 · Amman to Tunis','https://www.flight.info/RJ553'],
  ['Flyadeal F3151 · Riyadh to Jeddah','https://www.flight.info/F3151'],
  ['Jeddah to Tunis schedules','https://www.wego.com/schedules/jed/tun/flight-schedules-from-jeddah-to-tunis'],
+ ['Turkish Airlines TK141 · Riyadh to Istanbul','https://www.flight.info/TK141'],
+ ['Turkish Airlines TK661 · Istanbul to Tunis','https://info.flightmapper.net/flight/Turkish_Airlines_TK_661'],
  ['Doha to Tunis schedules','https://www.wego.com/schedules/doh/tun/flight-schedules-from-doha-to-tunus']
 ];
 const seen=new Set((D.sources||[]).map(x=>x[1]));
