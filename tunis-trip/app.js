@@ -99,14 +99,17 @@
   const oldStays = saved.stays || {};
   Object.entries(oldStays).forEach(([k, v]) => { if (BASES.includes(k)) S.stays[k] = v; else BASES.forEach(b => { if (T.stayPools[b].some(o => o.id === v)) S.stays[b] = v; }); });
   BASES.forEach(b => { if (!S.stays[b]) S.stays[b] = T.stayPools[b][0].id; });
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ lang: S.lang, plan: S.plan, route: S.route, stays: S.stays, car: S.car, checks: S.checks, suggestions: S.suggestions })); } catch (e) { } };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ lang: S.lang, routeV: T.routeVersion, plan: S.plan, route: S.route, stays: S.stays, car: S.car, checks: S.checks, suggestions: S.suggestions })); } catch (e) { } };
 
   /* ───────── route → plan ───────── */
-  const tuples = route => { let n = 0, prev = null; return route.map(b => { n = b === prev ? n + 1 : 0; prev = b; return `${b}:${n}`; }); };
-  const templateRows = key => { const [b, n] = key.split(':'); const tpl = T.templates[b]; return tpl[Number(n) % tpl.length].map(x => { const [p, s] = x.split('@'); return { p, s: s || byId[p].slot }; }); };
+  const tuples = route => { let n = -1, prev = null; return route.map(b => { if (b !== prev) { const tk = prev && T.transitions[`${prev}>${b}`] ? `${prev}>${b}` : null; prev = b; if (tk) { n = -1; return tk; } n = 0; return `${b}:0`; } n++; return `${b}:${n}`; }); };
+  const rowsFrom = list => list.map(x => { const [p, s] = x.split('@'); return { p, s: s || byId[p].slot }; });
+  const templateRows = key => { if (key.includes('>')) return rowsFrom(T.transitions[key].plan); const [b, n] = key.split(':'); const tpl = T.templates[b]; return rowsFrom(tpl[Number(n) % tpl.length]); };
   const defaultPlan = route => { const plan = {}; T.days.forEach(d => plan[d.id] = []); tuples(route).forEach((k, i) => plan[T.nights[i]] = templateRows(k)); return plan; };
   S.plan = saved.plan || defaultPlan(S.route);
   const setRoute = route => { const before = tuples(S.route), after = tuples(route); after.forEach((k, i) => { if (k !== before[i]) S.plan[T.nights[i]] = templateRows(k); }); S.route = route; save(); };
+  // The family fixed the route (Tunis 2 · Sousse 2 · Hammamet 2); move devices that still hold an older default.
+  if (saved.routeV !== T.routeVersion) { if (saved.plan) setRoute([...T.defaultRoute]); S.routeV = T.routeVersion; save(); }
 
   // shared link → state
   const b64e = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -137,14 +140,14 @@
   const dayBase = d => { const i = dayIndex(d.id); return i === 0 ? null : i === T.days.length - 1 ? S.route[T.nights.length - 1] : S.route[i - 1]; };
   const prevBase = d => { const i = dayIndex(d.id); return i >= 2 && i <= T.nights.length ? S.route[i - 2] : null; };
   const dayAreas = d => { const b = dayBase(d), p = prevBase(d); return b ? [...T.bases[b].areas, ...(p && p !== b ? T.bases[p].areas : [])] : []; };
-  const dayTitle = d => { const i = dayIndex(d.id), b = dayBase(d), p = prevBase(d); if (i === 0) return L2({ en: d.ten, ar: d.tar }); if (i === 1) return `${t('arriveIn')} ${baseLabel(b)}`; if (i === T.days.length - 1) return `${baseLabel(b)} ${t('toAirport')}`; return p && p !== b ? `${baseLabel(p)} ${arrow(S)} ${baseLabel(b)}` : baseLabel(b); };
+  const dayTitle = d => { const i = dayIndex(d.id), b = dayBase(d), p = prevBase(d); if (i === 0) return L2({ en: d.ten, ar: d.tar }); if (i === 1) return `${t('arriveIn')} ${baseLabel(b)}`; if (i === T.days.length - 1) return `${baseLabel(b)} ${t('toAirport')}`; if (p && p !== b) { const tr = T.transitions[`${p}>${b}`]; return `${baseLabel(p)} ${arrow(S)} ${baseLabel(b)}${tr ? ` ${L2(tr)}` : ''}`; } return baseLabel(b); };
   const poolOf = b => [...T.stayPools[b], ...S.suggestions.filter(x => x.block === b)];
   const stayFor = b => { const pool = poolOf(b); return pool.find(o => o.id === S.stays[b]) || pool[0]; };
   const blocks = () => { const out = []; S.route.forEach((b, i) => { const last = out[out.length - 1]; if (last && last.base === b && last.end === i - 1) { last.end = i; last.nights++; } else out.push({ base: b, start: i, end: i, nights: 1 }); }); return out.map(x => ({ ...x, from: dayById[T.nights[x.start]], to: dayById[T.days[dayIndex(T.nights[x.end]) + 1].id], label: `${baseLabel(x.base)} · ${dayLabel(dayById[T.nights[x.start]])} – ${dayLabel(dayById[T.days[dayIndex(T.nights[x.end]) + 1].id])} · ${x.nights} ${t('nightsIn')}` })); };
   const fixedRows = d => {
     const i = dayIndex(d.id), b = dayBase(d), p = prevBase(d), rows = [...d.fixed];
     if (i === 1 && b) { const st = stayFor(b); rows.push({ slot: 'morning', time: '09:00', en: `${UI.land[0]} ~${fmtH(T.bases[b].airport)} ${UI.to[0]} ${st.n}`, ar: `${UI.land[1]} ~${fmtH(T.bases[b].airport)} ${UI.to[1]} ${st.n}`, ll: [36.8510, 10.2272], kind: 'flight' }); }
-    if (p && p !== b) { const h = driveH(p, b), from = stayFor(p), to = stayFor(b); rows.push({ slot: 'morning', time: '', en: `${UI.checkOut[0]} ${from.n}`, ar: `${UI.checkOut[1]} ${from.n}`, kind: 'stay' }); rows.push({ slot: 'afternoon', time: '', en: `${UI.drive[0]} ${T.bases[p].en} → ${T.bases[b].en} · ~${fmtH(h)} · ${UI.checkIn[0]} ${to.n}`, ar: `${UI.drive[1]} ${T.bases[p].ar} ← ${T.bases[b].ar} · ~${fmtH(h)} · ${UI.checkIn[1]} ${to.n}`, ll: to.ll, kind: 'drive' }); }
+    if (p && p !== b) { const tr = T.transitions[`${p}>${b}`]; const h = tr ? tr.h : driveH(p, b), via = tr ? ` ${L2(tr)}` : '', from = stayFor(p), to = stayFor(b); rows.push({ slot: 'morning', time: '', en: `${UI.checkOut[0]} ${from.n}`, ar: `${UI.checkOut[1]} ${from.n}`, kind: 'stay' }); rows.push({ slot: 'afternoon', time: '', en: `${UI.drive[0]} ${T.bases[p].en} → ${T.bases[b].en}${via} · ~${fmtH(h)} · ${UI.checkIn[0]} ${to.n}`, ar: `${UI.drive[1]} ${T.bases[p].ar} ← ${T.bases[b].ar}${via} · ~${fmtH(h)} · ${UI.checkIn[1]} ${to.n}`, ll: to.ll, kind: 'drive' }); }
     if (i === T.days.length - 1 && b) { const h = T.bases[b].airport, st = stayFor(b); rows.unshift({ slot: 'morning', time: hhmm(8 * 60 + 40 - Math.round(h * 60) - 15), en: `${UI.leave[0]} ${st.n} ${UI.leaveFor[0]} · ~${fmtH(h)}`, ar: `${UI.leave[1]} ${st.n} ${UI.leaveFor[1]} · ~${fmtH(h)}`, kind: 'drive' }); }
     return rows;
   };
