@@ -150,7 +150,7 @@ window.TRIP = (() => {
   const S = (id, n, type, tag, guests, rating, note, ll, url, exp, priv, val, tier) => ({ id, n, type, tag, guests, rating, note, ll, url, exp, priv, val, tier });
   const stays = [
     { id: 'tunis', n: 'Tunis', na: 'تونس', nights: 'Sat 19 – Mon 21 · 2 nights', nightsAr: 'السبت 19 – الاثنين 21 · ليلتان', days: ['D2', 'D3'], def: 'dar24', options: [
-      S('dar24', 'Dar 24 · whole 18th-century Medina house', 'Entire home', 'Top pick', '7 guests · 3 bedrooms · 3 baths', '4.97 · 152 reviews', 'An entire renovated 18th-century house with patio, rooftop and three bedrooms; the cleanest match to “a riad of our own”. Late check-in must be confirmed.', [36.8016, 10.1688], 'https://www.airbnb.com/rooms/13846170', 10, 10, 6, '$$$'),
+      S('dar24', 'Dar 24 · whole 18th-century Medina house', 'Entire home', 'Top pick', '7 guests · 3 bedrooms · 3 baths', '4.97 · 152 reviews', 'An entire renovated 18th-century house with patio, rooftop and three bedrooms; the cleanest match to “a riad of our own”. You arrive around 11:00 Saturday, so ask about early check-in or a luggage drop.', [36.8016, 10.1688], 'https://www.airbnb.com/rooms/13846170', 10, 10, 6, '$$$'),
       S('typical-medina', 'Typical Medina House', 'Entire home', 'Most traditional', '6 guests · 4 bedrooms · 3 baths', '4.95 · 19 reviews', 'Restored with antique tiles and period objects; more old-house character than a guesthouse.', [36.7988, 10.1700], 'https://www.airbnb.com/rooms/1000626548921981810', 10, 10, 7, '$$$'),
       S('dar-nabiha', 'Dar Nabiha · Tourbet El Bey', 'Entire home', 'Best size for 3', '4 guests · 2 bedrooms · 2 baths', '4.96 · 46 reviews', 'Historic whole house facing Tourbet El Bey with patio and rooftop; two bedrooms fit three naturally.', [36.7941, 10.1702], 'https://www.airbnb.com/rooms/786252231713372133', 9.8, 10, 8, '$$'),
       S('pearl-medina', 'The Pearl of the Medina', 'Entire home', 'Guest favourite', '4 guests · 2 bedrooms', '4.99 · 67 reviews', 'Very strong private-home option in the old city with a high review score.', [36.7984, 10.1706], 'https://www.airbnb.com/rooms/1273014287129551258', 9.8, 10, 7, '$$$'),
@@ -246,11 +246,13 @@ window.TRIP = (() => {
   const D = (id, date, en, ar, ten, tar, areas, stay, fixed) => ({ id, date, en, ar, ten, tar, areas, stay, fixed });
   // fixed rows: {slot, time, en, ar, ll, kind:'flight'|'drive'|'note'}
   const days = [
-    D('D1', '2026-09-18', 'Fri 18', 'الجمعة 18', 'Night flight to Tunis', 'رحلة ليلية إلى تونس', [], null, [
-      { slot: 'night', time: 'out.dep', en: 'Depart Riyadh', ar: 'المغادرة من الرياض', kind: 'flight' }
+    D('D1', '2026-09-18', 'Fri 18', 'الجمعة 18', 'Late night to King Khalid Airport', 'ليلة الانطلاق إلى مطار الملك خالد', [], null, [
+      { slot: 'night', time: '22:30', en: 'Leave for King Khalid Airport · be there by 23:00 for the 01:45 flight', ar: 'الانطلاق إلى مطار الملك خالد · الوصول قبل 23:00 لرحلة 01:45', kind: 'drive' },
+      { slot: 'night', time: '01:45', en: 'Depart Riyadh (Sat) · Turkish Airlines to Istanbul', ar: 'الإقلاع من الرياض (السبت) · الخطوط التركية إلى إسطنبول', kind: 'flight' }
     ]),
     D('D2', '2026-09-19', 'Sat 19', 'السبت 19', 'Arrive · a gentle first day in Tunis', 'الوصول · يوم أول هادئ في تونس', ['tunis', 'coast'], 'tunis', [
-      { slot: 'morning', time: 'out.arr', en: 'Land at Tunis–Carthage, drive to the Medina, sleep in', ar: 'الهبوط في مطار تونس قرطاج، ثم إلى المدينة العتيقة والنوم', ll: [36.8510, 10.2272], kind: 'flight' }
+      { slot: 'morning', time: '05:45', en: 'Istanbul transfer · 2 h 20 min, TK661 leaves 08:05', ar: 'ترانزيت إسطنبول · ساعتان و20 دقيقة، رحلة TK661 تقلع 08:05', kind: 'flight' },
+      { slot: 'morning', time: '09:00', en: 'Land at Tunis–Carthage · bags, car, ~30 min to the Medina', ar: 'الهبوط في مطار تونس قرطاج · الحقائب والسيارة ونحو 30 دقيقة إلى المدينة العتيقة', ll: [36.8510, 10.2272], kind: 'flight' }
     ]),
     D('D3', '2026-09-20', 'Sun 20', 'الأحد 20', 'Bardo, Carthage and the coast', 'باردو وقرطاج والساحل', ['tunis', 'coast', 'road'], 'tunis', []),
     D('D4', '2026-09-21', 'Mon 21', 'الاثنين 21', 'Tunis → Zaghouan → Kairouan → Sousse', 'تونس ← زغوان ← القيروان ← سوسة', ['road', 'kairouan', 'sousse'], 'central', [
@@ -263,9 +265,9 @@ window.TRIP = (() => {
       { slot: 'afternoon', time: '14:30', en: 'Drive El Jem → Hammamet · ~2 h', ar: 'القيادة من الجم إلى الحمامات · نحو ساعتين', kind: 'drive' }
     ]),
     D('D7', '2026-09-24', 'Thu 24', 'الخميس 24', 'Nabeul, the beach and a slow evening', 'نابل والشاطئ ومساء هادئ', ['hammamet', 'nabeul'], 'hammamet', []),
-    D('D8', '2026-09-25', 'Fri 25', 'الجمعة 25', 'Hammamet → airport → Riyadh', 'الحمامات ← المطار ← الرياض', ['hammamet'], null, [
-      { slot: 'midday', time: 'back.leave', en: 'Leave Hammamet for the airport · ~1 h 15 drive, arrive 3 h before', ar: 'الانطلاق من الحمامات إلى المطار · نحو ساعة و15 دقيقة، والوصول قبل 3 ساعات', kind: 'drive' },
-      { slot: 'afternoon', time: 'back.dep', en: 'Depart Tunis–Carthage for Riyadh', ar: 'المغادرة من مطار تونس قرطاج إلى الرياض', ll: [36.8510, 10.2272], kind: 'flight' }
+    D('D8', '2026-09-25', 'Fri 25', 'الجمعة 25', 'Hammamet → airport → Jeddah → Riyadh', 'الحمامات ← المطار ← جدة ← الرياض', ['hammamet'], null, [
+      { slot: 'morning', time: '07:30', en: 'Leave Hammamet for Tunis–Carthage · ~1 h 15, Terminal M, be there by 08:40', ar: 'الانطلاق من الحمامات إلى مطار تونس قرطاج · نحو ساعة و15 دقيقة، المبنى M، الوصول قبل 08:40', kind: 'drive' },
+      { slot: 'midday', time: '11:40', en: 'Depart Tunis · Saudia SV366 to Jeddah 18:05, then SV1046 20:00 → Riyadh 21:45', ar: 'الإقلاع من تونس · السعودية SV366 إلى جدة 18:05، ثم SV1046 الساعة 20:00 ← الرياض 21:45', ll: [36.8510, 10.2272], kind: 'flight' }
     ])
   ];
 
@@ -314,10 +316,10 @@ window.TRIP = (() => {
     D5: ['sousse-ribat', 'sousse-mosque', 'sousse-museum', 'le-lido', 'kantaoui-beach', 'monastir-ribat', 'monastir-marina-lunch'],
     D6: ['eljem-amphitheatre', 'eljem-museum', 'eljem-lunch', 'takrouna', 'hammamet-medina', 'hammamet-kasbah', 'barberousse'],
     D7: ['nabeul-pottery', 'nabeul-souk', 'chez-achour', 'hammamet-beach', 'bio-azur', 'sidi-bou-hdid'],
-    D8: ['hammamet-beach']
+    D8: []
   };
   // slot overrides for default rows that differ from the place default
-  const defaultSlots = { 'D5:monastir-marina-lunch': 'evening', 'D6:hammamet-medina': 'evening', 'D6:hammamet-kasbah': 'evening', 'D7:sidi-bou-hdid': 'evening', 'D8:hammamet-beach': 'morning', 'D3:la-marsa-corniche': 'afternoon' };
+  const defaultSlots = { 'D2:zitouna': 'midday', 'D5:monastir-marina-lunch': 'evening', 'D6:hammamet-medina': 'evening', 'D6:hammamet-kasbah': 'evening', 'D7:sidi-bou-hdid': 'evening', 'D3:la-marsa-corniche': 'afternoon' };
 
   const goodToKnow = [
     { en: 'Money: Tunisian dinar (TND) is a closed currency; withdraw from ATMs on arrival and keep receipts to change back. Cards work in hotels and bigger restaurants, cash in souks.', ar: 'المال: الدينار التونسي عملة مغلقة؛ اسحبوا من الصراف عند الوصول واحتفظوا بالإيصالات لإعادة الصرف. البطاقات تعمل في الفنادق والمطاعم الكبيرة، والنقد في الأسواق.' },
@@ -325,8 +327,15 @@ window.TRIP = (() => {
     { en: 'Fridays: souks quieten around midday prayer; the Nabeul market is Friday mornings; museums keep normal hours. The Bardo closes on Mondays.', ar: 'الجمعة: تهدأ الأسواق وقت صلاة الجمعة؛ سوق نابل صباح الجمعة؛ المتاحف بمواعيدها المعتادة. باردو يغلق الاثنين.' },
     { en: 'Driving: motorway A1 Tunis–Sousse–El Jem is fast and tolled (small change). Medina streets are pedestrian; park outside and walk. Speed cameras are common.', ar: 'القيادة: الطريق السيار A1 تونس–سوسة–الجم سريع ومدفوع (فكة). شوارع المدن العتيقة للمشاة؛ اركنوا خارجها وامشوا. رادارات السرعة منتشرة.' },
     { en: 'Mosques: Zitouna and the Great Mosque of Kairouan welcome Muslim visitors to the prayer halls; dress modestly, shoes off, avoid prayer times for sightseeing.', ar: 'المساجد: الزيتونة وجامع القيروان يرحبان بالزوار المسلمين في بيوت الصلاة؛ لباس محتشم وخلع الأحذية وتجنب أوقات الصلاة للزيارة.' },
-    { en: 'Heat: late September is still 28–32 °C on the coast. Sights before 11 or after 16; beach and spa in the middle of the day.', ar: 'الحر: أواخر سبتمبر ما زال 28–32 درجة على الساحل. المعالم قبل 11 أو بعد 16؛ الشاطئ والسبا وسط النهار.' }
+    { en: 'Heat: late September is still 28–32 °C on the coast. Sights before 11 or after 16; beach and spa in the middle of the day.', ar: 'الحر: أواخر سبتمبر ما زال 28–32 درجة على الساحل. المعالم قبل 11 أو بعد 16؛ الشاطئ والسبا وسط النهار.' },
+    { en: 'Baggage: 2 × 23 kg each on the way out, but only 1 × 23 kg each on the Saudia return (Guest Basic). Shop with the return limit in mind, or add a bag on saudia.com before Friday.', ar: 'الأمتعة: حقيبتان 23 كغ لكل شخص في الذهاب، لكن حقيبة واحدة 23 كغ فقط في العودة مع السعودية (Guest Basic). تسوقوا على أساس حد العودة أو أضيفوا حقيبة عبر saudia.com قبل الجمعة.' },
+    { en: 'Return day: the Saudia flight leaves Tunis at 11:40 from Terminal M, with a 1 h 55 connection in Jeddah (Terminal 1). Leave Hammamet by 07:30.', ar: 'يوم العودة: رحلة السعودية تقلع من تونس 11:40 من المبنى M، مع ربط ساعة و55 دقيقة في جدة (المبنى 1). غادروا الحمامات قبل 07:30.' }
   ];
 
-  return { start: '2026-09-18', travelers: 3, flight: { airline: 'Royal Jordanian · RJ737 + RJ553', route: 'RUH → AMM → TUN', out: { dep: '20:15', arr: '02:15' }, back: { dep: '', leave: '' } }, places: P, stays, cars, days, areas, cats, slots, tags, defaultPlan, defaultSlots, goodToKnow };
+  const flight = {
+    out: { en: 'Sat 19 Sep · Turkish Airlines · Riyadh 01:45 → Istanbul 05:45 · TK661 08:05 → Tunis 09:00', ar: 'السبت 19 سبتمبر · الخطوط التركية · الرياض 01:45 ← إسطنبول 05:45 · TK661 الساعة 08:05 ← تونس 09:00' },
+    back: { en: 'Fri 25 Sep · Saudia · SV366 Tunis 11:40 → Jeddah 18:05 · SV1046 20:00 → Riyadh 21:45', ar: 'الجمعة 25 سبتمبر · السعودية · SV366 تونس 11:40 ← جدة 18:05 · SV1046 الساعة 20:00 ← الرياض 21:45' }
+  };
+
+  return { start: '2026-09-18', travelers: 3, flight, places: P, stays, cars, days, areas, cats, slots, tags, defaultPlan, defaultSlots, goodToKnow };
 })();
