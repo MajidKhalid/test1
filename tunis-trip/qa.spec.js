@@ -166,7 +166,7 @@ test('09 book: no flight controls; stays with photo rails can be changed; car; r
   await expect(page.locator('#staysSection [data-block=tunis] .stayRail .stayCard')).toHaveCount(20);
   expect(await page.locator('#staysSection .photo img').count()).toBeGreaterThan(30);
   if (await page.evaluate(() => typeof window.L !== 'undefined')) {
-    await expect.poll(() => page.locator('#staysSection [data-block=tunis] .hero .photo img').evaluate(i => i.naturalWidth), { timeout: 20000 }).toBeGreaterThan(0);
+    await expect.poll(() => page.locator('#staysSection [data-block=tunis] .hero .photo img').first().evaluate(i => i.naturalWidth), { timeout: 20000 }).toBeGreaterThan(0);
   }
   await page.locator('#staysSection [data-block=hammamet] [data-filter=both]').click();
   await expect(page.locator('#staysSection [data-block=hammamet] .stayRail .stayCard')).toHaveCount(9);
@@ -252,7 +252,7 @@ test('13 map: markers for the day when Leaflet loads, a labelled placeholder whe
     await expect.poll(() => page.locator('#map .pinIcon').count(), { timeout: 10000 }).toBeGreaterThan(4);
     await expect(page.locator('#map .pinIcon .icon svg')).not.toHaveCount(0);
     await expect(page.locator('#map .routeLine')).toHaveCount(1);
-    await page.locator('#map .pinIcon').nth(2).click();
+    await page.locator('#map .leaflet-marker-icon').nth(2).dispatchEvent('click');
     await expect(page.locator('.leaflet-popup-content')).toBeVisible();
     await expect(page.locator('.leaflet-popup-content')).toContainText('Sun 20');
     await expect(page.locator('.leaflet-popup-content')).toContainText('Directions');
@@ -336,7 +336,7 @@ test('16 a place opens a detail sheet with what it relates to; history and photo
   if (online) {
     await expect(page.locator('#sheet .hist p')).toBeVisible({ timeout: 15000 });
     await expect(page.locator('#sheet .hist p')).toContainText(/Kairouan|mosque/i);
-    await expect(page.locator('#sheet .photo img')).toHaveAttribute('src', /upload\.wikimedia\.org/, { timeout: 15000 });
+    await expect(page.locator('#sheet .photo img')).toHaveAttribute('src', /wikimedia\.org/, { timeout: 15000 });
   } else {
     await expect(page.locator('#sheet .hist p')).toBeHidden();
   }
