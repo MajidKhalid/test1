@@ -4,7 +4,7 @@ Family trip site. Open `tunis-trip/index.html` from any static host (GitHub Page
 
 - **Plan** — the day-by-day itinerary with a map. Tap a row to change its time of day, move it, get directions or remove it.
 - **Explore** — the catalogue: Food · Sights · Shopping · Nightlife · Relax, filterable by area, searchable. Add anything to any day.
-- **Book** — the three stays, the car, and a reservation checklist built from the plan. **Share plan** copies a link that carries the whole plan to another phone. Flights are booked and appear as fixed rows on Day 1, 2 and 8.
+- **Book** — the route (which base for each of the six nights, with presets), a home for each stop chosen from photo rails, the car, and a reservation checklist built from the plan. **Share plan** copies a link that carries route, stays and plan to another phone. Flights are booked and appear as fixed rows on Day 1, 2 and 8.
 
 English and Arabic; follows the system light/dark setting.
 
