@@ -168,6 +168,13 @@ test('09 book: no flight controls; stays with photo rails can be changed; car; r
   if (await page.evaluate(() => typeof window.L !== 'undefined')) {
     await expect.poll(() => page.locator('#staysSection [data-block=tunis] .hero .photo img').evaluate(i => i.naturalWidth), { timeout: 20000 }).toBeGreaterThan(0);
   }
+  await page.locator('#staysSection [data-block=hammamet] [data-filter=both]').click();
+  await expect(page.locator('#staysSection [data-block=hammamet] .stayRail .stayCard')).toHaveCount(9);
+  await page.locator('#staysSection [data-block=hammamet] [data-filter=all]').click();
+  await page.locator('#staysSection [data-block=tunis] [data-private]').click();
+  const privCount = await page.locator('#staysSection [data-block=tunis] .stayRail .stayCard').count();
+  expect(privCount).toBeGreaterThanOrEqual(10); expect(privCount).toBeLessThan(20);
+  await page.locator('#staysSection [data-block=tunis] [data-private]').click();
   await page.locator('#staysSection [data-block=sousse] [data-opt="central-dar-baaziz"]').click();
   await expect(page.locator('#staysSection [data-block=sousse] h3')).toContainText('Dar Baaziz');
   await page.locator('#viewTabs [data-view=plan]').click();
@@ -242,12 +249,22 @@ test('13 map: markers for the day when Leaflet loads, a labelled placeholder whe
   await page.locator('#dayStrip .chip[data-day=D3]').click();
   const hasLeaflet = await page.evaluate(() => typeof window.L !== 'undefined');
   if (hasLeaflet) {
-    await expect.poll(() => page.locator('#map path.pin').count(), { timeout: 10000 }).toBeGreaterThan(4);
-    await page.locator('#map path.pin').first().dispatchEvent('click');
+    await expect.poll(() => page.locator('#map .pinIcon').count(), { timeout: 10000 }).toBeGreaterThan(4);
+    await expect(page.locator('#map .pinIcon .icon svg')).not.toHaveCount(0);
+    await expect(page.locator('#map .routeLine')).toHaveCount(1);
+    await page.locator('#map .pinIcon').nth(2).click();
     await expect(page.locator('.leaflet-popup-content')).toBeVisible();
+    await expect(page.locator('.leaflet-popup-content')).toContainText('Sun 20');
     await expect(page.locator('.leaflet-popup-content')).toContainText('Directions');
+    await page.locator('#mapTools [data-tool=route]').click();
+    await expect(page.locator('#map .routeLine')).toHaveCount(0);
+    await page.locator('#mapTools [data-tool=pins]').click();
+    await expect(page.locator('#map .pinIcon')).toHaveCount(0);
+    await page.locator('#mapTools [data-tool=pins]').click();
+    expect(await page.locator('#map .pinIcon').count()).toBeGreaterThan(4);
   } else {
     await expect(page.locator('#map.off')).toContainText('Map unavailable');
+    await expect(page.locator('#mapTools')).toBeHidden();
   }
 });
 
@@ -304,4 +321,28 @@ test('15 route editor: change one night, use a preset; stays, drives, titles and
   await expect(page.locator('#dayPanel .row.fixed').nth(0)).toContainText('07:10');
   await page.locator('#dayStrip .chip[data-day=D2]').click();
   await expect(page.locator('#dayPanel h1')).toContainText('Carthage');
+});
+
+test('16 a place opens a detail sheet with what it relates to; history and photo arrive from Wikipedia when online', async ({ page }) => {
+  await open(page, '#explore');
+  await page.locator('#catTabs [data-cat=sights]').click();
+  await page.locator('#placeGrid [data-open="great-mosque"]').click();
+  await expect(page.locator('#sheet')).toBeVisible();
+  await expect(page.locator('#sheet h2')).toContainText('Great Mosque of Kairouan');
+  await expect(page.locator('#sheet .rel')).toContainText('Uqba ibn Nafi');
+  await expect(page.locator('#sheet .hist b')).toContainText('history');
+  await expect(page.locator('#sheet [data-day]')).toHaveCount(7);
+  const online = await page.evaluate(() => typeof window.L !== 'undefined');
+  if (online) {
+    await expect(page.locator('#sheet .hist p')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#sheet .hist p')).toContainText(/Kairouan|mosque/i);
+    await expect(page.locator('#sheet .photo img')).toHaveAttribute('src', /upload\.wikimedia\.org/, { timeout: 15000 });
+  } else {
+    await expect(page.locator('#sheet .hist p')).toBeHidden();
+  }
+  await page.keyboard.press('Escape');
+  await page.locator('#viewTabs [data-view=plan]').click();
+  await page.locator('#dayStrip .chip[data-day=D4]').click();
+  await page.locator('#dayPanel [data-row="great-mosque"]').click();
+  await expect(page.locator('#sheet .rel')).toContainText('Aghlabid');
 });
