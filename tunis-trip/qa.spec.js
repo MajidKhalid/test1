@@ -230,9 +230,10 @@ test('13 map: markers for the day when Leaflet loads, a labelled placeholder whe
   await page.locator('#dayStrip .chip[data-day=D3]').click();
   const hasLeaflet = await page.evaluate(() => typeof window.L !== 'undefined');
   if (hasLeaflet) {
-    await expect.poll(() => page.locator('#map path.leaflet-interactive').count(), { timeout: 10000 }).toBeGreaterThan(4);
-    await page.locator('#map path.leaflet-interactive').first().dispatchEvent('click');
+    await expect.poll(() => page.locator('#map path.pin').count(), { timeout: 10000 }).toBeGreaterThan(4);
+    await page.locator('#map path.pin').first().dispatchEvent('click');
     await expect(page.locator('.leaflet-popup-content')).toBeVisible();
+    await expect(page.locator('.leaflet-popup-content')).toContainText('Directions');
   } else {
     await expect(page.locator('#map.off')).toContainText('Map unavailable');
   }
