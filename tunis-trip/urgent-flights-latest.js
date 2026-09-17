@@ -1,0 +1,1 @@
+(()=>{const rows=window.URGENT_BUILD?.flightRows;if(!Array.isArray(rows))return;const row=rows.find(r=>r[0]==='turkey-1605');if(row){row[1]='Flynas/Turkish 16:05 via Istanbul · XY299/TK7362 + TK657';row[10]='BEST MATCH · ONE PNR ONLY';}})();
