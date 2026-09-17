@@ -1,21 +1,257 @@
+// Playwright QA for the Tunisia trip site. Runs against a static server on :4173 (see .github/workflows/tunis-trip-qa.yml).
+// The map depends on a CDN; tests accept either a working Leaflet map or the labelled offline placeholder.
 const { test, expect } = require('@playwright/test');
-const URL='http://127.0.0.1:4173/tunis-trip/';
-async function ready(page){await page.goto(URL,{waitUntil:'domcontentloaded'});await expect(page.locator('#tripMap')).toBeVisible();await expect(page.locator('#flightOptions .flight-card')).toHaveCount(20);await expect(page.locator('#carOptions .car-card')).toHaveCount(20);await expect(page.locator('#staySegments .stay-segment')).toHaveCount(4);await expect(page.locator('#urgentBooking')).not.toBeEmpty()}
+const URL = 'http://127.0.0.1:4173/tunis-trip/';
 
-test('01 layout order is map, calendar, booking, configuration',async({page})=>{await ready(page);const o=await page.evaluate(()=>['map','calendar','book-now','configure'].map(id=>document.getElementById(id).getBoundingClientRect().top+scrollY));expect(o[0]).toBeLessThan(o[1]);expect(o[1]).toBeLessThan(o[2]);expect(o[2]).toBeLessThan(o[3]);await expect(page.locator('.bottom-nav a')).toHaveCount(4)});
-test('02 map controls and all eight day filters work',async({page})=>{await ready(page);await expect(page.locator('#topDays .day-chip')).toHaveCount(9);expect(await page.locator('#tripMap').evaluate(e=>e.getBoundingClientRect().height)).toBeGreaterThan(350);const r=page.locator('#routesToggle'),p=page.locator('#pinsToggle');await r.click();await expect(r).not.toHaveClass(/active/);await r.click();await p.click();await expect(p).not.toHaveClass(/active/);await p.click();await page.locator('#topDays .day-chip[data-day="D3"]').click();await expect(page.locator('#topDays .day-chip[data-day="D3"]')).toHaveClass(/active/)});
-test('03 calendar has eight days and new overnight flow',async({page})=>{await ready(page);await expect(page.locator('#schedule .day-card')).toHaveCount(8);await expect(page.locator('#schedule')).toContainText('Sousse / Kairouan');await expect(page.locator('#schedule')).toContainText('Hammamet');const d=page.locator('#detail-D4'),s=page.locator('[data-expand="D4"]'),h=await d.evaluate(e=>e.classList.contains('hidden'));await s.click();expect(await d.evaluate(e=>e.classList.contains('hidden'))).toBe(!h)});
-test('04 urgent booking dashboard stores dates and checklist state',async({page})=>{await ready(page);await expect(page.locator('#datePreset option')).toHaveCount(2);await page.locator('#datePreset').selectOption('original');expect(await page.evaluate(()=>localStorage.getItem('tn-date-preset-v1'))).toBe('original');await page.locator('.booking-checklist input').first().check();expect((await page.evaluate(()=>JSON.parse(localStorage.getItem('tn-booking-checklist-v1')||'{}')))['0']).toBeTruthy();await expect(page.locator('#briefPreview')).toContainText('TUNISIA BOOKING BRIEF')});
-test('05 flights have twenty options, 16:05 Turkey pattern first, metrics and persistence',async({page})=>{await ready(page);const c=page.locator('#flightOptions .flight-card');await expect(c).toHaveCount(20);await expect(c.first()).toContainText('Flynas');await expect(c.first()).toContainText('16:05');await expect(c.first().locator('.flight-metrics>div')).toHaveCount(3);const n=(await c.nth(1).locator('h4').textContent()).trim();await c.nth(1).locator('.choose-flight').click();await expect(page.locator('#flightSelected')).toContainText(n);await page.reload({waitUntil:'domcontentloaded'});await expect(page.locator('#flightSelected')).toContainText(n)});
-test('06 luxury SUVs show twenty choices, BMW X5 then Range Rover, unique images and persistence',async({page})=>{await ready(page);const c=page.locator('#carOptions .car-card');await expect(c).toHaveCount(20);await expect(c.nth(0)).toContainText('BMW X5');await expect(c.nth(1)).toContainText('Range Rover');await expect(c.nth(0).locator('.car-metrics>div')).toHaveCount(3);await expect(c.locator('.car-photo')).toHaveCount(20);const src=await c.locator('.car-photo').evaluateAll(x=>x.map(i=>i.src));expect(new Set(src).size).toBe(20);const n=(await c.nth(2).locator('h4').textContent()).trim();await c.nth(2).locator('.choose-car').click();await expect(page.locator('#carSelected')).toContainText(n);await page.reload({waitUntil:'domcontentloaded'});await expect(page.locator('#carSelected')).toContainText(n)});
-test('07 four stay blocks each expose at least twenty ranked choices and three ratings',async({page})=>{await ready(page);const s=page.locator('#staySegments .stay-segment');await expect(s).toHaveCount(4);for(let i=0;i<4;i++){const c=s.nth(i).locator('.stay-card');expect(await c.count()).toBeGreaterThanOrEqual(20);await expect(c.first().locator('.best-ribbon')).toBeVisible();await expect(c.first().locator('.stay-metrics>div')).toHaveCount(3)}await expect(s.nth(1)).toContainText('Sousse / Kairouan')});
-test('08 choosing a central stay updates calendar and survives reload',async({page})=>{await ready(page);const o=page.locator('#staySegments .stay-segment').nth(1).locator('.stay-card').nth(1),n=(await o.locator('h3').textContent()).trim();await o.locator('.choose-stay').click();await expect(page.locator('#schedule')).toContainText(n);await page.reload({waitUntil:'domcontentloaded'});await expect(page.locator('#schedule')).toContainText(n)});
-test('09 activities provide exactly 28 timeslots and three choices per slot',async({page})=>{await ready(page);const g=page.locator('.slot-group'),c=page.locator('.slot-group .choice-card');await expect(g).toHaveCount(28);await expect(c).toHaveCount(84);for(let i=0;i<28;i++)await expect(g.nth(i).locator('.choice-card')).toHaveCount(3);const src=await c.locator('.photo-rail img').evaluateAll(x=>x.map(i=>i.src));expect(new Set(src).size/src.length).toBeGreaterThan(.95)});
-test('10 selecting another option replaces the same timeslot choice and updates calendar',async({page})=>{await ready(page);await page.locator('.tab[data-tab="leisure"]').click();const g=page.locator('#leisureList .slot-group').first(),c=g.locator('.choice-card'),n=(await c.nth(1).locator('h3').textContent()).trim();await c.nth(1).locator('.choice-toggle').click();await expect(c.nth(1)).toHaveClass(/selected-choice/);await expect(c.nth(0)).not.toHaveClass(/selected-choice/);await expect(page.locator('#schedule')).toContainText(n);expect(await g.locator('.selected-choice').count()).toBe(1)});
-test('11 a timeslot can be skipped and reset restores recommended flight, car and activities',async({page})=>{await ready(page);const g=page.locator('#historyList .slot-group').first();await g.locator('.skip-slot').click();await expect(g.locator('.selected-choice')).toHaveCount(0);await page.locator('#restoreBtn').click();await expect(page.locator('#flightSelected')).toContainText('Flynas');await expect(page.locator('#carSelected')).toContainText('BMW X5');await expect(page.locator('#historyList .slot-group').first().locator('.selected-choice')).toHaveCount(1)});
-test('12 WhatsApp stay importer adds, persists and removes a group suggestion',async({page})=>{await ready(page);await page.locator('#waSegment').selectOption('centralBase');await page.locator('#waInput').fill('Group villa suggestion https://example.com/group-villa');await page.locator('#waImport').click();await expect(page.locator('.wa-suggestion')).toContainText('Group villa suggestion');await expect(page.locator('#staySegments .stay-segment').nth(1)).toContainText('WHATSAPP GROUP');expect((await page.evaluate(()=>JSON.parse(localStorage.getItem('tn-wa-suggestions-v1')||'[]'))).length).toBe(1);await page.reload({waitUntil:'domcontentloaded'});await expect(page.locator('.wa-suggestion')).toContainText('Group villa suggestion');await page.locator('[data-remove-wa]').click();await expect(page.locator('.wa-suggestion')).toHaveCount(0)});
-test('13 map has markers and a useful popup for selected routes',async({page})=>{await ready(page);await page.locator('#topDays .day-chip[data-day="D3"]').click();const markers=page.locator('#tripMap .leaflet-marker-icon');await expect.poll(async()=>markers.count(),{timeout:10000}).toBeGreaterThan(3);await markers.first().dispatchEvent('click');await expect(page.locator('.leaflet-popup-content')).toBeVisible();expect((await page.locator('.leaflet-popup-content').innerText()).trim().length).toBeGreaterThan(10)});
-test('14 mobile view has no horizontal overflow and four primary navigation items',async({page})=>{await page.setViewportSize({width:390,height:844});await ready(page);await expect(page.locator('.bottom-nav')).toBeVisible();await expect(page.locator('.bottom-nav a')).toHaveCount(4);await expect(page.locator('.mobile-lang-bar [data-language-toggle]')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);await page.locator('.bottom-nav a').nth(2).click();await expect(page.locator('#book-now')).toBeInViewport();expect(await page.locator('.stay-rail').first().evaluate(e=>e.scrollWidth>e.clientWidth)).toBeTruthy()});
-test('15 core interactions produce no uncaught JavaScript errors',async({page})=>{const e=[];page.on('pageerror',x=>e.push(String(x)));await ready(page);await page.locator('#topDays .day-chip[data-day="D5"]').click();await page.locator('#routesToggle').click();await page.locator('#routesToggle').click();await page.locator('.tab[data-tab="leisure"]').click();await page.locator('#recommendedBtn').click();await page.locator('#recommendedBtn').click();await page.waitForTimeout(800);expect(e).toEqual([])});
-test('16 external actions are HTTPS/noopener, IDs are unique and content images have alt text',async({page})=>{await ready(page);const l=page.locator('a[target="_blank"]');expect(await l.count()).toBeGreaterThan(30);expect(await l.evaluateAll(a=>a.filter(x=>!/^https:\/\//i.test(x.href)||!x.rel.split(/\s+/).includes('noopener')).map(x=>x.outerHTML))).toEqual([]);const dup=await page.evaluate(()=>{const i=[...document.querySelectorAll('[id]')].map(e=>e.id);return [...new Set(i.filter((x,n)=>i.indexOf(x)!==n))]});expect(dup).toEqual([]);expect(await page.locator('img:not(.leaflet-tile)').evaluateAll(i=>i.filter(x=>!x.getAttribute('alt')?.trim()).map(x=>x.outerHTML))).toEqual([])});
-test('17 Arabic switcher applies RTL to the urgent interface and persists',async({page})=>{await ready(page);const t=page.locator('.topbar [data-language-toggle]');await t.click();await expect(page.locator('html')).toHaveAttribute('lang','ar');await expect(page.locator('html')).toHaveAttribute('dir','rtl');await expect(page.locator('h1')).toContainText('تونس أولًا');await expect(page.locator('#book-now h2')).toContainText('حجوزات');await expect(page.locator('#configure-cars h3')).toContainText('السيارة');await expect(t).toHaveText('EN');await page.reload({waitUntil:'domcontentloaded'});await expect(page.locator('html')).toHaveAttribute('lang','ar');await expect(page.locator('.topbar [data-language-toggle]')).toHaveText('EN');await page.evaluate(()=>document.querySelector('.topbar [data-language-toggle]').click());await expect(page.locator('html')).toHaveAttribute('lang','en');await expect(page.locator('html')).toHaveAttribute('dir','ltr');await expect(page.locator('h1')).toContainText('Tunis first')});
+async function open(page, hash = '') { await page.goto(URL + hash, { waitUntil: 'domcontentloaded' }); await expect(page.locator('#viewTabs [role=tab]')).toHaveCount(3); await page.waitForFunction(() => !!window.TRIP_APP); }
+const state = page => page.evaluate(() => JSON.parse(JSON.stringify(window.TRIP_APP.S)));
+
+test('01 shell: three views, one visible, no horizontal overflow on a phone', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open(page);
+  await expect(page.locator('#viewTabs [role=tab]')).toHaveCount(3);
+  await expect(page.locator('#tabbar [role=tab]')).toHaveCount(3);
+  await expect(page.locator('#tabbar')).toBeVisible();
+  await expect(page.locator('#plan')).toBeVisible();
+  await expect(page.locator('#explore')).toBeHidden();
+  await expect(page.locator('#book')).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  await page.locator('#tabbar [data-view=explore]').click();
+  await expect(page.locator('#explore')).toBeVisible();
+  await expect(page.locator('#plan')).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+});
+
+test('02 plan opens on a real day with a stay line, day header and timeline', async ({ page }) => {
+  await open(page);
+  const on = page.locator('#dayStrip .chip[aria-selected=true]');
+  await expect(on).toHaveCount(1);
+  expect(await on.getAttribute('data-day')).not.toBe('trip');
+  await expect(page.locator('#dayPanel .dayHead h1')).not.toBeEmpty();
+  await expect(page.locator('#dayPanel .stayLine')).toBeVisible();
+  await page.locator('#dayStrip .chip[data-day=D2]').click();
+  await expect(page.locator('#dayPanel h1')).toContainText('first day in Tunis');
+  await expect(page.locator('#dayPanel .row.fixed')).toContainText('02:15');
+  expect(await page.locator('#dayPanel .row[data-row]').count()).toBeGreaterThanOrEqual(6);
+  await expect(page.locator('#dayPanel .slotHead').first()).toHaveText(/Morning/);
+});
+
+test('03 default plan is coherent: no duplicate places in a day, Bardo once on Sunday, places match the day area', async ({ page }) => {
+  await open(page);
+  const problems = await page.evaluate(() => {
+    const T = window.TRIP, S = window.TRIP_APP.S, out = [];
+    for (const d of T.days) {
+      const rows = S.plan[d.id] || [], ids = rows.map(r => r.p);
+      if (new Set(ids).size !== ids.length) out.push(`${d.id}: duplicates`);
+      for (const r of rows) { const p = T.places.find(x => x.id === r.p); if (!p) out.push(`${d.id}: unknown ${r.p}`); else if (!d.areas.includes(p.area)) out.push(`${d.id}: ${p.id} is in ${p.area}`); }
+    }
+    if ((S.plan.D3 || []).filter(r => r.p === 'bardo').length !== 1) out.push('Bardo should appear exactly once on Sunday');
+    if ((S.plan.D2 || []).length < 6) out.push('Saturday is too empty');
+    if ((S.plan.D1 || []).length) out.push('Flight night should have no picks');
+    return out;
+  });
+  expect(problems).toEqual([]);
+});
+
+test('04 trip overview lists eight days and opens one', async ({ page }) => {
+  await open(page);
+  await page.locator('#dayStrip .chip[data-day=trip]').click();
+  await expect(page.locator('#dayPanel .overview li')).toHaveCount(8);
+  await page.locator('#dayPanel .overview [data-day=D6]').click();
+  await expect(page.locator('#dayPanel h1')).toContainText('El Jem');
+  await expect(page.locator('#dayStrip .chip[data-day=D6]')).toHaveAttribute('aria-selected', 'true');
+});
+
+test('05 explore: five category tabs, area filter, search, and safe external links', async ({ page }) => {
+  await open(page, '#explore');
+  await expect(page.locator('#explore')).toBeVisible();
+  await expect(page.locator('#catTabs [role=tab]')).toHaveCount(5);
+  await expect(page.locator('#catTabs [role=tab]').nth(3)).toContainText('Nightlife');
+  const before = await page.locator('#placeGrid .card').count();
+  expect(before).toBeGreaterThan(20);
+  await page.locator('#catTabs [data-cat=sights]').click();
+  await expect(page.locator('#catTabs [data-cat=sights]')).toHaveAttribute('aria-selected', 'true');
+  await page.locator('#areaChips [data-area=kairouan]').click();
+  const kairouan = await page.locator('#placeGrid .card').count();
+  expect(kairouan).toBeGreaterThanOrEqual(5);
+  await expect(page.locator('#placeGrid .card').first()).toContainText('Kairouan');
+  await page.locator('#areaChips [data-area=all]').click();
+  await page.locator('#search').fill('bardo');
+  expect(await page.locator('#placeGrid .card').count()).toBeLessThanOrEqual(3);
+  await expect(page.locator('#placeGrid .card h3').first()).toContainText('Bardo');
+  await page.locator('#search').fill('zzzz');
+  await expect(page.locator('#placeGrid .noResults')).toBeVisible();
+  await page.locator('#search').fill('');
+  const links = page.locator('a[target=_blank]');
+  expect(await links.count()).toBeGreaterThan(20);
+  expect(await links.evaluateAll(a => a.filter(x => !/^https:\/\//i.test(x.href) || !x.rel.split(/\s+/).includes('noopener')).map(x => x.outerHTML))).toEqual([]);
+});
+
+test('06 add a place to a day from Explore, see it in Plan, survive reload, then remove it', async ({ page }) => {
+  await open(page, '#explore');
+  await page.locator('#catTabs [data-cat=nightlife]').click();
+  const card = page.locator('#placeGrid .card', { hasText: 'Villa Didon' });
+  await card.locator('[data-add]').click();
+  await expect(page.locator('#sheet')).toBeVisible();
+  await expect(page.locator('#sheet [data-day]')).toHaveCount(7);
+  await page.locator('#sheet [data-day=D3]').click();
+  await expect(page.locator('#sheet')).toBeHidden();
+  await expect(card.locator('[data-add]')).toContainText('Added');
+  await expect(page.locator('#toast')).toContainText('Sun 20');
+  await page.locator('#viewTabs [data-view=plan]').click();
+  await page.locator('#dayStrip .chip[data-day=D3]').click();
+  await expect(page.locator('#dayPanel [data-row="villa-didon"]')).toBeVisible();
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('#dayStrip .chip[data-day=D3]').click();
+  await expect(page.locator('#dayPanel [data-row="villa-didon"]')).toBeVisible();
+  await page.locator('#dayPanel [data-row="villa-didon"]').click();
+  await page.locator('#sheet [data-remove]').click();
+  await expect(page.locator('#dayPanel [data-row="villa-didon"]')).toHaveCount(0);
+  expect((await state(page)).plan.D3.some(r => r.p === 'villa-didon')).toBe(false);
+});
+
+test('07 "Add from Explore" pre-filters to the day area and adds with one tap', async ({ page }) => {
+  await open(page);
+  await page.locator('#dayStrip .chip[data-day=D5]').click();
+  await page.locator('#addFrom').click();
+  await expect(page.locator('#explore')).toBeVisible();
+  await expect(page.locator('#addingBanner')).toContainText('Tue 22');
+  await expect(page.locator('#areaChips [data-area=sousse]')).toHaveAttribute('aria-selected', 'true');
+  const card = page.locator('#placeGrid .card', { hasText: 'Dar Antonia' });
+  await card.locator('[data-add]').click();
+  await expect(card.locator('[data-add]')).toContainText('Added');
+  expect((await state(page)).plan.D5.some(r => r.p === 'dar-antonia-dinner')).toBe(true);
+  await page.locator('#doneAdding').click();
+  await expect(page.locator('#plan')).toBeVisible();
+  await expect(page.locator('#dayPanel [data-row="dar-antonia-dinner"]')).toBeVisible();
+});
+
+test('08 a plan row can change its time of day and move to another day', async ({ page }) => {
+  await open(page);
+  await page.locator('#dayStrip .chip[data-day=D2]').click();
+  await page.locator('#dayPanel [data-row="medina-walk"]').click();
+  await page.locator('#sheet [data-slot=evening]').click();
+  await page.keyboard.press('Escape');
+  expect((await state(page)).plan.D2.find(r => r.p === 'medina-walk').s).toBe('evening');
+  const heads = await page.locator('#dayPanel .timeline > li').evaluateAll(l => l.map(x => x.classList.contains('slotHead') ? 'H:' + x.textContent.trim() : (x.querySelector('[data-row]')?.dataset.row || 'fixed')));
+  expect(heads.indexOf('medina-walk')).toBeGreaterThan(heads.indexOf('H:Evening'));
+  await page.locator('#dayPanel [data-row="medina-walk"]').click();
+  await page.locator('#sheet [data-move]').click();
+  await page.locator('#sheet [data-day=D3]').click();
+  const s = await state(page);
+  expect(s.plan.D2.some(r => r.p === 'medina-walk')).toBe(false);
+  expect(s.plan.D3.some(r => r.p === 'medina-walk' && r.s === 'evening')).toBe(true);
+});
+
+test('09 book: flights are booked, return time drives day 8, stays and car can be changed, reservations follow the plan', async ({ page }) => {
+  await open(page, '#book');
+  await expect(page.locator('#book')).toBeVisible();
+  await expect(page.locator('#book .status')).toContainText('Booked');
+  await page.locator('[data-f="back.dep"]').fill('15:30');
+  await expect(page.locator('[data-f="back.leave"]')).toHaveAttribute('placeholder', '11:15');
+  await page.locator('#viewTabs [data-view=plan]').click();
+  await page.locator('#dayStrip .chip[data-day=D8]').click();
+  await expect(page.locator('#dayPanel .row.fixed').nth(0)).toContainText('11:15');
+  await expect(page.locator('#dayPanel .row.fixed').nth(1)).toContainText('15:30');
+  await page.locator('#viewTabs [data-view=book]').click();
+  await expect(page.locator('#staysSection .panel')).toHaveCount(3);
+  await page.locator('#staysSection [data-toggle=central]').click();
+  await expect(page.locator('#staysSection [data-block=central] .optList li')).toHaveCount(20);
+  await page.locator('#staysSection [data-block=central] [data-opt="central-dar-koraich"]').click();
+  await expect(page.locator('#staysSection [data-block=central] h3')).toContainText('Dar Koraich');
+  await page.locator('#viewTabs [data-view=plan]').click();
+  await page.locator('#dayStrip .chip[data-day=D4]').click();
+  await expect(page.locator('#dayPanel .stayLine')).toContainText('Dar Koraich');
+  await page.locator('#viewTabs [data-view=book]').click();
+  await page.locator('#carSection [data-toggle=car]').click();
+  await expect(page.locator('#carSection .optList li')).toHaveCount(20);
+  await page.locator('#carSection [data-car="volvo-xc90"]').click();
+  await expect(page.locator('#carSection h3')).toContainText('Volvo XC90');
+  const checks = page.locator('#resSection .checks li');
+  expect(await checks.count()).toBeGreaterThan(6);
+  await expect(page.locator('#resSection')).toContainText('Dar Koraich');
+  await expect(page.locator('#resSection')).toContainText('Volvo XC90');
+  await expect(page.locator('#resSection')).toContainText('Reserve');
+  await checks.first().locator('input').check();
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#resSection .checks li').first()).toHaveClass(/done/);
+  await expect(page.locator('#carSection h3')).toContainText('Volvo XC90');
+});
+
+test('10 a group suggestion can be added to a stay block and chosen', async ({ page }) => {
+  await open(page, '#book');
+  await page.locator('#staysSection [data-toggle=hammamet]').click();
+  const form = page.locator('#staysSection form[data-suggest=hammamet]');
+  await form.locator('[name=n]').fill('Villa from the family group');
+  await form.locator('[name=u]').fill('https://example.com/villa');
+  await form.locator('button[type=submit]').click();
+  await expect(page.locator('#staysSection [data-block=hammamet] h3')).toContainText('Villa from the family group');
+  await expect(page.locator('#staysSection [data-block=hammamet] .optList')).toContainText('Group suggestion');
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#staysSection [data-block=hammamet] h3')).toContainText('Villa from the family group');
+});
+
+test('11 share link carries the plan to another device', async ({ page, context }) => {
+  await open(page);
+  await page.evaluate(() => { window.TRIP_APP.addToDay('dougga', 'D3'); window.TRIP_APP.S.stays.tunis = 'dar-nabiha'; window.TRIP_APP.render(); });
+  const url = await page.evaluate(() => window.TRIP_APP.shareUrl());
+  expect(url).toContain('#s=');
+  const other = await context.newPage();
+  await other.evaluate(() => localStorage.clear()).catch(() => {});
+  await other.goto(url, { waitUntil: 'domcontentloaded' });
+  await expect(other.locator('#viewTabs [role=tab]')).toHaveCount(3);
+  await expect(other.locator('#toast')).toContainText('loaded');
+  const s = await state(other);
+  expect(s.plan.D3.some(r => r.p === 'dougga')).toBe(true);
+  expect(s.stays.tunis).toBe('dar-nabiha');
+  expect(other.url()).not.toContain('#s=');
+});
+
+test('12 Arabic: RTL, translated UI and catalogue, persists across reload', async ({ page }) => {
+  await open(page);
+  await page.locator('#langBtn').click();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await expect(page.locator('#viewTabs [data-view=plan]')).toHaveText('الخطة');
+  await page.locator('#dayStrip .chip[data-day=D2]').click();
+  await expect(page.locator('#dayPanel h1')).toContainText('تونس');
+  await expect(page.locator('#dayPanel [data-row="zitouna"] b')).toContainText('جامع الزيتونة');
+  await page.locator('#viewTabs [data-view=explore]').click();
+  await expect(page.locator('#catTabs [data-cat=food]')).toContainText('طعام');
+  await expect(page.locator('#placeGrid .card').first().locator('p')).not.toBeEmpty();
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+  await page.locator('#langBtn').click();
+  await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+});
+
+test('13 map: markers for the day when Leaflet loads, a labelled placeholder when it does not', async ({ page }) => {
+  await open(page);
+  await page.locator('#dayStrip .chip[data-day=D3]').click();
+  const hasLeaflet = await page.evaluate(() => typeof window.L !== 'undefined');
+  if (hasLeaflet) {
+    await expect.poll(() => page.locator('#map path.pin').count(), { timeout: 10000 }).toBeGreaterThan(4);
+    await page.locator('#map path.pin').first().dispatchEvent('click');
+    await expect(page.locator('.leaflet-popup-content')).toBeVisible();
+    await expect(page.locator('.leaflet-popup-content')).toContainText('Directions');
+  } else {
+    await expect(page.locator('#map.off')).toContainText('Map unavailable');
+  }
+});
+
+test('14 no uncaught errors during a full walkthrough; ids unique; controls labelled', async ({ page }) => {
+  const errors = []; page.on('pageerror', e => errors.push(String(e)));
+  await open(page);
+  for (const d of ['trip', 'D1', 'D4', 'D8']) await page.locator(`#dayStrip .chip[data-day=${d}]`).click();
+  await page.locator('#viewTabs [data-view=explore]').click();
+  for (const c of ['sights', 'shopping', 'nightlife', 'relax', 'food']) await page.locator(`#catTabs [data-cat=${c}]`).click();
+  await page.locator('#viewTabs [data-view=book]').click();
+  await page.locator('#copyBtn').click();
+  await page.locator('#viewTabs [data-view=plan]').click();
+  await page.locator('#resetPlan').click().catch(() => {});
+  expect(errors).toEqual([]);
+  const dup = await page.evaluate(() => { const i = [...document.querySelectorAll('[id]')].map(e => e.id); return [...new Set(i.filter((x, n) => i.indexOf(x) !== n))]; });
+  expect(dup).toEqual([]);
+  const unlabelled = await page.evaluate(() => [...document.querySelectorAll('button')].filter(b => !b.textContent.trim() && !b.getAttribute('aria-label')).map(b => b.outerHTML));
+  expect(unlabelled).toEqual([]);
+});
