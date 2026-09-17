@@ -161,14 +161,6 @@ html[dir="rtl"] .search input { padding: 8px 34px 8px 12px; }
 .section > .lead { color: var(--ink2); font-size: 14px; margin-bottom: 14px; }
 .panel { background: var(--card); border: 1px solid var(--line2); border-radius: var(--r); padding: 16px; margin-top: 12px; }
 .panel h3 { font-size: 17px; }
-.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 14px; margin-top: 10px; }
-.kv span:first-child { color: var(--ink2); }
-.status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--relax); background: color-mix(in srgb, var(--relax) 12%, transparent); border-radius: 999px; padding: 3px 10px; }
-.status .icon { width: 13px; height: 13px; vertical-align: 0; }
-.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
-.field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink2); font-weight: 600; }
-.field input { border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 10px; padding: 8px 10px; font-size: 15px; font-weight: 500; }
-.field input::placeholder { color: var(--ink3); font-weight: 400; }
 .scores { display: flex; gap: 14px; margin-top: 10px; font-size: 13px; }
 .scores div { color: var(--ink2); }
 .scores b { display: block; color: var(--ink); font-size: 15px; font-variant-numeric: tabular-nums; }

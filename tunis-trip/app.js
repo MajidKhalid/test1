@@ -15,9 +15,7 @@
     all: ['All', 'الكل'], search: ['Search places', 'ابحثوا عن مكان'], noResults: ['Nothing matches. Try another area or word.', 'لا نتائج. جرّبوا منطقة أو كلمة أخرى.'],
     addingTo: ['Adding to', 'الإضافة إلى'], done: ['Done', 'تم'], addTo: ['Add to a day', 'إضافة إلى يوم'], moveTo: ['Move to another day', 'نقل إلى يوم آخر'],
     timeOfDay: ['Time of day', 'وقت اليوم'], removeFrom: ['Remove from', 'إزالة من'], addedTo: ['Added to', 'أُضيف إلى'], removed: ['Removed', 'أُزيل'],
-    view: ['View', 'عرض'], undo: ['Undo', 'تراجع'], flights: ['Flights', 'الرحلات الجوية'], booked: ['Booked', 'محجوز'], outbound: ['Outbound', 'الذهاب'],
-    ret: ['Return', 'العودة'], departs: ['Departs', 'الإقلاع'], arrives: ['Arrives', 'الوصول'], leaveFor: ['Leave Hammamet', 'الانطلاق من الحمامات'],
-    flightHelp: ['These times drive Day 1 and Day 8. Change them if your booking differs.', 'تُستخدم هذه الأوقات في اليومين الأول والأخير. عدّلوها إذا اختلف حجزكم.'],
+    view: ['View', 'عرض'], undo: ['Undo', 'تراجع'], flights: ['Flights', 'الرحلات الجوية'],
     stays: ['Stays', 'الإقامات'], staysLead: ['One home per leg. The list is the researched shortlist; add the group’s suggestions below each block.', 'بيت واحد لكل مرحلة. القائمة مدروسة؛ أضيفوا اقتراحات المجموعة أسفل كل مرحلة.'],
     experience: ['Experience', 'التجربة'], privacy: ['Privacy', 'الخصوصية'], value: ['Value', 'القيمة'], chosen: ['Chosen', 'المختار'], choose: ['Choose', 'اختيار'],
     openListing: ['Open listing', 'فتح الإعلان'], otherOptions: ['Other options', 'خيارات أخرى'], hide: ['Hide options', 'إخفاء الخيارات'],
@@ -31,9 +29,9 @@
     copied: ['Copied', 'تم النسخ'], planLoaded: ['Plan loaded from the shared link', 'تم تحميل الخطة من الرابط'], goodToKnow: ['Good to know', 'معلومات مفيدة'],
     reset: ['Reset to recommended plan', 'إعادة الخطة المقترحة'], resetConfirm: ['Replace your plan with the recommended one?', 'هل تريدون استبدال خطتكم بالخطة المقترحة؟'],
     mapOff: ['Map unavailable right now. Every place still opens in Maps.', 'الخريطة غير متاحة الآن. كل مكان يفتح في الخرائط.'],
-    nights: ['nights', 'ليالٍ'], flight: ['Flight', 'طيران'], drive: ['Drive', 'قيادة'], setTime: ['set time', 'حدّدوا الوقت'],
+    nights: ['nights', 'ليالٍ'], flight: ['Flight', 'طيران'], drive: ['Drive', 'قيادة'],
     reserve: ['Reserve', 'احجزوا'], tickets: ['Tickets', 'تذاكر'], travelers: ['3 adults', '3 بالغين'], places: ['places', 'أماكن'],
-    bookTitle: ['Book', 'الحجوزات'], bookLead: ['Flights are done. What is left: the three homes, the car, and the tables and tickets your plan needs.', 'الطيران محجوز. المتبقي: البيوت الثلاثة والسيارة والطاولات والتذاكر التي تحتاجها خطتكم.'],
+    bookTitle: ['Book', 'الحجوزات'], bookLead: ['What is left to book: the three homes, the car, and the tables and tickets your plan needs.', 'المتبقي للحجز: البيوت الثلاثة والسيارة والطاولات والتذاكر التي تحتاجها خطتكم.'],
     shareLead: ['One link carries the whole plan and your choices. Everyone who opens it sees the same thing.', 'رابط واحد يحمل الخطة كلها واختياراتكم. كل من يفتحه يرى الشيء نفسه.'],
     overviewLead: ['Tap a day to open it.', 'اضغطوا على يوم لفتحه.'], nightsIn: ['nights in', 'ليالٍ في'],
     exploreLead: ['Everything worth your time, by mood and by place. Add anything to any day.', 'كل ما يستحق وقتكم، حسب المزاج والمكان. أضيفوا أي شيء إلى أي يوم.'],
@@ -78,18 +76,18 @@
   const S = {
     lang: saved.lang === 'ar' ? 'ar' : 'en', view: 'plan', day: null, cat: 'food', area: 'all', q: '', addingTo: null,
     plan: saved.plan || defaultPlan(), stays: saved.stays || Object.fromEntries(T.stays.map(s => [s.id, s.def])), car: saved.car || T.cars[0].id,
-    flight: Object.assign({ out: { ...T.flight.out }, back: { ...T.flight.back } }, saved.flight || {}), checks: saved.checks || {}, suggestions: saved.suggestions || [], open: {}
+    checks: saved.checks || {}, suggestions: saved.suggestions || [], open: {}
   };
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ lang: S.lang, plan: S.plan, stays: S.stays, car: S.car, flight: S.flight, checks: S.checks, suggestions: S.suggestions })); } catch (e) { } };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ lang: S.lang, plan: S.plan, stays: S.stays, car: S.car, checks: S.checks, suggestions: S.suggestions })); } catch (e) { } };
 
   // shared link → state
   const b64e = s => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   const b64d = s => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))));
   const importHash = () => {
     const m = location.hash.match(/^#s=([A-Za-z0-9_-]+)/); if (!m) return false;
-    try { const d = JSON.parse(b64d(m[1])); if (d.plan) S.plan = d.plan; if (d.stays) S.stays = d.stays; if (d.car) S.car = d.car; if (d.flight) S.flight = d.flight; if (d.suggestions) S.suggestions = d.suggestions; save(); history.replaceState(null, '', location.pathname); return true; } catch (e) { return false; }
+    try { const d = JSON.parse(b64d(m[1])); if (d.plan) S.plan = d.plan; if (d.stays) S.stays = d.stays; if (d.car) S.car = d.car; if (d.suggestions) S.suggestions = d.suggestions; save(); history.replaceState(null, '', location.pathname); return true; } catch (e) { return false; }
   };
-  const shareUrl = () => `${location.origin}${location.pathname}#s=${b64e(JSON.stringify({ plan: S.plan, stays: S.stays, car: S.car, flight: S.flight, suggestions: S.suggestions }))}`;
+  const shareUrl = () => `${location.origin}${location.pathname}#s=${b64e(JSON.stringify({ plan: S.plan, stays: S.stays, car: S.car, suggestions: S.suggestions }))}`;
 
   /* ───────── helpers ───────── */
   const todayIso = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
@@ -100,9 +98,7 @@
   const mapsUrl = p => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.q || `${p.n.replace(/ · /g, ', ')}, ${T.areas[p.area].en.split(' · ')[0]}, Tunisia`)}`;
   const rowsOf = d => (S.plan[d] || []);
   const inDays = pid => T.days.filter(d => rowsOf(d.id).some(r => r.p === pid)).map(d => d.id);
-  const flightTime = key => { const [a, b] = key.split('.'); return (S.flight[a] || {})[b] || ''; };
-  const leaveTime = () => { if (S.flight.back.leave) return S.flight.back.leave; const dep = S.flight.back.dep; if (!dep) return ''; const [h, m] = dep.split(':').map(Number); let mins = h * 60 + m - 255; if (mins < 0) mins += 1440; return `${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`; };
-  const fixedTime = f => f.time === 'back.leave' ? leaveTime() : (/^[a-z]+\./.test(f.time) ? flightTime(f.time) : f.time);
+  const fixedTime = f => f.time || '';
   const dur = p => S.lang === 'ar' ? p.dur.replace(/\bh\b/g, 'س').replace(/min/g, 'د').replace('Full day', 'يوم كامل').replace('Half day', 'نصف يوم') : p.dur;
   const stayFor = block => { const b = stayBlock(block); if (!b) return null; const id = S.stays[block]; return b.options.find(o => o.id === id) || S.suggestions.find(x => x.id === id) || b.options[0]; };
   const dayLabel = d => L2({ en: d.en, ar: d.ar });
@@ -156,7 +152,7 @@
   };
 
   const rowHtml = (p, r, day) => `<button type="button" class="row" data-row="${esc(p.id)}" data-day="${day}"><span class="glyph" style="--c:${catColor(p.cat)}">${icon(p.cat)}</span><span><b>${esc(tx(p))}</b><small>${esc(areaLabel(p.area))}${p.dur ? ` · ${esc(dur(p))}` : ''}${p.book ? ` · ${esc(t(p.book))}` : ''}</small></span><span class="chev">${icon('chevron')}</span></button>`;
-  const fixedHtml = f => { const tm = fixedTime(f); return `<div class="row fixed"><span class="glyph">${icon(f.kind === 'flight' ? 'flight' : 'drive')}</span><span><b>${esc(L2(f))}</b><small>${esc(t(f.kind))}</small></span><span class="time">${tm ? esc(tm) : `<a class="link" href="#book" data-view-link="book">${esc(t('setTime'))}</a>`}</span></div>`; };
+  const fixedHtml = f => { const tm = fixedTime(f); return `<div class="row fixed"><span class="glyph">${icon(f.kind === 'flight' ? 'flight' : 'drive')}</span><span><b>${esc(L2(f))}</b><small>${esc(t(f.kind))}</small></span><span class="time">${esc(tm)}</span></div>`; };
 
   const renderDayPanel = () => {
     const host = $('#dayPanel');
@@ -228,20 +224,18 @@
     T.days.forEach(d => rowsOf(d.id).forEach(r => { const p = byId[r.p]; if (p.book) out.push({ key: `p:${d.id}:${p.id}`, b: tx(p), s: `${dayLabel(d)} · ${L2(T.slots[slotIndex(r.s)])} · ${t(p.book)}`, url: p.url || mapsUrl(p) }); }));
     return out;
   };
-  const summary = () => { const lines = [`Tunisia · ${t('dates')} · ${t('travelers')}`, `${t('flights')}: ${T.flight.airline} · ${T.flight.route} · ${S.flight.out.dep || '?'} → ${S.flight.out.arr || '?'} · ${t('ret')} ${S.flight.back.dep || '?'}`, ...T.stays.map(b => `${L2({ en: b.n, ar: b.na })}: ${stayFor(b.id)?.n || '—'}`), `${t('car')}: ${(T.cars.find(c => c.id === S.car) || T.cars[0]).n}`, '']; T.days.forEach(d => { lines.push(`${dayLabel(d)} · ${L2({ en: d.ten, ar: d.tar })}`); [...d.fixed.map(f => ({ s: f.slot, k: 0, txt: `${fixedTime(f) || '--:--'} ${L2(f)}` })), ...rowsOf(d.id).map((r, i) => ({ s: r.s, k: 1 + i, txt: `${L2(T.slots[slotIndex(r.s)])} · ${tx(byId[r.p])}` }))].sort((a, b) => slotIndex(a.s) - slotIndex(b.s) || a.k - b.k).forEach(x => lines.push('  ' + x.txt)); }); return lines.join('\n'); };
+  const summary = () => { const lines = [`Tunisia · ${t('dates')} · ${t('travelers')}`, `${t('flights')}: ${L2(T.flight.out)}`, `${t('flights')}: ${L2(T.flight.back)}`, ...T.stays.map(b => `${L2({ en: b.n, ar: b.na })}: ${stayFor(b.id)?.n || '—'}`), `${t('car')}: ${(T.cars.find(c => c.id === S.car) || T.cars[0]).n}`, '']; T.days.forEach(d => { lines.push(`${dayLabel(d)} · ${L2({ en: d.ten, ar: d.tar })}`); [...d.fixed.map(f => ({ s: f.slot, k: 0, txt: `${fixedTime(f) || '--:--'} ${L2(f)}` })), ...rowsOf(d.id).map((r, i) => ({ s: r.s, k: 1 + i, txt: `${L2(T.slots[slotIndex(r.s)])} · ${tx(byId[r.p])}` }))].sort((a, b) => slotIndex(a.s) - slotIndex(b.s) || a.k - b.k).forEach(x => lines.push('  ' + x.txt)); }); return lines.join('\n'); };
   const copy = async (text, ok) => { try { await navigator.clipboard.writeText(text); toast(ok); } catch (e) { prompt(ok, text); } };
 
   const renderBook = () => {
     const host = $('#bookPanel'); const car = T.cars.find(c => c.id === S.car) || T.cars[0]; const res = reservations();
     const optRow = (o, block, chosen) => `<li><span><b>${esc(o.n)}${o.suggested ? ` <span class="badge">${esc(t('suggested'))}</span>` : ''}</b><small>${esc([o.type, o.guests, o.rating, o.tag].filter(Boolean).join(' · '))}${o.exp != null ? ` · ${t('experience')} ${o.exp} · ${t('privacy')} ${o.priv} · ${t('value')} ${o.val}` : ''}</small></span><button type="button" class="btn${chosen ? ' on' : ' ghost'}" data-stay="${block}" data-opt="${esc(o.id)}">${chosen ? icon('check') + esc(t('chosen')) : esc(t('choose'))}</button></li>`;
     host.innerHTML = `<header class="bookHead"><h1>${esc(t('bookTitle'))}</h1><p>${esc(t('bookLead'))}</p></header>
-    <section class="section"><h2>${esc(t('flights'))} <span class="status">${icon('check')}${esc(t('booked'))}</span></h2><p class="lead">${esc(t('flightHelp'))}</p><div class="panel"><h3>${esc(T.flight.airline)}</h3><div class="kv"><span>${esc(t('outbound'))}</span><span>${esc(T.flight.route)} · Fri 18 → Sat 19 Sep</span><span>${esc(t('ret'))}</span><span>TUN → RUH · Fri 25 Sep</span></div><div class="fields"><label class="field">${esc(t('outbound'))} · ${esc(t('departs'))}<input type="time" data-f="out.dep" value="${esc(S.flight.out.dep)}"></label><label class="field">${esc(t('outbound'))} · ${esc(t('arrives'))}<input type="time" data-f="out.arr" value="${esc(S.flight.out.arr)}"></label><label class="field">${esc(t('ret'))} · ${esc(t('departs'))}<input type="time" data-f="back.dep" value="${esc(S.flight.back.dep)}"></label><label class="field">${esc(t('leaveFor'))}<input type="time" data-f="back.leave" value="${esc(S.flight.back.leave)}" placeholder="${esc(leaveTime())}"></label></div></div></section>
     <section class="section" id="staysSection"><h2>${esc(t('stays'))}</h2><p class="lead">${esc(t('staysLead'))}</p>${T.stays.map(b => { const st = stayFor(b.id); const opts = [...b.options, ...S.suggestions.filter(x => x.block === b.id)]; const open = S.open[b.id]; return `<div class="panel" data-block="${b.id}"><div class="eyebrow">${esc(L2({ en: b.n, ar: b.na }))} · ${esc(S.lang === 'ar' ? b.nightsAr : b.nights)}</div><h3>${esc(st.n)}</h3><p class="note">${esc([st.type, st.guests, st.rating].filter(Boolean).join(' · '))}</p>${st.exp != null ? scoreRow(st, [['exp', 'experience'], ['priv', 'privacy']]) : ''}${st.note ? `<p class="note">${esc(st.note)}</p>` : ''}<div class="actions">${st.url ? `<a class="btn" href="${esc(st.url)}" target="_blank" rel="noopener noreferrer">${esc(t('openListing'))}${icon('link')}</a>` : ''}<button type="button" class="btn ghost" data-toggle="${b.id}">${esc(open ? t('hide') : t('otherOptions'))} · ${opts.length}</button></div>${open ? `<ul class="optList">${opts.map(o => optRow(o, b.id, o.id === st.id)).join('')}</ul><form class="suggest" data-suggest="${b.id}"><input name="n" placeholder="${esc(t('suggestName'))}" required maxlength="120"><input name="u" type="url" placeholder="${esc(t('suggestUrl'))}"><button type="submit" class="btn ghost">${icon('plus')}${esc(t('addSuggestion'))}</button></form>` : ''}</div>`; }).join('')}</section>
     <section class="section" id="carSection"><h2>${esc(t('car'))}</h2><p class="lead">${esc(t('carLead'))}</p><div class="panel"><h3>${esc(car.n)}</h3><p class="note">${esc(car.type)} · ${esc(car.avail)}</p><div class="scores"><div>${esc(t('luxury'))}<b>${car.lux}</b></div><div>${esc(t('comfort'))}<b>${car.comfort}</b></div><div>${esc(t('value'))}<b>${car.val}</b></div></div><p class="note">${esc(car.note)} ${esc(car.price)}.</p><div class="actions"><a class="btn" href="${esc(car.link)}" target="_blank" rel="noopener noreferrer">${esc(t('checkRentals'))}${icon('link')}</a><button type="button" class="btn ghost" data-toggle="car">${esc(S.open.car ? t('hide') : t('otherOptions'))} · ${T.cars.length}</button></div>${S.open.car ? `<ul class="optList">${T.cars.map(c => `<li><span><b>${esc(c.n)}</b><small>${esc(c.type)} · ${esc(c.tag)} · ${t('luxury')} ${c.lux} · ${t('comfort')} ${c.comfort} · ${t('value')} ${c.val}</small></span><button type="button" class="btn${c.id === car.id ? ' on' : ' ghost'}" data-car="${c.id}">${c.id === car.id ? icon('check') + esc(t('chosen')) : esc(t('choose'))}</button></li>`).join('')}</ul>` : ''}</div></section>
     <section class="section" id="resSection"><h2>${esc(t('reservations'))}</h2><p class="lead">${esc(t('reservationsLead'))}</p>${res.length ? `<ul class="checks">${res.map(x => `<li class="${S.checks[x.key] ? 'done' : ''}"><input type="checkbox" data-check="${esc(x.key)}" ${S.checks[x.key] ? 'checked' : ''} aria-label="${esc(x.b)}"><span><b>${esc(x.b)}</b><small>${esc(x.s)}</small></span>${x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${esc(t('website'))} ↗</a>` : ''}</li>`).join('')}</ul>` : `<p class="note">${esc(t('nothingToBook'))}</p>`}</section>
     <section class="section"><h2>${esc(t('share'))}</h2><p class="lead">${esc(t('shareLead'))}</p><div class="share"><button type="button" class="btn" id="shareBtn">${icon('share')}${esc(t('share'))}</button><button type="button" class="btn ghost" id="copyBtn">${icon('copy')}${esc(t('copySummary'))}</button></div><pre class="brief" id="brief">${esc(summary())}</pre></section>
     <section class="section"><h2>${esc(t('goodToKnow'))}</h2><ul class="tips">${T.goodToKnow.map(g => { const s = L2(g); const i = s.indexOf(':'); return `<li>${i > 0 ? `<b>${esc(s.slice(0, i + 1))}</b>${esc(s.slice(i + 1))}` : esc(s)}</li>`; }).join('')}</ul></section>`;
-    host.querySelectorAll('[data-f]').forEach(inp => inp.onchange = () => { const [a, b] = inp.dataset.f.split('.'); S.flight[a][b] = inp.value; save(); render(); });
     host.querySelectorAll('[data-toggle]').forEach(b => b.onclick = () => { S.open[b.dataset.toggle] = !S.open[b.dataset.toggle]; render(); });
     host.querySelectorAll('[data-stay]').forEach(b => b.onclick = () => { S.stays[b.dataset.stay] = b.dataset.opt; save(); render(); });
     host.querySelectorAll('[data-car]').forEach(b => b.onclick = () => { S.car = b.dataset.car; save(); render(); });

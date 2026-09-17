@@ -31,9 +31,15 @@ test('02 plan opens on a real day with a stay line, day header and timeline', as
   await expect(page.locator('#dayPanel .stayLine')).toBeVisible();
   await page.locator('#dayStrip .chip[data-day=D2]').click();
   await expect(page.locator('#dayPanel h1')).toContainText('first day in Tunis');
-  await expect(page.locator('#dayPanel .row.fixed')).toContainText('02:15');
+  await expect(page.locator('#dayPanel .row.fixed').nth(1)).toContainText('09:00');
   expect(await page.locator('#dayPanel .row[data-row]').count()).toBeGreaterThanOrEqual(6);
   await expect(page.locator('#dayPanel .slotHead').first()).toHaveText(/Morning/);
+  await page.locator('#dayStrip .chip[data-day=D1]').click();
+  await expect(page.locator('#dayPanel .row.fixed').nth(1)).toContainText('01:45');
+  await page.locator('#dayStrip .chip[data-day=D8]').click();
+  await expect(page.locator('#dayPanel .row.fixed').nth(0)).toContainText('07:30');
+  await expect(page.locator('#dayPanel .row.fixed').nth(1)).toContainText('11:40');
+  await expect(page.locator('#dayPanel .row[data-row]')).toHaveCount(0);
 });
 
 test('03 default plan is coherent: no duplicate places in a day, Bardo once on Sunday, places match the day area', async ({ page }) => {
@@ -143,17 +149,11 @@ test('08 a plan row can change its time of day and move to another day', async (
   expect(s.plan.D3.some(r => r.p === 'medina-walk' && r.s === 'evening')).toBe(true);
 });
 
-test('09 book: flights are booked, return time drives day 8, stays and car can be changed, reservations follow the plan', async ({ page }) => {
+test('09 book: no flight controls, stays and car can be changed, reservations follow the plan', async ({ page }) => {
   await open(page, '#book');
   await expect(page.locator('#book')).toBeVisible();
-  await expect(page.locator('#book .status')).toContainText('Booked');
-  await page.locator('[data-f="back.dep"]').fill('15:30');
-  await expect(page.locator('[data-f="back.leave"]')).toHaveAttribute('placeholder', '11:15');
-  await page.locator('#viewTabs [data-view=plan]').click();
-  await page.locator('#dayStrip .chip[data-day=D8]').click();
-  await expect(page.locator('#dayPanel .row.fixed').nth(0)).toContainText('11:15');
-  await expect(page.locator('#dayPanel .row.fixed').nth(1)).toContainText('15:30');
-  await page.locator('#viewTabs [data-view=book]').click();
+  await expect(page.locator('#book input[type=time]')).toHaveCount(0);
+  await expect(page.locator('#book .section').first()).toContainText('Stays');
   await expect(page.locator('#staysSection .panel')).toHaveCount(3);
   await page.locator('#staysSection [data-toggle=central]').click();
   await expect(page.locator('#staysSection [data-block=central] .optList li')).toHaveCount(20);
