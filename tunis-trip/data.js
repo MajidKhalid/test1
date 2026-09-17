@@ -245,7 +245,8 @@ window.TRIP = (() => {
   };
 
   /* ───────────── CAR (researched shortlist, ported) ───────────── */
-  const C = (id, n, type, tag, lux, comfort, val, price, avail, note, link) => ({ id, n, type, tag, lux, comfort, val, price, avail, note, link });
+  const CAR_WIKI = {"bmw-x5":"BMW_X5","range-rover-sport":"Range_Rover_Sport","land-cruiser-prado":"Toyota_Land_Cruiser_Prado","mercedes-gle":"Mercedes-Benz_GLE-Class","audi-q7":"Audi_Q7","volvo-xc90":"Volvo_XC90","bmw-x3":"BMW_X3","mercedes-glc":"Mercedes-Benz_GLC-Class","lexus-rx":"Lexus_RX","porsche-cayenne":"Porsche_Cayenne","audi-q5":"Audi_Q5","volvo-xc60":"Volvo_XC60","mercedes-gla":"Mercedes-Benz_GLA-Class","vw-tiguan":"Volkswagen_Tiguan","peugeot-5008":"Peugeot_5008","jetour-t2":"Jetour_T2","skoda-karoq":"Škoda_Karoq","hyundai-santa-fe":"Hyundai_Santa_Fe","kia-sorento":"Kia_Sorento","nissan-xtrail":"Nissan_X-Trail"};
+  const C = (id, n, type, tag, lux, comfort, val, price, avail, note, link) => ({ id, n, type, tag, lux, comfort, val, price, avail, note, link, wiki: CAR_WIKI[id] || null });
   const cars = [
     C('bmw-x5', 'BMW X5 or similar', 'Luxury SUV · 5 seats', 'Best luxury fit', 10, 9.7, 7.5, 'From ~€85/day benchmark', 'Tunis-airport model search exists', 'Best balance of luxury, luggage space and road-trip comfort for three adults. Confirm the exact X5, automatic, unlimited mileage, full cover.', 'https://bookingauto.com/en/tunisia/tunis-airport/bmw-x5'),
     C('range-rover-sport', 'Range Rover / Range Rover Sport', 'Full-size luxury SUV', 'Most prestigious', 10, 9.8, 5.5, 'Premium quote required', 'Ask premium local agencies', 'The most prestigious choice if an agency guarantees the exact model; highest cost and deposit.', 'https://tunisiarentcar.net/car-hire-luxe'),

@@ -187,6 +187,13 @@ test('09 book: no flight controls; stays with photo rails can be changed; car; r
   await expect(page.locator('#carSection h3')).toContainText('Volvo XC90');
   const checks = page.locator('#resSection .checks li');
   expect(await checks.count()).toBeGreaterThan(6);
+  expect(await page.locator('#resSection .checks li .thumb').count()).toBe(await checks.count());
+  await expect(page.locator('#carSection .hero .photo img')).toHaveAttribute('data-wiki', 'Volvo_XC90');
+  expect(await page.locator('#carSection .optList .thumb img').count()).toBe(20);
+  if (await page.evaluate(() => typeof window.L !== 'undefined')) {
+    await expect(page.locator('#carSection .hero .photo img')).toHaveAttribute('src', /wikimedia\.org/, { timeout: 15000 });
+    await expect(page.locator('#carSection .hero .photo')).toBeVisible();
+  }
   await expect(page.locator('#resSection')).toContainText('Dar Baaziz');
   await expect(page.locator('#resSection')).toContainText('Volvo XC90');
   await expect(page.locator('#resSection')).toContainText('Reserve');
