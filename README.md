@@ -4,7 +4,7 @@ Family trip site. Open `tunis-trip/index.html` from any static host (GitHub Page
 
 - **Plan** — the day-by-day itinerary with a map. Tap a row to change its time of day, move it, get directions or remove it.
 - **Explore** — the catalogue: Food · Sights · Shopping · Nightlife · Relax, filterable by area, searchable. Add anything to any day.
-- **Book** — the route (which base for each of the six nights, with presets), a home for each stop chosen from photo rails, the car, and a reservation checklist built from the plan. **Share plan** copies a link that carries route, stays and plan to another phone. Flights are booked and appear as fixed rows on Day 1, 2 and 8; the Carthage home is booked and locked.
+- **Book** — where we sleep (one home per stop, with photo and directions), the car, and a reservation checklist built from the plan. The route editor, stay rails and car list sit behind a collapsed "Adjust on this phone" section: the plan is meant to be changed through the trip bot in the family group, which updates every phone. **Share plan** copies a link that carries route, stays and plan to another phone. Flights are booked and appear as fixed rows on Day 1, 2 and 8; the Carthage home is booked and locked.
 
 Every place, stay, drive and airport row has a Google Maps link. The map draws the day's route along real roads; with a Google Maps key in `tunis-trip/config.js` it becomes a Google map (see below).
 

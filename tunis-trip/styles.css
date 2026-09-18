@@ -344,3 +344,14 @@ html[dir="rtl"] .toast { direction: rtl; }
 .rowWrap .row { border-top: 0; flex: 1; min-width: 0; }
 .rowMaps { display: flex; align-items: center; padding: 0 4px 0 10px; color: var(--accent); }
 .rowMaps .icon { width: 20px; height: 20px; vertical-align: 0; }
+
+/* Adjust on this phone: collapsed editors */
+.adjust { border-top: 1px solid var(--line2); padding-top: 18px; }
+.adjust summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; list-style: none; }
+.adjust summary::-webkit-details-marker { display: none; }
+.adjust summary h2 { margin: 0; }
+.adjust summary .chev { color: var(--ink3); transition: transform .2s; }
+.adjust[open] summary .chev { transform: rotate(90deg); }
+.adjust .lead { margin-top: 8px; }
+.adjust .sub { margin-top: 16px; }
+.adjust .sub h2 { font-size: 17px; }
