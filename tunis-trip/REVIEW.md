@@ -73,3 +73,4 @@ The researched stay and car shortlists were **kept** and ported into the new `da
 - **Real routes**: the day's route follows roads (OSRM) instead of straight lines; Google Directions when a key is configured.
 - **Mobile**: sticky day strip, map height toggle, larger tap targets, sheet grab handle.
 - **Trip-planner bot** in `bot/`: Claude with plan-editing tools behind Telegram / WhatsApp webhooks, publishing `plan.json`.
+- **Bot first**: the route editor and the stay/car pickers moved behind a collapsed "Adjust on this phone" section at the end of Book, so the site reads as the reference and planning happens in the chat.

@@ -175,8 +175,10 @@ test('09 book: no flight controls; stays with photo rails can be changed; car; r
   await expect(page.locator('#staysSection .stayPanel').nth(0)).toContainText('2 nights');
   await expect(page.locator('#staysSection [data-block=carthage] .hero')).toContainText('Booked');
   await expect(page.locator('#staysSection [data-block=carthage] .hero .photo img')).toHaveAttribute('src', /intact-home-carthage/);
-  await expect(page.locator('#staysSection [data-block=carthage] .stayRail .stayCard button[data-opt]').first()).toBeDisabled();
   await expect(page.locator('#staysSection [data-block=carthage] .hero a[href*="google.com/maps"]')).not.toHaveCount(0);
+  await expect(page.locator('#staysSection .stayRail')).toHaveCount(0);
+  for (const b of ['carthage', 'sousse', 'hammamet']) await page.locator(`#staysSection [data-toggle=${b}]`).click();
+  await expect(page.locator('#staysSection [data-block=carthage] .stayRail .stayCard button[data-opt]').first()).toBeDisabled();
   await expect(page.locator('#staysSection [data-block=sousse] .stayRail .stayCard')).toHaveCount(11);
   await expect(page.locator('#staysSection [data-block=carthage] .stayRail .stayCard')).toHaveCount(21);
   expect(await page.locator('#staysSection .photo img').count()).toBeGreaterThan(30);
@@ -220,6 +222,7 @@ test('09 book: no flight controls; stays with photo rails can be changed; car; r
 
 test('10 a group suggestion can be added to a stop and chosen', async ({ page }) => {
   await open(page, '#book');
+  await page.locator('#staysSection [data-toggle=hammamet]').click();
   const form = page.locator('#staysSection form[data-suggest=hammamet]');
   await form.locator('[name=n]').fill('Villa from the family group');
   await form.locator('[name=u]').fill('https://example.com/villa');
@@ -298,6 +301,7 @@ test('14 no uncaught errors during a full walkthrough; ids unique; controls labe
   for (const c of ['sights', 'shopping', 'nightlife', 'relax', 'food']) await page.locator(`#catTabs [data-cat=${c}]`).click();
   await page.locator('#viewTabs [data-view=book]').click();
   await page.locator('#copyBtn').click();
+  await page.locator('#adjustSection summary').click();
   await page.locator('[data-preset="1"]').click();
   await page.locator('#viewTabs [data-view=plan]').click();
   page.once('dialog', d => d.accept());
@@ -311,6 +315,9 @@ test('14 no uncaught errors during a full walkthrough; ids unique; controls labe
 
 test('15 route editor: change one night, use a preset; stays, drives, titles and plans follow', async ({ page }) => {
   await open(page, '#book');
+  await expect(page.locator('#routeSection .nightCell').first()).toBeHidden();
+  await page.locator('#adjustSection summary').click();
+  await expect(page.locator('#routeSection .nightCell').first()).toBeVisible();
   await expect(page.locator('#routeSection .nightCell')).toHaveCount(6);
   await expect(page.locator('#routeSection .nightCell').nth(2)).toContainText('Sousse');
   await expect(page.locator('#routeSection .nightCell').nth(0)).toContainText('Booked');
@@ -338,6 +345,7 @@ test('15 route editor: change one night, use a preset; stays, drives, titles and
   expect(s2.plan.D4.some(r => r.p === 'medina-walk')).toBe(true);
   await expect(page.locator('#staysSection .stayPanel')).toHaveCount(2);
   await expect(page.locator('#staysSection .stayPanel').nth(0)).toContainText('3 nights');
+  await page.locator('#staysSection [data-toggle=carthage]').click();
   await expect(page.locator('#staysSection [data-block=carthage] .stayRail .stayCard')).toHaveCount(21);
   await page.reload({ waitUntil: 'domcontentloaded' });
   expect((await state(page)).route).toEqual(['carthage', 'carthage', 'carthage', 'hammamet', 'hammamet', 'hammamet']);
