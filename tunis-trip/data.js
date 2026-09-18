@@ -177,6 +177,7 @@ window.TRIP = (() => {
       S("lac1-apartment", "Lac 1 private apartment + parking", "Entire condo", "Airport option", "2 guests", "4.89 · 35 reviews", "Very easy airport access; not the Medina experience.", [36.835, 10.224], "https://www.airbnb.com/rooms/614532216119288980", 6.4, 10, 8, "$$", [shot("https://www.airbnb.com/rooms/614532216119288980")])
     ],
     carthage: [
+      Object.assign(S("intact-home", "Home in Carthage · Intact Home", "Entire home", "Booked", "3 guests", "Airbnb", "The booked house: a sea-facing home on Rue Bairem Ettounsi, Carthage. Check-in from 15:00 Saturday; ask the host about dropping bags earlier. Check-out Monday 11:00.", [36.8560, 10.3330], "https://www.google.com/maps/search/?api=1&query=Rue%20Bairem%20Ettounsi%2C%20Carthage%2C%20Tunisia", 10, 10, 8, "$$", ["img/intact-home-carthage.jpg"]), { booked: true, checkin: '15:00', checkout: '11:00', address: 'Rue Bairem Ettounsi, Carthage' }),
       S("sidi-traditional", "Dar Saydouna · Sidi Bou Said traditional house", "Entire home", "Best in the village", "7 guests · 3 bedrooms", "4.93 · 191 reviews", "Centuries-old traditional house around a patio with panoramic rooftop Gulf views.", [36.8702, 10.3416], "https://www.airbnb.com/rooms/21562961", 10, 10, 7, "$$$", [shot("https://www.airbnb.com/rooms/21562961")]),
       S("sidi-authentic", "Authentic Sidi Bou Said house · sea-view rooftop", "Entire home", "Sea-view rooftop", "5 guests · 2 bedrooms · 2 baths", "4.83", "A whole traditional-style home with sea-view rooftop in the blue-and-white village.", [36.8698, 10.3414], "https://www.airbnb.com/rooms/893507389634553970", 9.8, 10, 7, "$$$", [shot("https://www.airbnb.com/rooms/893507389634553970")]),
       S("dar-mima", "Dar Mima · 300-year-old house + rooftop jacuzzi", "Entire home", "Heritage + sea", "7 guests · 3 bedrooms", "4.9 · 20 reviews", "A preserved 300-year-old Sidi Bou Said home with sea-view rooftop.", [36.8701, 10.342], "https://www.airbnb.com/rooms/1494928392825293570", 10, 10, 5, "$$$$", [shot("https://www.airbnb.com/rooms/1494928392825293570")]),
@@ -340,9 +341,11 @@ window.TRIP = (() => {
   const driveHours = { 'tunis-carthage': 0.5, 'tunis-kairouan': 2, 'tunis-sousse': 1.75, 'tunis-hammamet': 1, 'carthage-kairouan': 2.25, 'carthage-sousse': 2, 'carthage-hammamet': 1.25, 'kairouan-sousse': 1, 'kairouan-hammamet': 1.5, 'sousse-hammamet': 1 };
   // Six nights: Sat 19 → Thu 24. Friday 25 is the flight home.
   const nights = ['D2', 'D3', 'D4', 'D5', 'D6', 'D7'];
-  const defaultRoute = ['tunis', 'tunis', 'sousse', 'sousse', 'hammamet', 'hammamet'];
-  const routeVersion = 2;
+  const defaultRoute = ['carthage', 'carthage', 'sousse', 'sousse', 'hammamet', 'hammamet'];
+  const routeVersion = 3;
+  const bookedStays = { carthage: 'intact-home' };
   const routePresets = [
+    { en: 'Carthage 2 · Sousse 2 · Hammamet 2', ar: 'قرطاج 2 · سوسة 2 · الحمامات 2', route: ['carthage', 'carthage', 'sousse', 'sousse', 'hammamet', 'hammamet'] },
     { en: 'Tunis 2 · Sousse 2 · Hammamet 2', ar: 'تونس 2 · سوسة 2 · الحمامات 2', route: ['tunis', 'tunis', 'sousse', 'sousse', 'hammamet', 'hammamet'] },
     { en: 'Carthage 3 · Hammamet 3', ar: 'قرطاج 3 · الحمامات 3', route: ['carthage', 'carthage', 'carthage', 'hammamet', 'hammamet', 'hammamet'] },
     { en: 'Tunis 2 · Kairouan 1 · Sousse 1 · Hammamet 2', ar: 'تونس 2 · القيروان 1 · سوسة 1 · الحمامات 2', route: ['tunis', 'tunis', 'kairouan', 'sousse', 'hammamet', 'hammamet'] },
@@ -366,8 +369,8 @@ window.TRIP = (() => {
       ['dougga', 'marche-central', 'essaraya']
     ],
     carthage: [
-      ['sidi-bou-said', 'dar-el-annabi', 'cafe-nattes', 'bambalouni', 'sidi-chabaane', 'bon-vieux-temps'],
-      ['byrsa', 'antonine-baths', 'punic-ports', 'roman-villas', 'cafe-vert', 'la-marsa-corniche', 'dar-zarrouk'],
+      ['cafe-vert', 'sidi-bou-said', 'dar-el-annabi', 'cafe-nattes', 'bambalouni', 'sidi-chabaane', 'bon-vieux-temps'],
+      ['bardo', 'byrsa', 'antonine-baths', 'punic-ports', 'le-golfe@midday', 'la-marsa-corniche', 'dar-zarrouk'],
       ['medina-walk', 'zitouna@midday', 'fondouk-attarine', 'souk-attarine', 'souk-kmach', 'dar-el-jeld'],
       ['bardo', 'ennejma-ezzahra', 'le-golfe', 'gammarth-beach', 'villa-didon']
     ],
@@ -405,5 +408,5 @@ window.TRIP = (() => {
     back: { en: 'Fri 25 Sep · Saudia · SV366 Tunis 11:40 → Jeddah 18:05 · SV1046 20:00 → Riyadh 21:45', ar: 'الجمعة 25 سبتمبر · السعودية · SV366 تونس 11:40 ← جدة 18:05 · SV1046 الساعة 20:00 ← الرياض 21:45' }
   };
 
-  return { start: '2026-09-18', travelers: 3, flight, places: P, stayPools, bases, driveHours, nights, defaultRoute, routeVersion, routePresets, templates, transitions, cars, days, areas, cats, slots, tags, goodToKnow };
+  return { start: '2026-09-18', travelers: 3, flight, places: P, stayPools, bases, driveHours, nights, defaultRoute, routeVersion, bookedStays, routePresets, templates, transitions, cars, days, areas, cats, slots, tags, goodToKnow };
 })();

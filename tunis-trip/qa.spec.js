@@ -31,10 +31,14 @@ test('02 plan opens on a real day; flight facts sit on days 1, 2 and 8', async (
   await expect(on).toHaveCount(1);
   expect(await on.getAttribute('data-day')).not.toBe('trip');
   await page.locator('#dayStrip .chip[data-day=D2]').click();
-  await expect(page.locator('#dayPanel h1')).toContainText('first day in Tunis');
+  await expect(page.locator('#dayPanel h1')).toContainText('first day in Carthage');
   await expect(page.locator('#dayPanel .row.fixed').nth(0)).toContainText('05:45');
   await expect(page.locator('#dayPanel .row.fixed').nth(1)).toContainText('09:00');
-  await expect(page.locator('#dayPanel .row.fixed').nth(1)).toContainText('Dar 24');
+  await expect(page.locator('#dayPanel .row.fixed').nth(1)).toContainText('Intact Home');
+  await expect(page.locator('#dayPanel .row.fixed').nth(1)).toContainText('check-in from 15:00');
+  await expect(page.locator('#dayPanel .row.fixed').nth(1).locator('a.mapsA')).toHaveAttribute('href', /google\.com\/maps/);
+  await expect(page.locator('#dayPanel .stayLine')).toContainText('Booked');
+  await expect(page.locator('#dayPanel .stayLine a').first()).toHaveAttribute('href', /google\.com\/maps/);
   expect(await page.locator('#dayPanel .row[data-row]').count()).toBeGreaterThanOrEqual(6);
   await expect(page.locator('#dayPanel .slotHead').first()).toHaveText(/Morning/);
   await page.locator('#dayStrip .chip[data-day=D1]').click();
@@ -59,9 +63,11 @@ test('03 default plan is coherent: no duplicates in a day, places match the day 
     if ((S.plan.D2 || []).length < 6) out.push('Saturday is too empty');
     if ((S.plan.D1 || []).length) out.push('Flight night should have no picks');
     if ((S.plan.D8 || []).length) out.push('Departure day should have no picks');
-    if (!(S.plan.D4 || []).some(r => r.p === 'great-mosque')) out.push('The Tunis → Sousse day should stop at the Great Mosque of Kairouan');
+    if (!(S.plan.D4 || []).some(r => r.p === 'great-mosque')) out.push('The Carthage → Sousse day should stop at the Great Mosque of Kairouan');
     if (!(S.plan.D6 || []).some(r => r.p === 'eljem-amphitheatre')) out.push('The Sousse → Hammamet day should stop at El Jem');
-    if (JSON.stringify(S.route) !== JSON.stringify(['tunis', 'tunis', 'sousse', 'sousse', 'hammamet', 'hammamet'])) out.push('Default route should be Tunis 2 · Sousse 2 · Hammamet 2');
+    if (JSON.stringify(S.route) !== JSON.stringify(['carthage', 'carthage', 'sousse', 'sousse', 'hammamet', 'hammamet'])) out.push('Default route should be Carthage 2 · Sousse 2 · Hammamet 2');
+    if (S.stays.carthage !== 'intact-home') out.push('The booked Carthage home must be the Carthage stay');
+    for (const p of T.places) { if (!/^https:\/\/(www\.google\.com\/maps|maps\.app\.goo\.gl|goo\.gl\/maps)/.test(A.mapsUrl(p))) out.push(`${p.id}: no Google Maps link`); }
     return out;
   });
   expect(problems).toEqual([]);
@@ -144,18 +150,19 @@ test('07 "Add from Explore" pre-filters to the day base and adds with one tap', 
 test('08 a plan row can change its time of day and move to another day', async ({ page }) => {
   await open(page);
   await page.locator('#dayStrip .chip[data-day=D2]').click();
-  await page.locator('#dayPanel [data-row="medina-walk"]').click();
+  await page.locator('#dayPanel [data-row="sidi-bou-said"]').click();
   await page.locator('#sheet [data-slot=evening]').click();
   await page.keyboard.press('Escape');
-  expect((await state(page)).plan.D2.find(r => r.p === 'medina-walk').s).toBe('evening');
+  expect((await state(page)).plan.D2.find(r => r.p === 'sidi-bou-said').s).toBe('evening');
   const heads = await page.locator('#dayPanel .timeline > li').evaluateAll(l => l.map(x => x.classList.contains('slotHead') ? 'H:' + x.textContent.trim() : (x.querySelector('[data-row]')?.dataset.row || 'fixed')));
-  expect(heads.indexOf('medina-walk')).toBeGreaterThan(heads.indexOf('H:Evening'));
-  await page.locator('#dayPanel [data-row="medina-walk"]').click();
+  expect(heads.indexOf('sidi-bou-said')).toBeGreaterThan(heads.indexOf('H:Evening'));
+  await expect(page.locator('#dayPanel .rowWrap a.rowMaps[href*="google.com/maps"]').first()).toBeVisible();
+  await page.locator('#dayPanel [data-row="sidi-bou-said"]').click();
   await page.locator('#sheet [data-move]').click();
   await page.locator('#sheet [data-day=D3]').click();
   const s = await state(page);
-  expect(s.plan.D2.some(r => r.p === 'medina-walk')).toBe(false);
-  expect(s.plan.D3.some(r => r.p === 'medina-walk' && r.s === 'evening')).toBe(true);
+  expect(s.plan.D2.some(r => r.p === 'sidi-bou-said')).toBe(false);
+  expect(s.plan.D3.some(r => r.p === 'sidi-bou-said' && r.s === 'evening')).toBe(true);
 });
 
 test('09 book: no flight controls; stays with photo rails can be changed; car; reservations follow the plan', async ({ page }) => {
@@ -164,21 +171,23 @@ test('09 book: no flight controls; stays with photo rails can be changed; car; r
   await expect(page.locator('#book input[type=time]')).toHaveCount(0);
   await expect(page.locator('#staysSection .stayPanel')).toHaveCount(3);
   await expect(page.locator('#staysSection .stayPanel').nth(1)).toContainText('Sousse');
-  await expect(page.locator('#staysSection .stayPanel').nth(0)).toContainText('Tunis');
+  await expect(page.locator('#staysSection .stayPanel').nth(0)).toContainText('Carthage');
   await expect(page.locator('#staysSection .stayPanel').nth(0)).toContainText('2 nights');
+  await expect(page.locator('#staysSection [data-block=carthage] .hero')).toContainText('Booked');
+  await expect(page.locator('#staysSection [data-block=carthage] .hero .photo img')).toHaveAttribute('src', /intact-home-carthage/);
+  await expect(page.locator('#staysSection [data-block=carthage] .stayRail .stayCard button[data-opt]').first()).toBeDisabled();
+  await expect(page.locator('#staysSection [data-block=carthage] .hero a[href*="google.com/maps"]')).not.toHaveCount(0);
   await expect(page.locator('#staysSection [data-block=sousse] .stayRail .stayCard')).toHaveCount(11);
-  await expect(page.locator('#staysSection [data-block=tunis] .stayRail .stayCard')).toHaveCount(20);
+  await expect(page.locator('#staysSection [data-block=carthage] .stayRail .stayCard')).toHaveCount(21);
   expect(await page.locator('#staysSection .photo img').count()).toBeGreaterThan(30);
-  if (await page.evaluate(() => typeof window.L !== 'undefined')) {
-    await expect.poll(() => page.locator('#staysSection [data-block=tunis] .hero .photo img').first().evaluate(i => i.naturalWidth), { timeout: 20000 }).toBeGreaterThan(0);
-  }
+  await expect.poll(() => page.locator('#staysSection [data-block=carthage] .hero .photo img').first().evaluate(i => i.naturalWidth), { timeout: 20000 }).toBeGreaterThan(0);
   await page.locator('#staysSection [data-block=hammamet] [data-filter=both]').click();
   await expect(page.locator('#staysSection [data-block=hammamet] .stayRail .stayCard')).toHaveCount(9);
   await page.locator('#staysSection [data-block=hammamet] [data-filter=all]').click();
-  await page.locator('#staysSection [data-block=tunis] [data-private]').click();
-  const privCount = await page.locator('#staysSection [data-block=tunis] .stayRail .stayCard').count();
-  expect(privCount).toBeGreaterThanOrEqual(10); expect(privCount).toBeLessThan(20);
-  await page.locator('#staysSection [data-block=tunis] [data-private]').click();
+  await page.locator('#staysSection [data-block=sousse] [data-private]').click();
+  const privCount = await page.locator('#staysSection [data-block=sousse] .stayRail .stayCard').count();
+  expect(privCount).toBeGreaterThanOrEqual(2); expect(privCount).toBeLessThan(11);
+  await page.locator('#staysSection [data-block=sousse] [data-private]').click();
   await page.locator('#staysSection [data-block=sousse] [data-opt="central-dar-baaziz"]').click();
   await expect(page.locator('#staysSection [data-block=sousse] h3')).toContainText('Dar Baaziz');
   await page.locator('#viewTabs [data-view=plan]').click();
@@ -192,6 +201,8 @@ test('09 book: no flight controls; stays with photo rails can be changed; car; r
   const checks = page.locator('#resSection .checks li');
   expect(await checks.count()).toBeGreaterThan(6);
   expect(await page.locator('#resSection .checks li .thumb').count()).toBe(await checks.count());
+  await expect(page.locator('#resSection .checks li').filter({ hasText: 'Intact Home' })).toHaveClass(/done/);
+  await expect(page.locator('#resSection .checks li').filter({ hasText: 'Intact Home' }).locator('a')).toHaveAttribute('href', /google\.com\/maps/);
   await expect(page.locator('#carSection .hero .photo img')).toHaveAttribute('data-wiki', 'Volvo_XC90');
   expect(await page.locator('#carSection .optList .thumb img').count()).toBe(20);
   if (await page.evaluate(() => typeof window.L !== 'undefined')) {
@@ -242,8 +253,8 @@ test('12 Arabic: RTL, translated UI and catalogue, persists across reload', asyn
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.locator('#viewTabs [data-view=plan]')).toHaveText('الخطة');
   await page.locator('#dayStrip .chip[data-day=D2]').click();
-  await expect(page.locator('#dayPanel h1')).toContainText('تونس');
-  await expect(page.locator('#dayPanel [data-row="zitouna"] b')).toContainText('جامع الزيتونة');
+  await expect(page.locator('#dayPanel h1')).toContainText('قرطاج');
+  await expect(page.locator('#dayPanel [data-row="sidi-bou-said"] b')).toContainText('سيدي بوسعيد');
   await page.locator('#viewTabs [data-view=explore]').click();
   await expect(page.locator('#catTabs [data-cat=food]')).toContainText('طعام');
   await expect(page.locator('#placeGrid .card').first().locator('p')).not.toBeEmpty();
@@ -302,31 +313,32 @@ test('15 route editor: change one night, use a preset; stays, drives, titles and
   await open(page, '#book');
   await expect(page.locator('#routeSection .nightCell')).toHaveCount(6);
   await expect(page.locator('#routeSection .nightCell').nth(2)).toContainText('Sousse');
+  await expect(page.locator('#routeSection .nightCell').nth(0)).toContainText('Booked');
   await expect(page.locator('#routeSection [data-preset="0"]')).toHaveAttribute('aria-selected', 'true');
   await page.locator('#routeSection .nightCell').nth(2).click();
   await expect(page.locator('#sheet [data-base]')).toHaveCount(5);
   await page.locator('#sheet [data-base=hammamet]').click();
   const s1 = await state(page);
-  expect(s1.route).toEqual(['tunis', 'tunis', 'hammamet', 'sousse', 'hammamet', 'hammamet']);
+  expect(s1.route).toEqual(['carthage', 'carthage', 'hammamet', 'sousse', 'hammamet', 'hammamet']);
   expect(s1.plan.D4.some(r => r.p === 'hammamet-medina')).toBe(true);
   expect(s1.plan.D4.some(r => r.p === 'great-mosque')).toBe(false);
   expect(s1.plan.D4.some(r => r.p === 'takrouna')).toBe(true);
   await expect(page.locator('#staysSection .stayPanel')).toHaveCount(4);
   await page.locator('#viewTabs [data-view=plan]').click();
   await page.locator('#dayStrip .chip[data-day=D4]').click();
-  await expect(page.locator('#dayPanel h1')).toContainText('Tunis → Hammamet');
+  await expect(page.locator('#dayPanel h1')).toContainText('Sidi Bou Said → Hammamet via Takrouna');
   await expect(page.locator('#dayPanel .row.fixed').filter({ hasText: 'Drive' })).toContainText('Dar Sandra');
   await expect(page.locator('#dayPanel .stayLine')).toContainText('Dar Sandra');
   await page.locator('#viewTabs [data-view=book]').click();
-  await page.locator('#routeSection [data-preset="1"]').click();
-  await expect(page.locator('#routeSection [data-preset="1"]')).toHaveAttribute('aria-selected', 'true');
+  await page.locator('#routeSection [data-preset="2"]').click();
+  await expect(page.locator('#routeSection [data-preset="2"]')).toHaveAttribute('aria-selected', 'true');
   const s2 = await state(page);
   expect(s2.route).toEqual(['carthage', 'carthage', 'carthage', 'hammamet', 'hammamet', 'hammamet']);
   expect(s2.plan.D2.some(r => r.p === 'sidi-bou-said')).toBe(true);
   expect(s2.plan.D4.some(r => r.p === 'medina-walk')).toBe(true);
   await expect(page.locator('#staysSection .stayPanel')).toHaveCount(2);
   await expect(page.locator('#staysSection .stayPanel').nth(0)).toContainText('3 nights');
-  await expect(page.locator('#staysSection [data-block=carthage] .stayRail .stayCard')).toHaveCount(20);
+  await expect(page.locator('#staysSection [data-block=carthage] .stayRail .stayCard')).toHaveCount(21);
   await page.reload({ waitUntil: 'domcontentloaded' });
   expect((await state(page)).route).toEqual(['carthage', 'carthage', 'carthage', 'hammamet', 'hammamet', 'hammamet']);
   await page.locator('#viewTabs [data-view=plan]').click();
@@ -362,13 +374,16 @@ test('16 a place opens a detail sheet with what it relates to; history and photo
 
 test('17 a device holding the older default route is moved to the fixed route, keeping its own edits elsewhere', async ({ page }) => {
   await open(page);
-  await page.evaluate(() => { localStorage.setItem('tunisia-2026', JSON.stringify({ route: ['tunis', 'tunis', 'kairouan', 'sousse', 'hammamet', 'hammamet'], plan: { D2: [{ p: 'dougga', s: 'morning' }], D4: [{ p: 'great-mosque', s: 'morning' }] }, stays: { tunis: 'dar-nabiha' } })); });
+  await page.evaluate(() => { localStorage.setItem('tunisia-2026', JSON.stringify({ routeV: 2, route: ['tunis', 'tunis', 'sousse', 'sousse', 'hammamet', 'hammamet'], plan: { D2: [{ p: 'medina-walk', s: 'morning' }], D4: [{ p: 'great-mosque', s: 'morning' }], D7: [{ p: 'dougga', s: 'morning' }] }, stays: { tunis: 'dar-nabiha', carthage: 'dar-mima' } })); });
   await page.reload({ waitUntil: 'domcontentloaded' });
   const s = await state(page);
-  expect(s.route).toEqual(['tunis', 'tunis', 'sousse', 'sousse', 'hammamet', 'hammamet']);
-  expect(s.plan.D2).toEqual([{ p: 'dougga', s: 'morning' }]);
+  expect(s.route).toEqual(['carthage', 'carthage', 'sousse', 'sousse', 'hammamet', 'hammamet']);
+  expect(s.plan.D7).toEqual([{ p: 'dougga', s: 'morning' }]);
+  expect(s.plan.D2.some(r => r.p === 'sidi-bou-said')).toBe(true);
+  expect(s.plan.D2.some(r => r.p === 'medina-walk')).toBe(false);
+  expect(s.stays.carthage).toBe('intact-home');
   expect(s.plan.D4.some(r => r.p === 'dar-antonia-dinner')).toBe(true);
   expect(s.stays.tunis).toBe('dar-nabiha');
   await page.reload({ waitUntil: 'domcontentloaded' });
-  expect((await state(page)).plan.D2).toEqual([{ p: 'dougga', s: 'morning' }]);
+  expect((await state(page)).plan.D7).toEqual([{ p: 'dougga', s: 'morning' }]);
 });

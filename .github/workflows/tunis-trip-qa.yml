@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'tunis-trip/**'
+      - 'bot/**'
       - '.github/workflows/tunis-trip-qa.yml'
   workflow_dispatch:
 
@@ -28,6 +29,11 @@ jobs:
           sleep 2
       - name: Run planner QA
         run: npx playwright test tunis-trip/qa.spec.js --reporter=line
+      - name: Bot unit tests
+        run: |
+          cd bot
+          npm install --no-audit --no-fund
+          npm test
       - name: Upload QA report on failure
         if: failure()
         uses: actions/upload-artifact@v4
