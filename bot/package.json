@@ -1,0 +1,15 @@
+{
+  "name": "tunisia-trip-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Trip-planner bot for the family Tunisia trip: chats on WhatsApp or Telegram, edits the shared plan, and publishes it to the site.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.127.0"
+  }
+}

@@ -3,3 +3,6 @@ playwright-report/
 node_modules/
 package.json
 package-lock.json
+!bot/package.json
+bot/.env
+!bot/package-lock.json

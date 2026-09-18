@@ -1,0 +1,198 @@
+{
+  "_readme": "Shared plan published by the trip bot (bot/). The site applies this file when updatedAt is newer than what the phone last saw. updatedAt null = not published yet; the site uses its defaults.",
+  "updatedAt": null,
+  "route": [
+    "carthage",
+    "carthage",
+    "sousse",
+    "sousse",
+    "hammamet",
+    "hammamet"
+  ],
+  "plan": {
+    "D1": [],
+    "D2": [
+      {
+        "p": "cafe-vert",
+        "s": "midday"
+      },
+      {
+        "p": "sidi-bou-said",
+        "s": "afternoon"
+      },
+      {
+        "p": "dar-el-annabi",
+        "s": "afternoon"
+      },
+      {
+        "p": "cafe-nattes",
+        "s": "afternoon"
+      },
+      {
+        "p": "bambalouni",
+        "s": "afternoon"
+      },
+      {
+        "p": "sidi-chabaane",
+        "s": "evening"
+      },
+      {
+        "p": "bon-vieux-temps",
+        "s": "evening"
+      }
+    ],
+    "D3": [
+      {
+        "p": "bardo",
+        "s": "morning"
+      },
+      {
+        "p": "byrsa",
+        "s": "morning"
+      },
+      {
+        "p": "antonine-baths",
+        "s": "morning"
+      },
+      {
+        "p": "punic-ports",
+        "s": "midday"
+      },
+      {
+        "p": "le-golfe",
+        "s": "midday"
+      },
+      {
+        "p": "la-marsa-corniche",
+        "s": "evening"
+      },
+      {
+        "p": "dar-zarrouk",
+        "s": "evening"
+      }
+    ],
+    "D4": [
+      {
+        "p": "great-mosque",
+        "s": "morning"
+      },
+      {
+        "p": "aghlabid-basins",
+        "s": "morning"
+      },
+      {
+        "p": "dar-koraich",
+        "s": "midday"
+      },
+      {
+        "p": "kairouan-medina",
+        "s": "midday"
+      },
+      {
+        "p": "makroudh",
+        "s": "afternoon"
+      },
+      {
+        "p": "sousse-medina",
+        "s": "evening"
+      },
+      {
+        "p": "dar-antonia-dinner",
+        "s": "evening"
+      }
+    ],
+    "D5": [
+      {
+        "p": "sousse-ribat",
+        "s": "morning"
+      },
+      {
+        "p": "sousse-mosque",
+        "s": "morning"
+      },
+      {
+        "p": "sousse-museum",
+        "s": "midday"
+      },
+      {
+        "p": "le-lido",
+        "s": "midday"
+      },
+      {
+        "p": "sousse-medina",
+        "s": "afternoon"
+      },
+      {
+        "p": "kantaoui-beach",
+        "s": "afternoon"
+      },
+      {
+        "p": "dar-antonia-dinner",
+        "s": "evening"
+      }
+    ],
+    "D6": [
+      {
+        "p": "eljem-amphitheatre",
+        "s": "morning"
+      },
+      {
+        "p": "eljem-museum",
+        "s": "midday"
+      },
+      {
+        "p": "eljem-lunch",
+        "s": "midday"
+      },
+      {
+        "p": "hammamet-medina",
+        "s": "evening"
+      },
+      {
+        "p": "hammamet-kasbah",
+        "s": "evening"
+      },
+      {
+        "p": "barberousse",
+        "s": "evening"
+      }
+    ],
+    "D7": [
+      {
+        "p": "nabeul-pottery",
+        "s": "morning"
+      },
+      {
+        "p": "nabeul-souk",
+        "s": "morning"
+      },
+      {
+        "p": "chez-achour",
+        "s": "midday"
+      },
+      {
+        "p": "hammamet-beach",
+        "s": "morning"
+      },
+      {
+        "p": "bio-azur",
+        "s": "afternoon"
+      },
+      {
+        "p": "sidi-bou-hdid",
+        "s": "evening"
+      }
+    ],
+    "D8": []
+  },
+  "stays": {
+    "tunis": "dar24",
+    "carthage": "intact-home",
+    "kairouan": "central-dar-koraich",
+    "sousse": "central-dar-antonia",
+    "hammamet": "dar-sandra"
+  },
+  "car": "bmw-x5",
+  "suggestions": [],
+  "log": []
+}

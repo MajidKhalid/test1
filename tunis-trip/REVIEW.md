@@ -24,10 +24,10 @@ Context that shaped the decisions:
 | U8 | **No sense of "today".** The site does not know which day it is, so during the trip every visit starts at the top. | Medium | Plan opens on today's day when the date falls inside the trip (otherwise the first day). |
 | U9 | **Map controls compete with content.** A sticky day strip plus Routes/Pins toggles sits under a sticky header and takes 116 px of every screen. | Medium | The day strip lives inside Plan and the map is the day's map. Route and Places toggles sit quietly on the map itself. Pins carry a logo per type (food, sights, shopping, nightlife, relax, flight, drive, stay); tapping one shows the photo, the explanation and where it sits in the schedule. |
 | U10 | **Selection state is unclear.** Selected stays get a teal outline, selected flights a dark button, selected activities reduced opacity for the others. Three different signals for the same idea. | Medium | One selection language everywhere: a filled check control, and "Added · Sun 20" on the button. |
-| U11 | **No way to share a plan.** Every device has its own `localStorage`; the family cannot see one plan. | Medium | **Share** copies a link that carries the plan; opening it on another phone loads the same plan. |
+| U11 | **No way to share a plan.** Every device has its own `localStorage`; the family cannot see one plan. | Medium | **Share** copies a link that carries the plan; opening it on another phone loads the same plan. The trip-planner bot (`bot/`) goes further: it edits one shared `plan.json` from the family chat and every phone pulls it. |
 | U12 | **Mobile tab bar labels (Map / Calendar / Book / Configure)** name page sections, not tasks. | Low | Plan · Explore · Book. |
 | U13 | **Accessibility gaps.** Segmented "tabs" are plain buttons without `role=tab`, colour contrast on muted text (#697383 on #fbfaf7) is borderline, focus rings suppressed by outline styling. | Low | Proper `tablist`/`tab`/`aria-selected`, contrast ≥ 4.5:1, visible focus rings. |
-| U14 | **External dependencies on every load**: Leaflet from unpkg, OSRM routing, thum.io, mshots, OpenStreetMap tiles. | Low | Only Leaflet + one tile provider remain; both fail gracefully (a labelled placeholder replaces the map; the rest of the site works). |
+| U14 | **External dependencies on every load**: Leaflet from unpkg, OSRM routing, thum.io, mshots, OpenStreetMap tiles. | Low | Leaflet + OpenStreetMap tiles + OSRM (for road-following routes) remain and fail gracefully (a labelled placeholder or a straight dashed line). With a Google Maps key in `config.js` the map is Google Maps with Google Directions instead. |
 
 ## Track 2 · Trip plan & choosing
 
@@ -40,7 +40,7 @@ Context that shaped the decisions:
 | T5 | **No nightlife / drinks tab** although requested. | High | **Nightlife** tab with bars, lounges, rooftop terraces, beach clubs and evening tea spots, plus a note that Kairouan is effectively dry. |
 | T6 | **Food, shopping and leisure were mixed into one tab** ("Dining · shopping · leisure"), and museums were mixed with ruins under "Historical". | Medium | Five tabs: Food · Sights · Shopping · Nightlife · Relax. |
 | T7 | **Twenty flight options ranked around a departure preference** that is now moot. | Medium | Flight booking removed from the site entirely. The booked itinerary (Turkish Airlines out Sat 19 Sep 01:45 → 09:00; Saudia back Fri 25 Sep 11:40 via Jeddah) is fixed into Day 1, Day 2 and Day 8. No reservation codes, ticket numbers or seats are stored, because the Pages address is public. |
-| T8 | **The route is hard-coded** (Tunis 2 · central 2 · Hammamet 2) and a stale fourth block was still in the code. | Medium | **Route editor**: each of the six nights is assigned a base (Tunis, Carthage · Sidi Bou Said, Kairouan, Sousse, Hammamet), with presets such as "Carthage 3 · Hammamet 3". Stay blocks, check-out and drive rows (with hours), day titles and the default day plans are derived from the route. The family fixed the route as **Tunis 2 · Sousse 2 · Hammamet 2**; the two drive days stop at Kairouan (Tunis → Sousse) and El Jem (Sousse → Hammamet). |
+| T8 | **The route is hard-coded** (Tunis 2 · central 2 · Hammamet 2) and a stale fourth block was still in the code. | Medium | **Route editor**: each of the six nights is assigned a base (Tunis, Carthage · Sidi Bou Said, Kairouan, Sousse, Hammamet), with presets such as "Carthage 3 · Hammamet 3". Stay blocks, check-out and drive rows (with hours), day titles and the default day plans are derived from the route. The family booked a home in Carthage for the first two nights (Sat 19 → Mon 21), so the route is **Carthage 2 · Sousse 2 · Hammamet 2**; the booked home is locked in the editor and the drive days stop at Kairouan (Carthage → Sousse) and El Jem (Sousse → Hammamet). |
 | T9 | **Stay lists are 20-long rails with a fabricated 0–100 score** (experience×5 + privacy×3 + value×2). The score dominates the card but the formula is hidden. | Medium | Chosen stay shown large with its photo; every option in the pool follows as a photo rail (Tunis 20, Carthage 20, Kairouan 7, Sousse 11, Hammamet 20) with the three visible ratings and no composite number. Group suggestions with a link get a preview photo. Each stop's rail can be filtered to the two experiences the family asked for, riad · dar, beach, or both in one home, and to private homes only. |
 | T10 | **Booking help is generic.** The checklist is a static 12-line list; it does not know what you actually picked. | High | Book builds its reservation list from your plan: every picked place that needs a reservation or tickets, each stay, the car, with links and check-off state. |
 | T11 | **No "where to eat near here" logic.** Restaurants are scattered by day, not by place. | Medium | Explore filters by area; Plan's "+ Add" opens Explore pre-filtered to that day's area. |
@@ -62,4 +62,14 @@ The researched stay and car shortlists were **kept** and ported into the new `da
 - `styles.css` — design tokens, light/dark, RTL.
 - `data.js` — trip days, areas, catalogue, stays, cars, default plan.
 - `app.js` — state, rendering, map, share link.
+- `config.js` — Google Maps key (optional).
+- `plan.json` — the shared plan the bot publishes; the site pulls it.
 - `qa.spec.js` — Playwright checks run by the existing workflow.
+
+## Added later
+
+- **Booked Carthage home** (Sat 19 → Mon 21): first stay in the pool with its photo, check-in 15:00 on the arrival row, checkout 11:00 on the drive row, locked in the route editor and stay rail, pre-ticked in reservations.
+- **Google Maps everywhere**: every plan row, catalogue card, detail sheet, stay, arrival and drive row links to Google Maps (directions or a place search).
+- **Real routes**: the day's route follows roads (OSRM) instead of straight lines; Google Directions when a key is configured.
+- **Mobile**: sticky day strip, map height toggle, larger tap targets, sheet grab handle.
+- **Trip-planner bot** in `bot/`: Claude with plan-editing tools behind Telegram / WhatsApp webhooks, publishing `plan.json`.
