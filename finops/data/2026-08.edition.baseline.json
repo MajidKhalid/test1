@@ -1,0 +1,3242 @@
+{
+ "meta": {
+  "studio": 1,
+  "stamp": "2026-09-09T16:15:23Z",
+  "builtFrom": "FinOps_Dashboard_v20 (July 2026) + Q2 2026 quarterly report"
+ },
+ "edition": {
+  "month": "2026-08",
+  "version": 21,
+  "dataAsOf": "31 August 2026",
+  "dataAsOfAr": "31 أغسطس 2026",
+  "published": "7 September 2026",
+  "publishedAr": "7 سبتمبر 2026",
+  "labelEn": "September 2026 edition · August 2026 data",
+  "labelAr": "إصدار سبتمبر 2026 · بيانات أغسطس 2026",
+  "fx": 3.75,
+  "azureCurrency": "USD",
+  "showQuarter": true,
+  "showLead": false,
+  "showStatement": false,
+  "ledgerCurrency": "USD",
+  "ledgerConfirmed": false,
+  "versionManual": false,
+  "publishedManual": false
+ },
+ "statement": {
+  "headEn": "We know where every riyal sits, and we are now managing to that.",
+  "headAr": "نعرف أين يقع كل ريال، ونُدير الإنفاق على هذا الأساس.",
+  "bodyEn": "{{month}} closed with GCP net spend of {{gcp.net}} after {{gcp.discounts}} of discounts on {{gcp.gross}} of usage, {{gcp.change}} on {{prevMonth}}. Every charge is read from the billing project it sits in, so each general department sees its own number rather than a share of a pool.\nThe purchase-order balance stands at {{gcp.credit.remaining}}, {{gcp.credit.pct}} of the starting credit, and the migration credit is fully consumed. From here spend runs at negotiated contract rates, so the run-rate, not the credit, is the number to manage.\nAzure joins this edition for the first time: {{azure.net}} for the month, {{azure.top.share}} of it {{azure.top.name}}. One report, both clouds, the same basis, every month.\nWe are also closing the gap between the credit consumed and the spend reported. It is explained, not mysterious: enhanced support, VAT and four months the billing account cannot see. One invoice settles it, and we have asked for it.",
+  "bodyAr": "أُغلق {{month}} بصافي إنفاق على GCP قدره {{gcp.net}} بعد خصومات بلغت {{gcp.discounts}} على استهلاك إجمالي قدره {{gcp.gross}}، {{gcp.change}} عن {{prevMonth}}. يُقرأ كل بند من مشروع الفوترة الذي يقع تحته، فترى كل إدارة عامة رقمها الخاص لا حصة من وعاء مشترك.\nيبلغ رصيد أوامر الشراء {{gcp.credit.remaining}}، أي {{gcp.credit.pct}} من الرصيد الابتدائي، وقد استُهلك رصيد الترحيل بالكامل. ومن هنا يجري الإنفاق وفق الأسعار التعاقدية المتفق عليها، فيصبح معدل الإنفاق الشهري، لا الرصيد، هو الرقم الذي نُديره.\nتنضم Azure إلى هذا الإصدار للمرة الأولى: {{azure.net}} خلال الشهر، منها {{azure.top.share}} لخدمة {{azure.top.name}}. تقرير واحد، ومنصتان، وعلى الأساس نفسه، كل شهر.\nونعمل كذلك على إغلاق الفجوة بين الائتمان المستهلك والإنفاق المعروض. فهي فجوة مفسَّرة لا غامضة: الدعم المتقدم، وضريبة القيمة المضافة، وأربعة أشهر لا يراها حساب الفوترة. وتحسمها فاتورة واحدة، وقد طلبناها.",
+  "dirEn": "Both clouds in one report, on the same basis, every month, with the quarter view in quarter-end editions.\nEvery Azure subscription and every GCP project mapped to a general department by the October edition, with nothing left unattributed.\nThe credit position reconciled to the invoice, support and VAT included, so the balance on this page and the ledger never disagree again.",
+  "dirAr": "المنصتان في تقرير واحد، وعلى الأساس نفسه، كل شهر، مع عرض الربع في إصدارات نهاية الربع.\nربط كل اشتراك في Azure وكل مشروع في GCP بإدارة عامة بحلول إصدار أكتوبر، دون أي بند غير منسوب.\nمطابقة الرصيد الائتماني مع الفاتورة، شاملاً الدعم وضريبة القيمة المضافة، حتى لا يختلف الرصيد في هذه الصفحة عن السجل مرة أخرى.",
+  "signEn": "IT Strategy & Planning Department · Information Technology and Digital Transformation",
+  "signAr": "إدارة استراتيجية وتخطيط تقنية المعلومات · تقنية المعلومات والتحول الرقمي"
+ },
+ "clouds": {
+  "gcp": {
+   "enabled": true,
+   "tdLabelEn": "October 2025 to August 2026",
+   "tdLabelAr": "أكتوبر 2025 إلى أغسطس 2026",
+   "credit": {
+    "purchaseOrders": [
+     {
+      "name": "PO 1",
+      "nameAr": "أمر الشراء 1",
+      "sar": 102359.88,
+      "usd": 89008.59,
+      "status": "full"
+     },
+     {
+      "name": "PO 2 (inc. Enhanced Support)",
+      "nameAr": "أمر الشراء 2 (شامل الدعم المتقدم)",
+      "sar": 2867779.1,
+      "usd": 2493720.96,
+      "status": "live"
+     }
+    ],
+    "fixed": [
+     {
+      "name": "Enhanced Support",
+      "nameAr": "الدعم المتقدم",
+      "usd": 235520.0,
+      "noteEn": "Support drawn from PO 2; not visible in billing dashboards",
+      "noteAr": "دعم مسحوب من أمر الشراء 2؛ لا يظهر في لوحات الفوترة"
+     },
+     {
+      "name": "Log Optimization and Customer Success",
+      "nameAr": "تحسين السجلات ونجاح العملاء",
+      "usd": 128517.64,
+      "noteEn": "One-time payment, fully paid, not visible in billing dashboards",
+      "noteAr": "دفعة واحدة مسددة بالكامل، لا تظهر في لوحات الفوترة"
+     }
+    ],
+    "commitments": [
+     {
+      "name": "SecOps",
+      "nameAr": "SecOps",
+      "usd": 914135.0,
+      "services": [
+       "Chronicle"
+      ],
+      "noteEn": "Paid monthly as the service is used",
+      "noteAr": "يُدفع شهرياً بحسب الاستخدام"
+     },
+     {
+      "name": "Security Command Center",
+      "nameAr": "Security Command Center",
+      "usd": 81672.81,
+      "services": [
+       "Security Command Center"
+      ],
+      "noteEn": "Paid monthly as the service is used",
+      "noteAr": "يُدفع شهرياً بحسب الاستخدام"
+     }
+    ],
+    "incentives": [
+     {
+      "name": "GCP credits (NotebookLM)",
+      "nameAr": "أرصدة GCP (NotebookLM)",
+      "usd": 450000.0,
+      "status": "full"
+     }
+    ]
+   },
+   "notes": {
+    "creditsEn": "No credits remain available at the end of the period. The migration credit is fully consumed, so spend now reflects negotiated contract rates. Figures are converted from the US dollars Google bills at the official rate of 3.75 Riyals to the US dollar.",
+    "creditsAr": "لا تتبقى أرصدة متاحة بنهاية الفترة. وقد تم استهلاك رصيد الترحيل بالكامل، وبالتالي يعكس الإنفاق الآن الأسعار التعاقدية المتفق عليها. وتم تحويل المبالغ من الدولار الأمريكي الذي تصدر به Google الفواتير وفق السعر الرسمي 3.75 ريال للدولار."
+   },
+   "highlights": {
+    "m": "",
+    "q": "",
+    "t": ""
+   },
+   "projectMapText": "# project id = cyber | itsvc | dtgd | dea | business | other\n# [account-level] is the bucket [Charges not specific to a project]; it is split by service.\n[account-level] = cyber\nmoe-secops-484408 = cyber\nprj-moenergy-prd-security-kms = itsvc\nprj-moenergy-dev-security-kms = itsvc\nprj-moenergy-prd-hub = itsvc\nprj-moenergy-dmz-host = itsvc\nprj-moenergy-dmz-srv = itsvc\nprj-moenergy-prd-host = itsvc\nprj-moenergy-dev-host = itsvc\nprj-moenergy-bootstrap = itsvc\nprj-moenergy-billexp = itsvc\nprj-moenergy-prd-bc-centlogs = itsvc\nprj-moenergy-dev-centlogs = itsvc\nprj-moenergy-iw-sb-development = dea\nprj-moenergy-iw-spark-admin = dea\nprj-moenergy-prd-bc-website = business\nprj-moenergy-migration-host-hq = business\nprj-moenergy-prd-data-dbs = business\nprj-moenergy-dev-data-dbs = business\nprj-moenergy-prd-bs-devops = dtgd\nprj-moenergy-dev-bs-devops = dtgd\nprj-moenergy-prd-infra-mngeng = business\nprj-moenergy-test-host = business\nmoe-notebooklm = other\nprj-moenergy-iw-it-eagd-ea-nf = dea\nprj-moenergy-iw-it-dtgd-ad-ne = dtgd\nprj-moenergy-iw-it-dtgd-et-fs = dtgd\nprj-moenergy-preprd-bc-websit = business\nprj-moenergy-dev-bc-website = business\nprj-moenergy-test-bc-website = business\nprj-moenergy-pre-prd-data-dbss = business\nprj-moenergy-test-data-dbss = business\nprj-moenergy-prd-bc-labware = business\nprj-moenergy-dev-bc-labware = business\nprj-moenergy-pre-prd-host = itsvc\n",
+   "sparkProjectsText": "# project ids inside the SPARK folder (969004756048). A trailing * matches a prefix.\nprj-moenergy-iw-*\n",
+   "sparkUseCasesText": "# One line per SPARK use case: Name | billing project id = department.\n# The project id is optional, so a use case with no billing project yet still counts.\n# prj-moenergy-iw-sb-development is the shared platform everyone builds on, not a use\n# case, so it is not listed here; its spend still counts towards SPARK and towards DEA.\nNawaf | prj-moenergy-iw-it-eagd-ea-nf = dea\nSPARK Admin | prj-moenergy-iw-spark-admin = dea\nprj-moenergy-iw-it-dtgd-et-fs | prj-moenergy-iw-it-dtgd-et-fs = dtgd\nprj-moenergy-iw-it-dtgd-ad-ne | prj-moenergy-iw-it-dtgd-ad-ne = dtgd\nAssisted Testing = dtgd\nDashboard Testing = dtgd\nGoogle DevOps Testing = dtgd\n",
+   "periods": {
+    "2026-07": {
+     "key": "2026-07",
+     "kind": "month",
+     "label": "July 2026",
+     "labelAr": "يوليو 2026",
+     "totals": {
+      "net": 546797.56,
+      "gross": 1193561.15,
+      "discounts": 646763.59
+     },
+     "sandbox": {
+      "net": 1485.74,
+      "gross": 1505.06,
+      "discounts": 19.32
+     },
+     "services": [
+      {
+       "name": "Chronicle",
+       "gross": 895898.32,
+       "net": 269808.97,
+       "chg": "-3%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 168988.12,
+       "net": 148886.32,
+       "chg": "42%"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+       "gross": 46760.4,
+       "net": 46760.4,
+       "chg": "0%"
+      },
+      {
+       "name": "FortiGate Next-Generation Firewall (PAYG)",
+       "gross": 36716.4,
+       "net": 36716.4,
+       "chg": "0%"
+      },
+      {
+       "name": "Security Command Center",
+       "gross": 28174.46,
+       "net": 28174.46,
+       "chg": "-3%"
+      },
+      {
+       "name": "Networking",
+       "gross": 9633.41,
+       "net": 9096.45,
+       "chg": "13%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 2632.84,
+       "net": 2632.84,
+       "chg": "-56%"
+      },
+      {
+       "name": "Backup and DR Service",
+       "gross": 1327.39,
+       "net": 1327.39,
+       "chg": "184%"
+      },
+      {
+       "name": "Claude Opus 4.8",
+       "gross": 1292.21,
+       "net": 1292.21,
+       "chg": "114%"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 1266.41,
+       "net": 1266.41,
+       "chg": "13%"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 356.85,
+       "net": 356.85,
+       "chg": "45%"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 353.62,
+       "net": 353.62,
+       "chg": "-54%"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 43.39,
+       "net": 23.81,
+       "chg": "-1%"
+      },
+      {
+       "name": "Cloud Key Management Service (KMS)",
+       "gross": 41.85,
+       "net": 41.85,
+       "chg": "-25%"
+      },
+      {
+       "name": "Cloud DNS",
+       "gross": 26.51,
+       "net": 26.51,
+       "chg": "-92%"
+      },
+      {
+       "name": "Network Security",
+       "gross": 23.17,
+       "net": 23.17,
+       "chg": "New"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 15.9,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Claude Sonnet 4.6",
+       "gross": 5.1,
+       "net": 5.1,
+       "chg": "268%"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 2.96,
+       "net": 2.96,
+       "chg": "147%"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 1.84,
+       "net": 1.84,
+       "chg": "145%"
+      },
+      {
+       "name": "BigQuery",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Vertex AI",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      }
+     ],
+     "sandboxServices": [
+      {
+       "name": "Claude Opus 4.8",
+       "gross": 1292.21,
+       "net": 1292.21,
+       "chg": "114%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 104.85,
+       "net": 104.85,
+       "chg": "-19%"
+      },
+      {
+       "name": "Networking",
+       "gross": 56.74,
+       "net": 56.74,
+       "chg": "-21%"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 42.49,
+       "net": 23.17,
+       "chg": "-2%"
+      },
+      {
+       "name": "Claude Sonnet 4.6",
+       "gross": 5.1,
+       "net": 5.1,
+       "chg": "268%"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 2.85,
+       "net": 2.85,
+       "chg": "153%"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 0.82,
+       "net": 0.82,
+       "chg": "214%"
+      },
+      {
+       "name": "Vertex AI",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      }
+     ],
+     "departments": [
+      {
+       "key": "cyber",
+       "net": 298337.0
+      },
+      {
+       "key": "itsvc",
+       "net": 178904.0
+      },
+      {
+       "key": "business",
+       "net": 69557.0
+      },
+      {
+       "key": "other",
+       "net": 0.0
+      }
+     ],
+     "deptMethod": "exact",
+     "projects": [
+      {
+       "label": "Security monitoring platform (Chronicle, Security Command Center)",
+       "labelAr": "منصة مراقبة الأمن (Chronicle وSecurity Command Center)",
+       "dept": "cyber",
+       "kind": "sec",
+       "net": 297983.44
+      },
+      {
+       "label": "Security operations",
+       "labelAr": "عمليات الأمن السيبراني",
+       "dept": "cyber",
+       "kind": "sec",
+       "net": 353.62
+      },
+      {
+       "label": "Shared network hub and landing zone",
+       "labelAr": "منصة الشبكة المشتركة ومنطقة الهبوط",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 84876.67
+      },
+      {
+       "label": "Security appliances inside the hub (F5 BIG-IP, FortiGate)",
+       "labelAr": "أجهزة الأمن داخل المنصة المشتركة (F5 BIG-IP وFortiGate)",
+       "dept": "itsvc",
+       "kind": "sec",
+       "net": 83476.8
+      },
+      {
+       "label": "Landing zone bootstrap",
+       "labelAr": "تأسيس منطقة الهبوط",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 3108.68
+      },
+      {
+       "label": "DMZ network host",
+       "labelAr": "مضيف شبكة المنطقة منزوعة السلاح",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 2955.86
+      },
+      {
+       "label": "Central logging (production)",
+       "labelAr": "السجلات المركزية (الإنتاج)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 2725.24
+      },
+      {
+       "label": "AI sandbox",
+       "labelAr": "بيئة تجارب الذكاء الاصطناعي",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 1485.71
+      },
+      {
+       "label": "DMZ servers",
+       "labelAr": "خوادم المنطقة منزوعة السلاح",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 155.55
+      },
+      {
+       "label": "Landing zone host (production)",
+       "labelAr": "مضيف منطقة الهبوط (الإنتاج)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 43.39
+      },
+      {
+       "label": "Landing zone host (development)",
+       "labelAr": "مضيف منطقة الهبوط (التطوير)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 24.98
+      },
+      {
+       "label": "Key management (development)",
+       "labelAr": "إدارة المفاتيح (التطوير)",
+       "dept": "itsvc",
+       "kind": "sec",
+       "net": 22.99
+      },
+      {
+       "label": "Central logging (development)",
+       "labelAr": "السجلات المركزية (التطوير)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 14.4
+      },
+      {
+       "label": "Key management (production)",
+       "labelAr": "إدارة المفاتيح (الإنتاج)",
+       "dept": "itsvc",
+       "kind": "sec",
+       "net": 12.49
+      },
+      {
+       "label": "Billing export",
+       "labelAr": "تصدير بيانات الفوترة",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 0.75
+      },
+      {
+       "label": "Notification Center workspace",
+       "labelAr": "مساحة عمل مركز الإشعارات",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 0.04
+      },
+      {
+       "label": "Database platform (production)",
+       "labelAr": "منصة قواعد البيانات (الإنتاج)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 33169.95
+      },
+      {
+       "label": "Database platform (development)",
+       "labelAr": "منصة قواعد البيانات (التطوير)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 21568.24
+      },
+      {
+       "label": "DevOps pipeline (production)",
+       "labelAr": "خط DevOps (الإنتاج)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 4489.12
+      },
+      {
+       "label": "Infrastructure management engine",
+       "labelAr": "محرك إدارة البنية التحتية",
+       "dept": "business",
+       "kind": "infra",
+       "net": 3494.17
+      },
+      {
+       "label": "Landing zone host (test)",
+       "labelAr": "مضيف منطقة الهبوط (الاختبار)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 3376.69
+      },
+      {
+       "label": "DevOps pipeline (development)",
+       "labelAr": "خط DevOps (التطوير)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 3147.6
+      },
+      {
+       "label": "Migration landing zone (HQ)",
+       "labelAr": "منطقة هبوط الترحيل (المقر)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 155.59
+      },
+      {
+       "label": "Ministry website",
+       "labelAr": "الموقع الإلكتروني للوزارة",
+       "dept": "business",
+       "kind": "app",
+       "net": 155.55
+      }
+     ],
+     "files": {},
+     "sample": false,
+     "source": "FinOps_Dashboard_v20.html (July 2026 edition)"
+    },
+    "2026-06": {
+     "key": "2026-06",
+     "kind": "month",
+     "label": "June 2026",
+     "labelAr": "يونيو 2026",
+     "totals": {
+      "net": 498574.72,
+      "gross": 798873.33,
+      "discounts": 300298.61
+     },
+     "sandbox": {
+      "net": 820.34,
+      "gross": 839.58,
+      "discounts": 19.24
+     },
+     "services": [
+      {
+       "name": "Chronicle",
+       "gross": 556716.9,
+       "net": 269797.46,
+       "chg": "6%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 115950.97,
+       "net": 102978.0,
+       "chg": "90%"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+       "gross": 45219.26,
+       "net": 45219.26,
+       "chg": "0%"
+      },
+      {
+       "name": "FortiGate Next-Generation Firewall (PAYG)",
+       "gross": 35531.96,
+       "net": 35531.96,
+       "chg": "0%"
+      },
+      {
+       "name": "Security Command Center",
+       "gross": 28174.46,
+       "net": 28174.46,
+       "chg": "6%"
+      },
+      {
+       "name": "Networking",
+       "gross": 8096.21,
+       "net": 7723.76,
+       "chg": "-14%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 5651.18,
+       "net": 5651.18,
+       "chg": "-51%"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 1090.5,
+       "net": 1090.5,
+       "chg": "72%"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 722.4,
+       "net": 722.4,
+       "chg": "-52%"
+      },
+      {
+       "name": "Claude Opus 4.8",
+       "gross": 602.44,
+       "net": 602.44,
+       "chg": "New"
+      },
+      {
+       "name": "Backup and DR Service",
+       "gross": 464.89,
+       "net": 464.89,
+       "chg": "741%"
+      },
+      {
+       "name": "Cloud DNS",
+       "gross": 299.66,
+       "net": 299.66,
+       "chg": "5%"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 236.36,
+       "net": 236.36,
+       "chg": "53%"
+      },
+      {
+       "name": "Cloud Key Management Service (KMS)",
+       "gross": 54.9,
+       "net": 54.9,
+       "chg": "495%"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 43.73,
+       "net": 24.15,
+       "chg": "New"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 14.17,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Claude Sonnet 4.6",
+       "gross": 1.39,
+       "net": 1.39,
+       "chg": "New"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 1.2,
+       "net": 1.2,
+       "chg": "167%"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 0.75,
+       "net": 0.75,
+       "chg": "New"
+      },
+      {
+       "name": "BigQuery",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      }
+     ],
+     "sandboxServices": [
+      {
+       "name": "Claude Opus 4.8",
+       "gross": 602.44,
+       "net": 602.44,
+       "chg": "New"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 122.85,
+       "net": 122.85,
+       "chg": "-31%"
+      },
+      {
+       "name": "Networking",
+       "gross": 68.62,
+       "net": 68.62,
+       "chg": "-28%"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 42.9,
+       "net": 23.66,
+       "chg": "New"
+      },
+      {
+       "name": "Claude Sonnet 4.6",
+       "gross": 1.39,
+       "net": 1.39,
+       "chg": "New"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 1.12,
+       "net": 1.12,
+       "chg": "200%"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 0.26,
+       "net": 0.26,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      }
+     ],
+     "departments": [
+      {
+       "key": "cyber",
+       "net": 298694.0
+      },
+      {
+       "key": "itsvc",
+       "net": 184118.0
+      },
+      {
+       "key": "business",
+       "net": 15762.0
+      },
+      {
+       "key": "other",
+       "net": 0.0
+      }
+     ],
+     "deptMethod": "derived",
+     "projects": null,
+     "files": {},
+     "sample": false,
+     "source": "FinOps_Dashboard_v20.html (July 2026 edition)"
+    },
+    "2026-05": {
+     "key": "2026-05",
+     "kind": "month",
+     "label": "May 2026",
+     "labelAr": "مايو 2026",
+     "totals": {
+      "net": 456865.79,
+      "gross": 542933.07,
+      "discounts": 86067.28
+     },
+     "sandbox": {
+      "net": 273.54,
+      "gross": 273.54,
+      "discounts": 0.0
+     },
+     "services": [
+      {
+       "name": "Chronicle",
+       "gross": 316710.45,
+       "net": 254611.65,
+       "chg": "-678964500%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 67934.77,
+       "net": 54321.9,
+       "chg": "New"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+       "gross": 46760.36,
+       "net": 46760.36,
+       "chg": "0%"
+      },
+      {
+       "name": "FortiGate Next-Generation Firewall (PAYG)",
+       "gross": 36716.4,
+       "net": 36716.4,
+       "chg": "0%"
+      },
+      {
+       "name": "Security Command Center",
+       "gross": 28174.46,
+       "net": 26588.59,
+       "chg": "New"
+      },
+      {
+       "name": "Vertex AI Search",
+       "gross": 22681.46,
+       "net": 14766.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 11787.45,
+       "net": 11518.27,
+       "chg": "New"
+      },
+      {
+       "name": "Networking",
+       "gross": 9442.84,
+       "net": 8946.83,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 1552.12,
+       "net": 1497.83,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 643.91,
+       "net": 633.15,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud DNS",
+       "gross": 295.91,
+       "net": 285.26,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 154.61,
+       "net": 154.61,
+       "chg": "New"
+      },
+      {
+       "name": "Backup and DR Service",
+       "gross": 59.4,
+       "net": 55.27,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Key Management Service (KMS)",
+       "gross": 9.45,
+       "net": 9.22,
+       "chg": "New"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 8.36,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 0.67,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 0.45,
+       "net": 0.45,
+       "chg": "New"
+      }
+     ],
+     "sandboxServices": [
+      {
+       "name": "Compute Engine",
+       "gross": 178.28,
+       "net": 178.28,
+       "chg": "New"
+      },
+      {
+       "name": "Networking",
+       "gross": 94.88,
+       "net": 94.88,
+       "chg": "New"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 0.38,
+       "net": 0.38,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      }
+     ],
+     "departments": [
+      {
+       "key": "cyber",
+       "net": 282698.0
+      },
+      {
+       "key": "itsvc",
+       "net": 149356.0
+      },
+      {
+       "key": "other",
+       "net": 14766.0
+      },
+      {
+       "key": "business",
+       "net": 10046.0
+      }
+     ],
+     "deptMethod": "derived",
+     "projects": null,
+     "files": {},
+     "sample": false,
+     "source": "FinOps_Dashboard_v20.html (July 2026 edition)"
+    },
+    "2026-04": {
+     "key": "2026-04",
+     "kind": "month",
+     "label": "April 2026",
+     "labelAr": "أبريل 2026",
+     "totals": {
+      "net": 80783.88,
+      "gross": 620281.57,
+      "discounts": 539497.69
+     },
+     "sandbox": {
+      "net": 0.0,
+      "gross": 9421.57,
+      "discounts": 9421.57
+     },
+     "services": [
+      {
+       "name": "Chronicle",
+       "gross": 288021.19,
+       "net": -0.04,
+       "chg": "0%"
+      },
+      {
+       "name": "Vertex AI Search",
+       "gross": 140625.0,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 62885.74,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+       "gross": 45251.96,
+       "net": 45251.96,
+       "chg": "6%"
+      },
+      {
+       "name": "FortiGate Next-Generation Firewall (PAYG)",
+       "gross": 35531.96,
+       "net": 35531.96,
+       "chg": "2%"
+      },
+      {
+       "name": "Security Command Center",
+       "gross": 28174.46,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Vertex AI",
+       "gross": 8005.16,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Networking",
+       "gross": 6097.5,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 4651.54,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 574.65,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 194.74,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud DNS",
+       "gross": 129.0,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Backup and DR Service",
+       "gross": 123.52,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 9.83,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Key Management Service (KMS)",
+       "gross": 3.75,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 0.94,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 0.3,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 0.26,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Workflows",
+       "gross": 0.07,
+       "net": 0.0,
+       "chg": "New"
+      }
+     ],
+     "sandboxServices": [
+      {
+       "name": "Vertex AI",
+       "gross": 8005.16,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 1380.41,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Networking",
+       "gross": 34.05,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 1.09,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 0.56,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 0.3,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      }
+     ],
+     "departments": [
+      {
+       "key": "itsvc",
+       "net": 80784.0
+      },
+      {
+       "key": "cyber",
+       "net": 0.0
+      },
+      {
+       "key": "business",
+       "net": 0.0
+      },
+      {
+       "key": "other",
+       "net": 0.0
+      }
+     ],
+     "deptMethod": "derived",
+     "projects": null,
+     "files": {},
+     "sample": false,
+     "source": "FinOps_Dashboard_v20.html (July 2026 edition)"
+    },
+    "2026-03": {
+     "key": "2026-03",
+     "kind": "month",
+     "label": "March 2026",
+     "labelAr": "مارس 2026",
+     "totals": {
+      "net": 80246.14,
+      "gross": 659738.48,
+      "discounts": 579492.34
+     },
+     "sandbox": {
+      "net": 0.0,
+      "gross": 71823.64,
+      "discounts": 71823.64
+     },
+     "services": [
+      {
+       "name": "Chronicle",
+       "gross": 275498.96,
+       "net": -0.04,
+       "chg": "0%"
+      },
+      {
+       "name": "Vertex AI Search",
+       "gross": 140625.0,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 69781.35,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Vertex AI",
+       "gross": 61024.43,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+       "gross": 44107.88,
+       "net": 44107.88,
+       "chg": "33%"
+      },
+      {
+       "name": "FortiGate Next-Generation Firewall (PAYG)",
+       "gross": 36138.3,
+       "net": 36138.3,
+       "chg": "-3%"
+      },
+      {
+       "name": "Security Command Center",
+       "gross": 28174.46,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Networking",
+       "gross": 2863.27,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 1084.99,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 146.66,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Backup and DR Service",
+       "gross": 143.25,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud DNS",
+       "gross": 56.78,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 51.3,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 34.5,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Key Management Service (KMS)",
+       "gross": 2.7,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 2.4,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 1.8,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 0.45,
+       "net": 0.0,
+       "chg": "0%"
+      }
+     ],
+     "sandboxServices": [
+      {
+       "name": "Vertex AI",
+       "gross": 61024.43,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 10526.21,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Networking",
+       "gross": 255.94,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 8.36,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 4.5,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 2.4,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 1.8,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      }
+     ],
+     "departments": [
+      {
+       "key": "itsvc",
+       "net": 80246.0
+      },
+      {
+       "key": "cyber",
+       "net": 0.0
+      },
+      {
+       "key": "business",
+       "net": 0.0
+      },
+      {
+       "key": "other",
+       "net": 0.0
+      }
+     ],
+     "deptMethod": "derived",
+     "projects": null,
+     "files": {},
+     "sample": false,
+     "source": "FinOps_Dashboard_v20.html (July 2026 edition)"
+    },
+    "2026-02": {
+     "key": "2026-02",
+     "kind": "month",
+     "label": "February 2026",
+     "labelAr": "فبراير 2026",
+     "totals": {
+      "net": 705480.68,
+      "gross": 1246724.86,
+      "discounts": 541244.18
+     },
+     "sandbox": {
+      "net": 0.0,
+      "gross": 60928.5,
+      "discounts": 60928.5
+     },
+     "services": [
+      {
+       "name": "Fortinet Security SaaS",
+       "gross": 641004.34,
+       "net": 641004.34,
+       "chg": "New"
+      },
+      {
+       "name": "Chronicle",
+       "gross": 269828.81,
+       "net": -0.04,
+       "chg": "-100%"
+      },
+      {
+       "name": "Vertex AI Search",
+       "gross": 140625.0,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Vertex AI",
+       "gross": 54549.3,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 46537.2,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "FortiGate Next-Generation Firewall (PAYG)",
+       "gross": 33582.53,
+       "net": 33582.53,
+       "chg": "22%"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+       "gross": 30893.85,
+       "net": 30893.85,
+       "chg": "60%"
+      },
+      {
+       "name": "Security Command Center",
+       "gross": 28174.46,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Networking",
+       "gross": 1283.85,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Backup and DR Service",
+       "gross": 112.09,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 90.34,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 18.15,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud DNS",
+       "gross": 9.94,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 6.79,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 5.81,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Cloud Key Management Service (KMS)",
+       "gross": 1.69,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 0.67,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Kubernetes Engine",
+       "gross": 0.04,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "BigQuery",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      }
+     ],
+     "sandboxServices": [
+      {
+       "name": "Vertex AI",
+       "gross": 54549.3,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 6143.66,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Networking",
+       "gross": 232.5,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 2.14,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 0.86,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Kubernetes Engine",
+       "gross": 0.04,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      }
+     ],
+     "departments": [
+      {
+       "key": "itsvc",
+       "net": 705481.0
+      },
+      {
+       "key": "cyber",
+       "net": 0.0
+      },
+      {
+       "key": "business",
+       "net": 0.0
+      },
+      {
+       "key": "other",
+       "net": 0.0
+      }
+     ],
+     "deptMethod": "derived",
+     "projects": null,
+     "files": {},
+     "sample": false,
+     "source": "FinOps_Dashboard_v20.html (July 2026 edition)"
+    },
+    "2026-01": {
+     "key": "2026-01",
+     "kind": "month",
+     "label": "January 2026",
+     "labelAr": "يناير 2026",
+     "totals": {
+      "net": 483831.2,
+      "gross": 536323.94,
+      "discounts": 52492.74
+     },
+     "sandbox": {
+      "net": 18775.5,
+      "gross": 21331.39,
+      "discounts": 2555.89
+     },
+     "services": [
+      {
+       "name": "Chronicle",
+       "gross": 269797.91,
+       "net": 243688.43,
+       "chg": "2700%"
+      },
+      {
+       "name": "Vertex AI Search",
+       "gross": 140625.0,
+       "net": 127016.14,
+       "chg": "-10%"
+      },
+      {
+       "name": "FortiGate Next-Generation Firewall (PAYG)",
+       "gross": 30005.03,
+       "net": 27567.53,
+       "chg": "New"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 29139.08,
+       "net": 24196.65,
+       "chg": "549%"
+      },
+      {
+       "name": "Security Command Center",
+       "gross": 28145.55,
+       "net": 25419.0,
+       "chg": "New"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+       "gross": 19315.72,
+       "net": 19315.72,
+       "chg": "New"
+      },
+      {
+       "name": "Vertex AI",
+       "gross": 18242.62,
+       "net": 15782.14,
+       "chg": "New"
+      },
+      {
+       "name": "Networking",
+       "gross": 758.89,
+       "net": 601.54,
+       "chg": "261%"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 25Mbps)",
+       "gross": 160.61,
+       "net": 160.61,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 96.9,
+       "net": 67.8,
+       "chg": "New"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 18.26,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud DNS",
+       "gross": 7.95,
+       "net": 6.04,
+       "chg": "374%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 3.34,
+       "net": 3.34,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 2.62,
+       "net": 2.62,
+       "chg": "-80%"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 2.55,
+       "net": 2.1,
+       "chg": "600%"
+      },
+      {
+       "name": "Cloud Key Management Service (KMS)",
+       "gross": 1.65,
+       "net": 1.5,
+       "chg": "100%"
+      },
+      {
+       "name": "Kubernetes Engine",
+       "gross": 0.26,
+       "net": 0.04,
+       "chg": "New"
+      },
+      {
+       "name": "BigQuery",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      }
+     ],
+     "sandboxServices": [
+      {
+       "name": "Vertex AI",
+       "gross": 18242.62,
+       "net": 15782.14,
+       "chg": "New"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 2918.74,
+       "net": 2849.74,
+       "chg": "New"
+      },
+      {
+       "name": "Networking",
+       "gross": 166.43,
+       "net": 142.76,
+       "chg": "New"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 2.36,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 0.98,
+       "net": 0.82,
+       "chg": "New"
+      },
+      {
+       "name": "Kubernetes Engine",
+       "gross": 0.26,
+       "net": 0.04,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      }
+     ],
+     "departments": [
+      {
+       "key": "cyber",
+       "net": 269107.0
+      },
+      {
+       "key": "other",
+       "net": 127016.0
+      },
+      {
+       "key": "itsvc",
+       "net": 82327.0
+      },
+      {
+       "key": "business",
+       "net": 5380.0
+      }
+     ],
+     "deptMethod": "derived",
+     "projects": null,
+     "files": {},
+     "sample": false,
+     "source": "FinOps_Dashboard_v20.html (July 2026 edition)"
+    },
+    "2026-h1": {
+     "key": "2026-h1",
+     "kind": "quarter",
+     "label": "H1 2026",
+     "labelAr": "النصف الأول 2026",
+     "totals": {
+      "net": 2305782.48,
+      "gross": 4404875.47,
+      "discounts": 2099092.99
+     },
+     "sandbox": {
+      "net": 19869.34,
+      "gross": 164618.24,
+      "discounts": 144748.9
+     },
+     "services": [
+      {
+       "name": "Chronicle",
+       "gross": 1976574.22,
+       "net": 768097.43,
+       "chg": "8726%"
+      },
+      {
+       "name": "Fortinet Security SaaS",
+       "gross": 641004.34,
+       "net": 641004.34,
+       "chg": "New"
+      },
+      {
+       "name": "Vertex AI Search",
+       "gross": 585181.43,
+       "net": 141782.1,
+       "chg": "-42%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 392229.11,
+       "net": 181496.51,
+       "chg": "4756%"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+       "gross": 231549.07,
+       "net": 231549.07,
+       "chg": "New"
+      },
+      {
+       "name": "FortiGate Next-Generation Firewall (PAYG)",
+       "gross": 207506.21,
+       "net": 205068.71,
+       "chg": "New"
+      },
+      {
+       "name": "Security Command Center",
+       "gross": 169017.86,
+       "net": 80182.01,
+       "chg": "New"
+      },
+      {
+       "name": "Vertex AI",
+       "gross": 141821.51,
+       "net": 15782.14,
+       "chg": "New"
+      },
+      {
+       "name": "Networking",
+       "gross": 28542.56,
+       "net": 17272.12,
+       "chg": "10097%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 23184.3,
+       "net": 17172.79,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 2995.88,
+       "net": 2220.22,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 1989.83,
+       "net": 1725.79,
+       "chg": "575163%"
+      },
+      {
+       "name": "Backup and DR Service",
+       "gross": 903.15,
+       "net": 520.2,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud DNS",
+       "gross": 799.31,
+       "net": 590.96,
+       "chg": "44926%"
+      },
+      {
+       "name": "Claude Opus 4.8",
+       "gross": 602.44,
+       "net": 602.44,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 580.99,
+       "net": 458.81,
+       "chg": "New"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 25Mbps)",
+       "gross": 160.61,
+       "net": 160.61,
+       "chg": "New"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 103.24,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Key Management Service (KMS)",
+       "gross": 74.14,
+       "net": 65.62,
+       "chg": "8650%"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 47.14,
+       "net": 24.15,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 4.72,
+       "net": 3.38,
+       "chg": "-74%"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 1.65,
+       "net": 1.65,
+       "chg": "New"
+      },
+      {
+       "name": "Claude Sonnet 4.6",
+       "gross": 1.39,
+       "net": 1.39,
+       "chg": "New"
+      },
+      {
+       "name": "Kubernetes Engine",
+       "gross": 0.3,
+       "net": 0.04,
+       "chg": "New"
+      },
+      {
+       "name": "Workflows",
+       "gross": 0.07,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "BigQuery",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      }
+     ],
+     "sandboxServices": [
+      {
+       "name": "Vertex AI",
+       "gross": 141821.51,
+       "net": 15782.14,
+       "chg": "New"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 21270.19,
+       "net": 3150.83,
+       "chg": "New"
+      },
+      {
+       "name": "Networking",
+       "gross": 852.41,
+       "net": 306.26,
+       "chg": "New"
+      },
+      {
+       "name": "Claude Opus 4.8",
+       "gross": 602.44,
+       "net": 602.44,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 44.66,
+       "net": 23.66,
+       "chg": "New"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 12.67,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 5.85,
+       "net": 0.82,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 5.06,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 1.5,
+       "net": 1.5,
+       "chg": "New"
+      },
+      {
+       "name": "Claude Sonnet 4.6",
+       "gross": 1.39,
+       "net": 1.39,
+       "chg": "New"
+      },
+      {
+       "name": "Kubernetes Engine",
+       "gross": 0.3,
+       "net": 0.04,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 0.26,
+       "net": 0.26,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      }
+     ],
+     "departments": [
+      {
+       "key": "itsvc",
+       "net": 1282312.0
+      },
+      {
+       "key": "cyber",
+       "net": 850500.0
+      },
+      {
+       "key": "other",
+       "net": 141782.0
+      },
+      {
+       "key": "business",
+       "net": 31189.0
+      }
+     ],
+     "deptMethod": "exact",
+     "projects": [
+      {
+       "label": "Security monitoring platform (Chronicle, Security Command Center)",
+       "labelAr": "منصة مراقبة الأمن (Chronicle وSecurity Command Center)",
+       "dept": "cyber",
+       "kind": "sec",
+       "net": 848279.47
+      },
+      {
+       "label": "Security operations",
+       "labelAr": "عمليات الأمن السيبراني",
+       "dept": "cyber",
+       "kind": "sec",
+       "net": 2220.22
+      },
+      {
+       "label": "Fortinet security platform (SaaS)",
+       "labelAr": "منصة Fortinet الأمنية (خدمة سحابية)",
+       "dept": "itsvc",
+       "kind": "sec",
+       "net": 641004.34
+      },
+      {
+       "label": "Security appliances inside the hub (F5 BIG-IP, FortiGate)",
+       "labelAr": "أجهزة الأمن داخل المنصة المشتركة (F5 BIG-IP وFortiGate)",
+       "dept": "itsvc",
+       "kind": "sec",
+       "net": 436778.4
+      },
+      {
+       "label": "Shared network hub and landing zone",
+       "labelAr": "منصة الشبكة المشتركة ومنطقة الهبوط",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 160210.95
+      },
+      {
+       "label": "AI sandbox",
+       "labelAr": "بيئة تجارب الذكاء الاصطناعي",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 19869.38
+      },
+      {
+       "label": "Central logging (production)",
+       "labelAr": "السجلات المركزية (الإنتاج)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 10428.67
+      },
+      {
+       "label": "Landing zone bootstrap",
+       "labelAr": "تأسيس منطقة الهبوط",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 9109.95
+      },
+      {
+       "label": "DMZ network host",
+       "labelAr": "مضيف شبكة المنطقة منزوعة السلاح",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 4541.14
+      },
+      {
+       "label": "DMZ servers",
+       "labelAr": "خوادم المنطقة منزوعة السلاح",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 297.56
+      },
+      {
+       "label": "Key management (development)",
+       "labelAr": "إدارة المفاتيح (التطوير)",
+       "dept": "itsvc",
+       "kind": "sec",
+       "net": 34.65
+      },
+      {
+       "label": "Key management (production)",
+       "labelAr": "إدارة المفاتيح (الإنتاج)",
+       "dept": "itsvc",
+       "kind": "sec",
+       "net": 20.96
+      },
+      {
+       "label": "Landing zone host (production)",
+       "labelAr": "مضيف منطقة الهبوط (الإنتاج)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 10.57
+      },
+      {
+       "label": "Landing zone host (development)",
+       "labelAr": "مضيف منطقة الهبوط (التطوير)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 3.45
+      },
+      {
+       "label": "Central logging (development)",
+       "labelAr": "السجلات المركزية (التطوير)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 1.5
+      },
+      {
+       "label": "Billing export",
+       "labelAr": "تصدير بيانات الفوترة",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 0.64
+      },
+      {
+       "label": "Database platform (production)",
+       "labelAr": "منصة قواعد البيانات (الإنتاج)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 18276.86
+      },
+      {
+       "label": "Database platform (development)",
+       "labelAr": "منصة قواعد البيانات (التطوير)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 12192.9
+      },
+      {
+       "label": "Landing zone host (test)",
+       "labelAr": "مضيف منطقة الهبوط (الاختبار)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 421.28
+      },
+      {
+       "label": "Ministry website",
+       "labelAr": "الموقع الإلكتروني للوزارة",
+       "dept": "business",
+       "kind": "app",
+       "net": 297.56
+      },
+      {
+       "label": "NotebookLM AI pilot",
+       "labelAr": "تجربة NotebookLM للذكاء الاصطناعي",
+       "dept": "other",
+       "kind": "app",
+       "net": 141782.1
+      }
+     ],
+     "files": {},
+     "sample": false,
+     "source": "FinOps_Dashboard_v20.html (July 2026 edition)"
+    },
+    "2026-q2": {
+     "key": "2026-q2",
+     "kind": "quarter",
+     "label": "Q2 2026",
+     "labelAr": "الربع الثاني 2026",
+     "totals": {
+      "net": 1036224.41,
+      "gross": 1962088.01,
+      "discounts": 925863.6
+     },
+     "sandbox": {
+      "net": 1093.87,
+      "gross": 10534.69,
+      "discounts": 9440.82
+     },
+     "services": [
+      {
+       "name": "Chronicle",
+       "gross": 1161448.54,
+       "net": 524409.08,
+       "chg": "115%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 246771.49,
+       "net": 157299.9,
+       "chg": "550%"
+      },
+      {
+       "name": "Vertex AI Search",
+       "gross": 163306.46,
+       "net": 14766.0,
+       "chg": "-88%"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+       "gross": 137231.59,
+       "net": 137231.59,
+       "chg": "45%"
+      },
+      {
+       "name": "FortiGate Next-Generation Firewall (PAYG)",
+       "gross": 107780.32,
+       "net": 107780.32,
+       "chg": "11%"
+      },
+      {
+       "name": "Security Command Center",
+       "gross": 84523.39,
+       "net": 54763.05,
+       "chg": "115%"
+      },
+      {
+       "name": "Networking",
+       "gross": 23636.55,
+       "net": 16670.59,
+       "chg": "2671%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 22090.16,
+       "net": 17169.45,
+       "chg": "514340%"
+      },
+      {
+       "name": "Vertex AI",
+       "gross": 8005.16,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 2849.17,
+       "net": 2220.22,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 1929.15,
+       "net": 1723.65,
+       "chg": "81979%"
+      },
+      {
+       "name": "Cloud DNS",
+       "gross": 724.58,
+       "net": 584.92,
+       "chg": "9588%"
+      },
+      {
+       "name": "Backup and DR Service",
+       "gross": 647.81,
+       "net": 520.16,
+       "chg": "New"
+      },
+      {
+       "name": "Claude Opus 4.8",
+       "gross": 602.44,
+       "net": 602.44,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 391.28,
+       "net": 390.98,
+       "chg": "477%"
+      },
+      {
+       "name": "Cloud Key Management Service (KMS)",
+       "gross": 68.1,
+       "net": 64.12,
+       "chg": "4175%"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 45.34,
+       "net": 24.15,
+       "chg": "New"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 32.36,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 1.65,
+       "net": 1.65,
+       "chg": "New"
+      },
+      {
+       "name": "Claude Sonnet 4.6",
+       "gross": 1.39,
+       "net": 1.39,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 1.01,
+       "net": 0.75,
+       "chg": "-71%"
+      },
+      {
+       "name": "Workflows",
+       "gross": 0.07,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "BigQuery",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      }
+     ],
+     "sandboxServices": [
+      {
+       "name": "Vertex AI",
+       "gross": 8005.16,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 1681.54,
+       "net": 301.12,
+       "chg": "-89%"
+      },
+      {
+       "name": "Claude Opus 4.8",
+       "gross": 602.44,
+       "net": 602.44,
+       "chg": "New"
+      },
+      {
+       "name": "Networking",
+       "gross": 197.55,
+       "net": 163.5,
+       "chg": "15%"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 42.9,
+       "net": 23.66,
+       "chg": "New"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 1.5,
+       "net": 1.5,
+       "chg": "New"
+      },
+      {
+       "name": "Claude Sonnet 4.6",
+       "gross": 1.39,
+       "net": 1.39,
+       "chg": "New"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 1.09,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 0.56,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 0.3,
+       "net": 0.0,
+       "chg": "-100%"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 0.26,
+       "net": 0.26,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "0%"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      }
+     ],
+     "departments": [
+      {
+       "key": "cyber",
+       "net": 581392.0
+      },
+      {
+       "key": "itsvc",
+       "net": 414258.0
+      },
+      {
+       "key": "business",
+       "net": 25808.0
+      },
+      {
+       "key": "other",
+       "net": 14766.0
+      }
+     ],
+     "deptMethod": "derived",
+     "projects": null,
+     "files": {},
+     "sample": false,
+     "source": "FinOps_Dashboard_v20.html (July 2026 edition)"
+    },
+    "2026-q1": {
+     "key": "2026-q1",
+     "kind": "quarter",
+     "label": "Q1 2026",
+     "labelAr": "الربع الأول 2026",
+     "totals": {
+      "net": 1269558.01,
+      "gross": 2442787.28,
+      "discounts": 1173229.27
+     },
+     "sandbox": {
+      "net": 18775.5,
+      "gross": 154083.52,
+      "discounts": 135308.02
+     },
+     "services": [
+      {
+       "name": "Chronicle",
+       "gross": 815125.69,
+       "net": 243688.35,
+       "chg": "n/a"
+      },
+      {
+       "name": "Fortinet Security SaaS",
+       "gross": 641004.34,
+       "net": 641004.34,
+       "chg": "n/a"
+      },
+      {
+       "name": "Vertex AI Search",
+       "gross": 421875.0,
+       "net": 127016.14,
+       "chg": "n/a"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 145457.62,
+       "net": 24196.65,
+       "chg": "n/a"
+      },
+      {
+       "name": "Vertex AI",
+       "gross": 133816.35,
+       "net": 15782.14,
+       "chg": "n/a"
+      },
+      {
+       "name": "FortiGate Next-Generation Firewall (PAYG)",
+       "gross": 99725.85,
+       "net": 97288.35,
+       "chg": "n/a"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+       "gross": 94317.45,
+       "net": 94317.45,
+       "chg": "n/a"
+      },
+      {
+       "name": "Security Command Center",
+       "gross": 84494.48,
+       "net": 25419.0,
+       "chg": "n/a"
+      },
+      {
+       "name": "Networking",
+       "gross": 4906.01,
+       "net": 601.54,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 1094.14,
+       "net": 3.34,
+       "chg": "n/a"
+      },
+      {
+       "name": "Backup and DR Service",
+       "gross": 255.34,
+       "net": 0.0,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 189.64,
+       "net": 67.8,
+       "chg": "n/a"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 25Mbps)",
+       "gross": 160.61,
+       "net": 160.61,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 146.66,
+       "net": 0.0,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud DNS",
+       "gross": 74.66,
+       "net": 6.04,
+       "chg": "n/a"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 70.91,
+       "net": 0.0,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 60.64,
+       "net": 2.1,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Key Management Service (KMS)",
+       "gross": 6.04,
+       "net": 1.5,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 3.75,
+       "net": 2.62,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 1.8,
+       "net": 0.0,
+       "chg": "n/a"
+      },
+      {
+       "name": "Kubernetes Engine",
+       "gross": 0.3,
+       "net": 0.04,
+       "chg": "n/a"
+      },
+      {
+       "name": "BigQuery",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "n/a"
+      }
+     ],
+     "sandboxServices": [
+      {
+       "name": "Vertex AI",
+       "gross": 133816.35,
+       "net": 15782.14,
+       "chg": "n/a"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 19588.61,
+       "net": 2849.74,
+       "chg": "n/a"
+      },
+      {
+       "name": "Networking",
+       "gross": 654.86,
+       "net": 142.76,
+       "chg": "n/a"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 11.59,
+       "net": 0.0,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 5.51,
+       "net": 0.82,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 4.5,
+       "net": 0.0,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 1.8,
+       "net": 0.0,
+       "chg": "n/a"
+      },
+      {
+       "name": "Kubernetes Engine",
+       "gross": 0.3,
+       "net": 0.04,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "n/a"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "n/a"
+      }
+     ],
+     "departments": [
+      {
+       "key": "itsvc",
+       "net": 868054.0
+      },
+      {
+       "key": "cyber",
+       "net": 269107.0
+      },
+      {
+       "key": "other",
+       "net": 127016.0
+      },
+      {
+       "key": "business",
+       "net": 5380.0
+      }
+     ],
+     "deptMethod": "derived",
+     "projects": null,
+     "files": {},
+     "sample": false,
+     "source": "FinOps_Dashboard_v20.html (July 2026 edition)"
+    },
+    "td": {
+     "key": "td",
+     "kind": "todate",
+     "label": "October 2025 to July 2026",
+     "labelAr": "أكتوبر 2025 إلى يوليو 2026",
+     "totals": {
+      "net": 3128008.82,
+      "gross": 5896377.97,
+      "discounts": 2768369.15
+     },
+     "sandbox": {
+      "net": 21355.24,
+      "gross": 166123.5,
+      "discounts": 144768.26
+     },
+     "services": [
+      {
+       "name": "Chronicle",
+       "gross": 2912744.44,
+       "net": 1056037.95,
+       "chg": "New"
+      },
+      {
+       "name": "Vertex AI Search",
+       "gross": 828280.58,
+       "net": 384881.21,
+       "chg": "New"
+      },
+      {
+       "name": "Fortinet Security SaaS",
+       "gross": 641004.34,
+       "net": 641004.34,
+       "chg": "New"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 569867.7,
+       "net": 338711.03,
+       "chg": "New"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+       "gross": 279510.04,
+       "net": 279510.04,
+       "chg": "New"
+      },
+      {
+       "name": "FortiGate Next-Generation Firewall (PAYG)",
+       "gross": 245223.6,
+       "net": 242786.1,
+       "chg": "New"
+      },
+      {
+       "name": "Security Command Center",
+       "gross": 198166.95,
+       "net": 109331.1,
+       "chg": "New"
+      },
+      {
+       "name": "Vertex AI",
+       "gross": 141821.51,
+       "net": 15782.17,
+       "chg": "New"
+      },
+      {
+       "name": "Networking",
+       "gross": 38487.75,
+       "net": 26639.59,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 25897.35,
+       "net": 19885.84,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 3363.56,
+       "net": 2587.91,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 3256.54,
+       "net": 2992.5,
+       "chg": "New"
+      },
+      {
+       "name": "Backup and DR Service",
+       "gross": 2352.38,
+       "net": 1969.39,
+       "chg": "New"
+      },
+      {
+       "name": "Secure Source Manager",
+       "gross": 2171.62,
+       "net": 2171.62,
+       "chg": "New"
+      },
+      {
+       "name": "Claude Opus 4.8",
+       "gross": 1894.65,
+       "net": 1894.65,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 937.84,
+       "net": 815.62,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud DNS",
+       "gross": 827.74,
+       "net": 619.39,
+       "chg": "New"
+      },
+      {
+       "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 25Mbps)",
+       "gross": 160.61,
+       "net": 160.61,
+       "chg": "New"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 128.21,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Key Management Service (KMS)",
+       "gross": 117.86,
+       "net": 109.35,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 90.56,
+       "net": 47.96,
+       "chg": "New"
+      },
+      {
+       "name": "Network Security",
+       "gross": 25.12,
+       "net": 25.12,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 19.61,
+       "net": 18.26,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Workstations",
+       "gross": 15.82,
+       "net": 15.82,
+       "chg": "New"
+      },
+      {
+       "name": "Claude Sonnet 4.6",
+       "gross": 6.49,
+       "net": 6.49,
+       "chg": "New"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 4.61,
+       "net": 4.61,
+       "chg": "New"
+      },
+      {
+       "name": "Kubernetes Engine",
+       "gross": 0.3,
+       "net": 0.04,
+       "chg": "New"
+      },
+      {
+       "name": "Workflows",
+       "gross": 0.19,
+       "net": 0.11,
+       "chg": "New"
+      },
+      {
+       "name": "BigQuery",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      }
+     ],
+     "sandboxServices": [
+      {
+       "name": "Vertex AI",
+       "gross": 141821.51,
+       "net": 15782.17,
+       "chg": "New"
+      },
+      {
+       "name": "Compute Engine",
+       "gross": 21375.19,
+       "net": 3255.83,
+       "chg": "New"
+      },
+      {
+       "name": "Claude Opus 4.8",
+       "gross": 1894.65,
+       "net": 1894.65,
+       "chg": "New"
+      },
+      {
+       "name": "Networking",
+       "gross": 909.15,
+       "net": 362.96,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Run",
+       "gross": 87.19,
+       "net": 46.84,
+       "chg": "New"
+      },
+      {
+       "name": "VM Manager",
+       "gross": 12.67,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Claude Sonnet 4.6",
+       "gross": 6.49,
+       "net": 6.49,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Monitoring",
+       "gross": 5.85,
+       "net": 0.82,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Logging",
+       "gross": 5.06,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Artifact Registry",
+       "gross": 4.35,
+       "net": 4.35,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Storage",
+       "gross": 1.09,
+       "net": 1.09,
+       "chg": "New"
+      },
+      {
+       "name": "Kubernetes Engine",
+       "gross": 0.3,
+       "net": 0.04,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Build",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      },
+      {
+       "name": "Cloud Pub/Sub",
+       "gross": 0.0,
+       "net": 0.0,
+       "chg": "New"
+      }
+     ],
+     "departments": [
+      {
+       "key": "itsvc",
+       "net": 1472243.0
+      },
+      {
+       "key": "cyber",
+       "net": 1167957.0
+      },
+      {
+       "key": "other",
+       "net": 384881.0
+      },
+      {
+       "key": "business",
+       "net": 102927.0
+      }
+     ],
+     "deptMethod": "exact",
+     "projects": [
+      {
+       "label": "Security monitoring platform (Chronicle, Security Command Center)",
+       "labelAr": "منصة مراقبة الأمن (Chronicle وSecurity Command Center)",
+       "dept": "cyber",
+       "kind": "sec",
+       "net": 1165369.05
+      },
+      {
+       "label": "Security operations",
+       "labelAr": "عمليات الأمن السيبراني",
+       "dept": "cyber",
+       "kind": "sec",
+       "net": 2587.91
+      },
+      {
+       "label": "Fortinet security platform (SaaS)",
+       "labelAr": "منصة Fortinet الأمنية (خدمة سحابية)",
+       "dept": "itsvc",
+       "kind": "sec",
+       "net": 641004.34
+      },
+      {
+       "label": "Security appliances inside the hub (F5 BIG-IP, FortiGate)",
+       "labelAr": "أجهزة الأمن داخل المنصة المشتركة (F5 BIG-IP وFortiGate)",
+       "dept": "itsvc",
+       "kind": "sec",
+       "net": 522456.75
+      },
+      {
+       "label": "Shared network hub and landing zone",
+       "labelAr": "منصة الشبكة المشتركة ومنطقة الهبوط",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 248823.41
+      },
+      {
+       "label": "AI sandbox",
+       "labelAr": "بيئة تجارب الذكاء الاصطناعي",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 21355.05
+      },
+      {
+       "label": "Landing zone bootstrap",
+       "labelAr": "تأسيس منطقة الهبوط",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 17166.82
+      },
+      {
+       "label": "Central logging (production)",
+       "labelAr": "السجلات المركزية (الإنتاج)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 13197.9
+      },
+      {
+       "label": "DMZ network host",
+       "labelAr": "مضيف شبكة المنطقة منزوعة السلاح",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 7586.32
+      },
+      {
+       "label": "DMZ servers",
+       "labelAr": "خوادم المنطقة منزوعة السلاح",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 456.98
+      },
+      {
+       "label": "Key management (development)",
+       "labelAr": "إدارة المفاتيح (التطوير)",
+       "dept": "itsvc",
+       "kind": "sec",
+       "net": 58.27
+      },
+      {
+       "label": "Landing zone host (production)",
+       "labelAr": "مضيف منطقة الهبوط (الإنتاج)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 55.95
+      },
+      {
+       "label": "Key management (production)",
+       "labelAr": "إدارة المفاتيح (الإنتاج)",
+       "dept": "itsvc",
+       "kind": "sec",
+       "net": 33.75
+      },
+      {
+       "label": "Landing zone host (development)",
+       "labelAr": "مضيف منطقة الهبوط (التطوير)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 29.74
+      },
+      {
+       "label": "Central logging (development)",
+       "labelAr": "السجلات المركزية (التطوير)",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 16.57
+      },
+      {
+       "label": "Billing export",
+       "labelAr": "تصدير بيانات الفوترة",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 1.39
+      },
+      {
+       "label": "Notification Center workspace",
+       "labelAr": "مساحة عمل مركز الإشعارات",
+       "dept": "itsvc",
+       "kind": "infra",
+       "net": 0.19
+      },
+      {
+       "label": "Database platform (production)",
+       "labelAr": "منصة قواعد البيانات (الإنتاج)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 52405.24
+      },
+      {
+       "label": "Database platform (development)",
+       "labelAr": "منصة قواعد البيانات (التطوير)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 34375.35
+      },
+      {
+       "label": "DevOps pipeline (production)",
+       "labelAr": "خط DevOps (الإنتاج)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 4696.65
+      },
+      {
+       "label": "Landing zone host (test)",
+       "labelAr": "مضيف منطقة الهبوط (الاختبار)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 3909.26
+      },
+      {
+       "label": "Infrastructure management engine",
+       "labelAr": "محرك إدارة البنية التحتية",
+       "dept": "business",
+       "kind": "infra",
+       "net": 3642.34
+      },
+      {
+       "label": "DevOps pipeline (development)",
+       "labelAr": "خط DevOps (التطوير)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 3285.79
+      },
+      {
+       "label": "Ministry website",
+       "labelAr": "الموقع الإلكتروني للوزارة",
+       "dept": "business",
+       "kind": "app",
+       "net": 457.05
+      },
+      {
+       "label": "Migration landing zone (HQ)",
+       "labelAr": "منطقة هبوط الترحيل (المقر)",
+       "dept": "business",
+       "kind": "infra",
+       "net": 155.59
+      },
+      {
+       "label": "NotebookLM AI pilot",
+       "labelAr": "تجربة NotebookLM للذكاء الاصطناعي",
+       "dept": "other",
+       "kind": "app",
+       "net": 384881.21
+      }
+     ],
+     "files": {},
+     "sample": false,
+     "source": "FinOps_Dashboard_v20.html (July 2026 edition)"
+    }
+   }
+  },
+  "azure": {
+   "enabled": false,
+   "tdLabelEn": "Contract start to 31 August 2026",
+   "tdLabelAr": "من بداية العقد إلى 31 أغسطس 2026",
+   "credit": {
+    "starting": null,
+    "remaining": 383182.5,
+    "expiry": "",
+    "labelEn": "Microsoft credit balance available as at 30 July 2026",
+    "labelAr": "رصيد Microsoft المتاح حتى 30 يوليو 2026",
+    "descEn": "USD 102,182 at 3.75, as stated in the Q2 2026 quarterly report. The Microsoft agreement states the credit as a three-year total, so the annualised line understates later years by design.",
+    "descAr": "102,182 دولاراً بسعر 3.75، كما ورد في تقرير الربع الثاني 2026. ينص اتفاق Microsoft على الرصيد كإجمالي لثلاث سنوات، ولذلك يُقلّل الخط السنوي من السنوات اللاحقة بطبيعته.",
+    "clarEn": "Refresh each month from Cost Management + Billing > Credits (MCA) or Enrollment > Prepayment (EA). The starting balance and the expiry date are requested for the October edition.",
+    "clarAr": "يُحدَّث شهرياً من إدارة التكلفة والفوترة > الأرصدة (MCA) أو التسجيل > الدفع المسبق (EA). والرصيد الابتدائي وتاريخ الانتهاء مطلوبان لإصدار أكتوبر.",
+    "footEn": "Contract-year consumption to 30 July 2026: 935K Riyals against an annualised line of 785K (119%), flagged in the Q2 report as context, not as an overrun of contract.",
+    "footAr": "استهلاك سنة العقد حتى 30 يوليو 2026: 935 ألف ريال مقابل خط سنوي قدره 785 ألفاً (119%)، وقد أُشير إليه في تقرير الربع الثاني للسياق لا بوصفه تجاوزاً للعقد."
+   },
+   "notes": {
+    "servicesEn": "Actual cost as reported by Cost analysis after Microsoft credits, converted from the US dollars Microsoft invoices at the official rate of 3.75 Riyals to the US dollar.",
+    "servicesAr": "التكلفة الفعلية كما يعرضها تحليل التكلفة بعد أرصدة Microsoft، محوّلة من الدولار الأمريكي الذي تصدر به Microsoft فواتيرها وفق السعر الرسمي 3.75 ريال للدولار."
+   },
+   "highlights": {
+    "m": "",
+    "q": "",
+    "t": ""
+   },
+   "subMapText": "# subscription name or id = cyber | itsvc | dtgd | dea | business | other\n# Fill this in from the by-subscription export. Matching is case-insensitive on the name or the id.\n# Example of the shape (not real subscriptions):\n#   MOE-SEC-PRD = cyber\n#   MOE-INFRA-HUB = itsvc\n#   MOE-BUSINESS-APPS = business\n",
+   "periods": {
+    "2026-h1": {
+     "key": "2026-h1",
+     "kind": "quarter",
+     "label": "H1 2026",
+     "labelAr": "النصف الأول 2026",
+     "services": [
+      {
+       "name": "Microsoft Defender for Cloud",
+       "net": 339952.5,
+       "gross": 339952.5,
+       "chg": "n/a"
+      },
+      {
+       "name": "Azure Bastion",
+       "net": 10665.0,
+       "gross": 10665.0,
+       "chg": "n/a"
+      },
+      {
+       "name": "Storage",
+       "net": 8336.25,
+       "gross": 8336.25,
+       "chg": "n/a"
+      },
+      {
+       "name": "Others",
+       "net": 3346.54,
+       "gross": 3346.54,
+       "chg": "n/a"
+      },
+      {
+       "name": "VPN Gateway",
+       "net": 3269.48,
+       "gross": 3269.48,
+       "chg": "n/a"
+      },
+      {
+       "name": "Azure Arc Enabled DB",
+       "net": 2338.88,
+       "gross": 2338.88,
+       "chg": "n/a"
+      },
+      {
+       "name": "Windows Virtual Desktop",
+       "net": 2268.94,
+       "gross": 2268.94,
+       "chg": "n/a"
+      }
+     ],
+     "regions": [
+      {
+       "name": "EU West",
+       "net": 281793.75
+      },
+      {
+       "name": "Unknown",
+       "net": 74043.75
+      },
+      {
+       "name": "US East",
+       "net": 8951.25
+      },
+      {
+       "name": "EU North",
+       "net": 5216.25
+      },
+      {
+       "name": "AE North",
+       "net": 168.75
+      }
+     ],
+     "totals": {
+      "net": 370177.59,
+      "gross": 370177.59,
+      "discounts": 0
+     },
+     "security": {
+      "name": "Microsoft Defender for Cloud",
+      "net": 339952.5,
+      "share": 91.83497574772151
+     },
+     "departments": null,
+     "deptMethod": "none",
+     "unmapped": [],
+     "files": {},
+     "sample": false,
+     "source": "Q2 2026 FinOps quarterly report (data as of 30 July 2026)",
+     "note": "Bars follow the Azure console breakdown for H1 2026 and sum to the half-year total within a few dollars of console rounding. Source: the Q2 2026 FinOps quarterly report, data as of 30 July 2026.",
+     "noteAr": "تتبع الأعمدة توزيع لوحة Azure للنصف الأول 2026 ويبلغ مجموعها إجمالي نصف السنة في حدود بضعة دولارات من تقريب اللوحة. المصدر: تقرير الربع الثاني 2026، البيانات حتى 30 يوليو 2026."
+    }
+   }
+  }
+ }
+}

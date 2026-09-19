@@ -1,0 +1,8 @@
+Service description,List cost ($),Negotiated savings ($),Savings programs ($),Other savings ($),Subtotal ($),Percent change in subtotal compared to previous period
+Claude Opus 4.8,352.10,0.00,0.00,0.00,352.10,2%
+Compute Engine,29.40,0.00,0.00,0.00,29.40,5%
+Networking,15.20,0.00,0.00,0.00,15.20,0%
+Cloud Run,11.90,0.00,0.00,-5.00,6.90,12%
+Artifact Registry,0.90,0.00,0.00,0.00,0.90,18%
+Cloud Storage,0.30,0.00,0.00,0.00,0.30,0%
+Vertex AI,5.20,0.00,0.00,0.00,5.20,New

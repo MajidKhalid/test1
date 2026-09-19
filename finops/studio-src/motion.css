@@ -1,0 +1,247 @@
+/* ---------------------------------------------------------------------------
+   Hero motion, lifted from FinOps_Dashboard_v20.html so this edition keeps the
+   look and feel leadership already received: the glass objects that drift on
+   their own and lean towards the pointer, and the Digital Energy lockup that
+   plays once on load and holds its last frame.
+   --------------------------------------------------------------------------- */
+
+.de-motifs{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;--presence:1;--dof:1}
+
+/* depth wash behind the headline, and the light the glass refracts */
+.de-motifs__depth{position:absolute;inset:0;background:radial-gradient(44% 62% at 56% -8%,rgba(28,53,102,.42) 0%,rgba(17,56,121,.12) 46%,transparent 74%)}
+.de-motifs__refract{position:absolute;inset:0;opacity:.34}
+.de-motifs__refract i{position:absolute;border-radius:50%;display:block}
+.de-motifs__refract i:nth-child(1){top:-14%;right:4%;width:38%;aspect-ratio:1.3;background:radial-gradient(circle,rgba(0,128,232,.30) 0%,transparent 66%);filter:blur(50px)}
+.de-motifs__refract i:nth-child(2){bottom:-26%;right:14%;width:36%;aspect-ratio:1.2;background:radial-gradient(circle,rgba(11,143,146,.26) 0%,transparent 66%);filter:blur(56px)}
+.de-motifs__refract i:nth-child(3){top:24%;right:-8%;width:24%;aspect-ratio:1;background:radial-gradient(circle,rgba(99,179,255,.18) 0%,transparent 68%);filter:blur(44px)}
+.de-motifs__refract i:nth-child(4){top:2%;right:30%;width:16%;aspect-ratio:1;background:radial-gradient(circle,rgba(255,115,74,.14) 0%,transparent 70%);filter:blur(40px)}
+.de-motifs__key{position:absolute;inset:0;background:radial-gradient(42% 54% at 62% 0%,rgba(196,222,252,.09) 0%,rgba(120,175,230,.03) 44%,transparent 72%)}
+
+/* an object: placement · own drift · own parallax depth */
+.de-mo{position:absolute;aspect-ratio:1;transform:translate3d(calc(var(--px,0px) * var(--k)),calc(var(--py,0px) * var(--k)),0);transition:transform .6s cubic-bezier(.2,.6,.35,1)}
+.de-mo__i{width:100%;height:100%;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+
+/* the glass itself */
+.de-glass{position:relative;width:100%;height:100%;overflow:hidden;border:1px solid rgba(255,255,255,.13)}
+.de-glass__glow{position:absolute;inset:-9%}
+.de-glass__sheen{position:absolute;inset:0}
+.de-glass__spec{position:absolute;left:-8%;top:-24%;width:80%;height:50%;border-radius:50%;background:radial-gradient(ellipse at 52% 100%,rgba(255,255,255,.26) 0%,rgba(255,255,255,.04) 56%,transparent 78%);filter:blur(6px)}
+.de-glass__ring{position:absolute;inset:2.5%;border:1px solid rgba(255,255,255,.07)}
+
+/* navy diamond · far plane */
+.de-mo--diamond{top:11.7%;inset-inline-end:55.5%;width:5%;--k:0.3}
+.de-mo--diamond .de-mo__i{animation-name:de-drift-b;animation-duration:44s}
+.de-mo--diamond .de-glass{
+  border-radius:12%;
+  transform:rotate(45deg);-webkit-backdrop-filter:blur(9px) saturate(1.35) brightness(1.03);
+  backdrop-filter:blur(9px) saturate(1.35) brightness(1.03);
+  box-shadow:
+    inset 2px 0px 1px rgba(255,255,255,.42),
+    inset -2px 0px 1px rgba(150,180,225,.07),
+    inset 0 0 24px rgba(255,255,255,.05),
+    9.9px 1.4px 14px rgba(2,8,20,0.24),
+    1.2px 0.2px 5px rgba(2,8,20,.24);
+  opacity:calc(0.88 * var(--presence));
+  filter:blur(calc(var(--dof) * 2.6px));
+}
+.de-mo--diamond .de-glass__glow{background:radial-gradient(circle closest-side at 50% 50%,rgba(17,56,121,0) 28%,rgba(17,56,121,0.132) 55%,rgba(17,56,121,0.396) 79%,rgba(17,56,121,0.66) 100%);filter:blur(7px)}
+.de-mo--diamond .de-glass__sheen{background:linear-gradient(128deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.07) 15%,rgba(255,255,255,0) 33%,rgba(255,255,255,0) 64%,rgba(150,180,225,.06) 89%,rgba(150,180,225,.12) 100%);transform:rotate(-45deg) scale(1.45)}
+.de-mo--diamond .de-glass__spec{transform:rotate(-45deg) scale(1.45);}
+.de-mo--diamond .de-glass__ring{border-radius:12%}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .de-mo--diamond .de-glass{background:rgba(8,22,49,.34)}
+}
+
+/* orange rounded square · accent */
+.de-mo--coral{top:8.1%;inset-inline-end:35.8%;width:6.1%;--k:0.55}
+.de-mo--coral .de-mo__i{animation-name:de-drift-a;animation-duration:31s}
+.de-mo--coral .de-glass{
+  border-radius:15%;
+  -webkit-backdrop-filter:blur(11px) saturate(1.45) brightness(1.04);
+  backdrop-filter:blur(11px) saturate(1.45) brightness(1.04);
+  box-shadow:
+    inset 1.5px 1.5px 1px rgba(255,255,255,.42),
+    inset -1.5px -1.5px 1px rgba(255,200,180,.07),
+    inset 0 0 24px rgba(255,255,255,.05),
+    12px 16px 18px rgba(2,8,20,0.4),
+    1.4px 1.9px 5px rgba(2,8,20,.24);
+  opacity:calc(0.94 * var(--presence));
+}
+.de-mo--coral .de-glass__glow{background:radial-gradient(circle closest-side at 50% 50%,rgba(255,115,74,0) 28%,rgba(255,115,74,0.120) 55%,rgba(255,115,74,0.360) 79%,rgba(255,115,74,0.6) 100%);filter:blur(5px)}
+.de-mo--coral .de-glass__sheen{background:linear-gradient(128deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.07) 15%,rgba(255,255,255,0) 33%,rgba(255,255,255,0) 64%,rgba(255,200,180,.06) 89%,rgba(255,200,180,.12) 100%)}
+.de-mo--coral .de-glass__spec{}
+.de-mo--coral .de-glass__ring{border-radius:15%}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .de-mo--coral .de-glass{background:rgba(8,22,49,.34)}
+}
+
+/* blue square · mid plane */
+.de-mo--square{top:15.3%;inset-inline-end:3.4%;width:6.9%;--k:0.6}
+.de-mo--square .de-mo__i{animation-name:de-drift-c;animation-duration:36s}
+.de-mo--square .de-glass{
+  border-radius:3.5%;
+  -webkit-backdrop-filter:blur(12px) saturate(1.5) brightness(1.05);
+  backdrop-filter:blur(12px) saturate(1.5) brightness(1.05);
+  box-shadow:
+    inset 1.6px 1.6px 1px rgba(255,255,255,.42),
+    inset -1.6px -1.6px 1px rgba(150,205,250,.07),
+    inset 0 0 24px rgba(255,255,255,.05),
+    15px 19px 20px rgba(2,8,20,0.4),
+    1.8px 2.3px 5px rgba(2,8,20,.24);
+  opacity:calc(0.92 * var(--presence));
+  filter:blur(calc(var(--dof) * 1.1px));
+}
+.de-mo--square .de-glass__glow{background:radial-gradient(circle closest-side at 50% 50%,rgba(0,128,232,0) 28%,rgba(0,128,232,0.140) 55%,rgba(0,128,232,0.420) 79%,rgba(0,128,232,0.7) 100%);filter:blur(5px)}
+.de-mo--square .de-glass__sheen{background:linear-gradient(128deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.07) 15%,rgba(255,255,255,0) 33%,rgba(255,255,255,0) 64%,rgba(150,205,250,.06) 89%,rgba(150,205,250,.12) 100%)}
+.de-mo--square .de-glass__spec{}
+.de-mo--square .de-glass__ring{border-radius:3.5%}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .de-mo--square .de-glass{background:rgba(8,22,49,.34)}
+}
+
+/* teal circle · nearest plane */
+.de-mo--circle{top:65.7%;inset-inline-end:2.8%;width:7.2%;--k:0.7}
+.de-mo--circle .de-mo__i{animation-name:de-drift-d;animation-duration:27s}
+.de-mo--circle .de-glass{
+  border-radius:50%;
+  -webkit-backdrop-filter:blur(14px) saturate(1.6) brightness(1.06);
+  backdrop-filter:blur(14px) saturate(1.6) brightness(1.06);
+  box-shadow:
+    inset 1.8px 1.8px 1px rgba(255,255,255,.42),
+    inset -1.8px -1.8px 1px rgba(150,215,218,.07),
+    inset 0 0 24px rgba(255,255,255,.05),
+    15px 19px 24px rgba(2,8,20,0.42),
+    1.8px 2.3px 5px rgba(2,8,20,.24);
+  opacity:calc(0.96 * var(--presence));
+}
+.de-mo--circle .de-glass__glow{background:radial-gradient(circle closest-side at 50% 50%,rgba(0,100,106,0) 28%,rgba(0,100,106,0.148) 55%,rgba(0,100,106,0.444) 79%,rgba(0,100,106,0.74) 100%);filter:blur(6px)}
+.de-mo--circle .de-glass__sheen{background:linear-gradient(128deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.07) 15%,rgba(255,255,255,0) 33%,rgba(255,255,255,0) 64%,rgba(150,215,218,.06) 89%,rgba(150,215,218,.12) 100%)}
+.de-mo--circle .de-glass__spec{}
+.de-mo--circle .de-glass__ring{border-radius:50%}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .de-mo--circle .de-glass{background:rgba(8,22,49,.34)}
+}
+
+@keyframes de-drift-a{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(20px,-4px,0)}}
+@keyframes de-drift-b{0%,100%{transform:translate3d(0,0,0)}34%{transform:translate3d(-26px,-8px,0)}67%{transform:translate3d(18px,6px,0)}}
+@keyframes de-drift-c{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(-11px,5px,0)}}
+@keyframes de-drift-d{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(8px,10px,0)}}
+
+/* The authored positions are solved against a 1440x370 hero with real lockups.
+   Below 1280 the copy column widens, the brand row re-flows, and in RTL the
+   period strip swaps side, so no single placement clears the copy in both
+   languages. The objects therefore appear only in the range they were solved
+   for; the depth wash, refraction field and key light stay at every width, so
+   the hero keeps its glass depth on smaller screens. Re-measure with the hero
+   ink boxes before widening this range. */
+@media (max-width:1279px){
+  .de-motifs{--presence:.85}
+  .de-motifs .de-mo{display:none}
+}
+@media (max-width:640px){
+  .de-motifs__refract{opacity:.24}
+}
+@media print{.de-motifs{display:none!important}}
+@media (prefers-reduced-motion:reduce){
+  .de-mo__i{animation:none!important}
+  .de-mo{transition:none!important;transform:none!important}
+}
+
+/* Exact supplied Digital Energy motion, once, then held on final frame */
+.hero-motion-lockup{direction:ltr;display:flex;align-items:center;gap:10px;min-height:64px}
+.hero-motion-lockup .finops-word{font-family:var(--font-display);font-size:22px;letter-spacing:.055em;color:#fff;line-height:1}
+.hero-motion-lockup .orb{font-size:22px}
+.dew-motion{display:block;width:188px;height:64px;object-fit:cover;object-position:center;border:0;mix-blend-mode:screen;filter:contrast(1.04);pointer-events:none}
+@media(prefers-reduced-motion:reduce){.dew-motion{display:none}
+.hero-motion-lockup::after{content:'طاقتنا رقمية';font-family:var(--font-display);font-size:20px;color:#fff;direction:rtl;white-space:nowrap}}
+.dew-motion{mix-blend-mode:normal;background:transparent!important}
+.dew-static{display:none;width:112px;height:auto;object-fit:contain;flex:none}
+.logo-fallback .dew-motion{display:none!important}
+.logo-fallback .dew-static{display:block!important}
+/* Keep the desktop hero animation visually integrated with the background. */
+.dew-motion{background:transparent!important;mix-blend-mode:screen}
+@media(max-width:700px){.hero-motion-lockup{min-height:38px!important;gap:7px!important;overflow:visible}
+.hero-motion-lockup .finops-word{font-size:18px!important;letter-spacing:.045em}
+.hero-motion-lockup .orb{font-size:18px!important}
+/* Use a transparent final-frame fallback on phones; the opaque MP4 canvas was
+     responsible for the dark rectangle shown in the user's iPhone screenshot. */
+  .dew-motion{display:none!important}
+.dew-static{display:block!important;width:100px}}
+@media(max-width:390px){.dew-static{width:92px!important}}
+@supports(-webkit-touch-callout:none){/* iOS Safari and iOS embedded viewers: never expose the opaque video canvas. */
+  .dew-motion{display:none!important}
+.dew-static{display:block!important}}
+/* =====================================================================
+   Animation restoration + fully integrated SPARK highlight
+   ===================================================================== */
+.hero-motion-lockup{
+  min-height:72px!important;
+  gap:9px!important;
+  overflow:visible!important;
+}
+.dew-animation-wrap{
+  position:relative;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  width:166px;
+  height:92px;
+  overflow:hidden;
+  isolation:isolate;
+}
+.dew-animation-wrap .dew-static,
+.dew-animation-wrap .dew-motion{
+  grid-area:1/1;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  border:0!important;
+  pointer-events:none;
+}
+.dew-animation-wrap .dew-static{
+  display:block!important;
+  opacity:1;
+  z-index:0;
+}
+.dew-animation-wrap .dew-motion{
+  display:block!important;
+  opacity:1;
+  z-index:1;
+  background:#07142f!important;
+  mix-blend-mode:screen!important;
+  filter:contrast(1.045) saturate(.98)!important;
+  -webkit-mask-image:radial-gradient(ellipse 73% 73% at 50% 50%,#000 64%,rgba(0,0,0,.92) 77%,transparent 100%);
+  mask-image:radial-gradient(ellipse 73% 73% at 50% 50%,#000 64%,rgba(0,0,0,.92) 77%,transparent 100%);
+}
+.logo-fallback .dew-animation-wrap .dew-motion{display:none!important}
+@media(max-width:700px){.hero-motion-lockup{min-height:55px!important;gap:6px!important}
+.dew-animation-wrap{width:122px;height:69px;margin-inline-start:-3px}
+.dew-animation-wrap .dew-motion{display:block!important}
+.dew-animation-wrap .dew-static{display:block!important}}
+@media(max-width:390px){.dew-animation-wrap{width:112px;height:63px}}
+@media(prefers-reduced-motion:reduce){.dew-animation-wrap .dew-motion{display:none!important}
+.dew-animation-wrap .dew-static{display:block!important}}
+/* Transparent APNG version of the supplied Digital Energy motion.
+   It preserves the exact motion while removing the opaque video canvas. */
+.dew-animation-wrap .dew-motion-image{
+  display:block!important;
+  background:transparent!important;
+  mix-blend-mode:normal!important;
+  filter:none!important;
+  -webkit-mask-image:none!important;
+  mask-image:none!important;
+  object-fit:contain!important;
+}
+.logo-fallback .dew-animation-wrap .dew-motion-image{display:block!important}
+@supports(-webkit-touch-callout:none){.dew-animation-wrap .dew-motion-image{display:block!important}}
+.dew-animation-wrap .dew-static{opacity:0!important;visibility:hidden!important}
+.logo-fallback .dew-animation-wrap .dew-static{opacity:1!important;visibility:visible!important}
+.logo-fallback .dew-animation-wrap .dew-motion-image{display:none!important}
+.hero-motion-lockup{align-items:flex-start!important;gap:8px!important}
+.hero-motion-lockup .finops-word{position:relative;top:-6px}
+.hero-motion-lockup .orb{position:relative;top:-6px}
+.hero-motion-lockup .dew-animation-wrap,.hero-motion-lockup .dew-motion,.hero-motion-lockup .dew-static,.hero-motion-lockup .dew-motion-image{position:relative;top:7px;left:-4px;height:52px!important;width:auto!important}
+
+/* the report's own hero wrap sits above the motif layer */
+.hero>.de-motifs{z-index:0}

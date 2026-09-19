@@ -1,0 +1,398 @@
+/* ===== FinOps Report Studio v1 · application script (studio only; the generated report carries no script) ===== */
+(function(){
+'use strict';
+var STORE='finops-studio-v1';
+var BASE=JSON.parse(document.getElementById('baseline').textContent);
+var A=window.ASSETS||{};
+var FAVICON="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%230180E9'/%3E%3Cstop offset='.55' stop-color='%230B8F92'/%3E%3Cstop offset='1' stop-color='%2300AC29'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='7' fill='%23081631'/%3E%3Cpath d='M18 4h6l-8 24h-6z' fill='url(%23b)'/%3E%3C/svg%3E";
+
+/* ---------- helpers ---------- */
+function $(s,r){return (r||document).querySelector(s);}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function tw(en,ar,blk){return '<span class="en">'+en+'</span><span class="ar'+(blk?' blk':'')+'">'+((ar==null||ar==='')?en:ar)+'</span>';}
+var RS='<span class="rs" aria-hidden="true"></span>';
+function r2(v){return Math.round(((+v)||0)*100+Number.EPSILON)/100;}
+function num(v,dp){v=+v||0;if(Math.abs(v)<0.005)v=0;if(dp==null)dp=Math.abs(v)<1000?2:0;return v.toLocaleString('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp});}
+function money(v,dp){return '<bdi class="m">'+RS+num(v,dp)+'</bdi>';}
+function pctS(p){return (p>0&&p<0.1)?'&lt;0.1%':(p>0&&p<1)?p.toFixed(1)+'%':Math.round(p)+'%';}
+function fmtPct(v){return Math.abs(v)>=1?Math.round(v)+'%':(Math.round(v*10)/10)+'%';}
+function get(o,p){return p.split('.').reduce(function(a,k){return a==null?a:a[k];},o);}
+function set(o,p,v){var ks=p.split('.'),a=o;for(var i=0;i<ks.length-1;i++){if(a[ks[i]]==null||typeof a[ks[i]]!=='object')a[ks[i]]={};a=a[ks[i]];}a[ks[ks.length-1]]=v;}
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function lines(s){return String(s||'').split(/\r?\n/).map(function(x){return x.trim();}).filter(Boolean);}
+function sum(arr,k){return (arr||[]).reduce(function(a,x){return a+(+x[k]||0);},0);}
+function byNetDesc(a,b){return b.net-a.net;}
+
+var MEN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var MAR=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+var QAR=['الربع الأول','الربع الثاني','الربع الثالث','الربع الرابع'];
+function ym(iso){var m=/^(\d{4})-(\d{2})/.exec(iso||'');return m?[+m[1],+m[2]]:[0,0];}
+function monthLabel(iso,ar){var p=ym(iso);if(!p[1])return iso||'';return (ar?MAR[p[1]-1]:MEN[p[1]-1])+' '+p[0];}
+function prevMonth(iso){var p=ym(iso),y=p[0],m=p[1]-1;if(m<1){m=12;y--;}return y+'-'+(m<10?'0':'')+m;}
+function quarterKey(iso){var p=ym(iso);return p[0]+'-q'+Math.ceil(p[1]/3);}
+function quarterLabel(key,ar){var m=/^(\d{4})-([qh])(\d)$/.exec(key);if(!m)return key;if(m[2]==='h')return ar?(m[3]==='1'?'النصف الأول ':'النصف الثاني ')+m[1]:'H'+m[3]+' '+m[1];return ar?QAR[+m[3]-1]+' '+m[1]:'Q'+m[3]+' '+m[1];}
+function isQuarterEnd(iso){var m=ym(iso)[1];return m>0&&m%3===0;}
+function kindKey(p){return p.kind==='month'?'m':p.kind==='quarter'?'q':'t';}
+
+/* ---------- departments, palettes, the GCP project map ---------- */
+var DEPT={cyber:{en:'Cybersecurity Department',ar:'إدارة الأمن السيبراني',c:'#113879'},itsvc:{en:'IT Services GD',ar:'الإدارة العامة لخدمات تقنية المعلومات',c:'#0180E9'},dtgd:{en:'Digital Transformation GD',ar:'الإدارة العامة للتحول الرقمي',c:'#00AC29'},dea:{en:'Digital Enterprise Architecture',ar:'هندسة المؤسسة الرقمية',c:'#7C5CBF'},business:{en:'Business departments',ar:'الإدارات المعنية بالأعمال',c:'#00A3A8'},other:{en:'Other',ar:'أخرى',c:'#8B96AC'},unmapped:{en:'Unmapped',ar:'غير مصنّف',c:'#C0341C'}};
+var DEPT_ORDER=['cyber','itsvc','dtgd','dea','business','other'];
+function zeroDepts(){var o={};DEPT_ORDER.forEach(function(k){o[k]=0;});return o;}
+var KIND={sec:{en:'Cybersecurity',ar:'أمن سيبراني'},infra:{en:'Infrastructure',ar:'بنية تحتية'},app:{en:'Application',ar:'تطبيق'}};
+var PAL=['#0180E9','#E85A30','#00A3A8','#7C5CBF'],OTHERC='#8B96AC',EXTRA='#5B7AA8';
+var SHORT={'F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)':'F5 BIG-IP Security','F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG 1Gbps)':'F5 BIG-IP Security','FortiGate Next-Generation Firewall (PAYG)':'FortiGate Security','Cloud Key Management Service (KMS)':'Cloud KMS','Trial for service fortigate-payg-fortigcp-project-001.cloudpartnerservices.goog':'FortiGate trial'};
+var ACCOUNT_ITSVC=['Fortinet Security SaaS'];
+var APPLIANCE=['F5 BIG-IP','FortiGate'];
+var SERVICE_MAP={'Chronicle':'cyber','Security Command Center':'cyber','Cloud Pub/Sub':'cyber','Fortinet Security SaaS':'itsvc','Vertex AI Search':'other'};
+var HUB='prj-moenergy-prd-hub';
+var GCP_LABELS={
+ '':['Account-level security charges','رسوم أمن على مستوى الحساب','sec'],
+ 'moe-secops-484408':['Security operations','عمليات الأمن السيبراني','sec'],
+ 'prj-moenergy-prd-security-kms':['Key management (production)','إدارة المفاتيح (الإنتاج)','sec'],
+ 'prj-moenergy-dev-security-kms':['Key management (development)','إدارة المفاتيح (التطوير)','sec'],
+ 'prj-moenergy-prd-hub':['Shared network hub and landing zone','منصة الشبكة المشتركة ومنطقة الهبوط','infra'],
+ 'prj-moenergy-dmz-host':['DMZ network host','مضيف شبكة المنطقة منزوعة السلاح','infra'],
+ 'prj-moenergy-dmz-srv':['DMZ servers','خوادم المنطقة منزوعة السلاح','infra'],
+ 'prj-moenergy-prd-host':['Landing zone host (production)','مضيف منطقة الهبوط (الإنتاج)','infra'],
+ 'prj-moenergy-dev-host':['Landing zone host (development)','مضيف منطقة الهبوط (التطوير)','infra'],
+ 'prj-moenergy-test-host':['Landing zone host (test)','مضيف منطقة الهبوط (الاختبار)','infra'],
+ 'prj-moenergy-bootstrap':['Landing zone bootstrap','تأسيس منطقة الهبوط','infra'],
+ 'prj-moenergy-billexp':['Billing export','تصدير بيانات الفوترة','infra'],
+ 'prj-moenergy-migration-host-hq':['Migration landing zone (HQ)','منطقة هبوط الترحيل (المقر)','infra'],
+ 'prj-moenergy-prd-data-dbs':['Database platform (production)','منصة قواعد البيانات (الإنتاج)','infra'],
+ 'prj-moenergy-dev-data-dbs':['Database platform (development)','منصة قواعد البيانات (التطوير)','infra'],
+ 'prj-moenergy-prd-bs-devops':['DevOps pipeline (production)','خط DevOps (الإنتاج)','infra'],
+ 'prj-moenergy-dev-bs-devops':['DevOps pipeline (development)','خط DevOps (التطوير)','infra'],
+ 'prj-moenergy-prd-infra-mngeng':['Infrastructure management engine','محرك إدارة البنية التحتية','infra'],
+ 'prj-moenergy-prd-bc-centlogs':['Central logging (production)','السجلات المركزية (الإنتاج)','infra'],
+ 'prj-moenergy-dev-centlogs':['Central logging (development)','السجلات المركزية (التطوير)','infra'],
+ 'prj-moenergy-prd-bc-website':['Ministry website','الموقع الإلكتروني للوزارة','app'],
+ 'prj-moenergy-iw-sb-development':['SPARK shared development environment','بيئة التطوير المشتركة في سبارك','infra'],
+ 'prj-moenergy-iw-it-dtgd-ad-ne':['Notification Center workspace','مساحة عمل مركز الإشعارات','infra'],
+ 'prj-moenergy-iw-spark-admin':['SPARK administration','إدارة منصة شرارة','infra'],
+ 'moe-notebooklm':['NotebookLM AI pilot','تجربة NotebookLM للذكاء الاصطناعي','app']};
+var ACCT_LABEL=['Security monitoring platform (Chronicle, Security Command Center)','منصة مراقبة الأمن (Chronicle وSecurity Command Center)'];
+var FORTI_LABEL=['Fortinet security platform (SaaS)','منصة Fortinet الأمنية (خدمة سحابية)'];
+var APPL_LABEL=['Security appliances inside the hub (F5 BIG-IP, FortiGate)','أجهزة الأمن داخل المنصة المشتركة (F5 BIG-IP وFortiGate)'];
+
+function sparkList(){return lines(S.clouds.gcp.sparkProjectsText||'').filter(function(l){return l.charAt(0)!=='#';}).map(function(l){return l.trim().toLowerCase();}).filter(Boolean);}
+function inSpark(pid){var L=sparkList(),p=String(pid||'').toLowerCase();return L.some(function(x){return x.slice(-1)==='*'?p.indexOf(x.slice(0,-1))===0:p===x;});}
+function sparkSplit(projRows,map){var tot=zeroDepts(),rows=[],unknown=[];(projRows||[]).forEach(function(r){if(!inSpark(r.pid))return;var b=map[r.pid];if(b==null){unknown.push(r.pid||r.name);return;}tot[b]+=r.net;rows.push({pid:r.pid,name:r.name,dept:b,net:r.net});});
+ return {parts:DEPT_ORDER.map(function(k){return {key:k,net:r2(tot[k])};}),rows:rows.sort(byNetDesc),unknown:unknown};}
+function sparkUseCases(){var out=[];lines(S.clouds.gcp.sparkUseCasesText||'').forEach(function(l){
+ if(l.charAt(0)==='#')return;var i=l.lastIndexOf('=');if(i<0)return;
+ var left=l.slice(0,i).trim(),dept=l.slice(i+1).trim().toLowerCase();if(!DEPT[dept]||dept==='unmapped')return;
+ var bar=left.indexOf('|'),label=bar<0?left:left.slice(0,bar).trim(),pid=bar<0?'':left.slice(bar+1).trim().toLowerCase();
+ if(label)out.push({label:label,pid:pid,dept:dept});});return out;}
+function parseMap(text){var out={};lines(text).forEach(function(l){if(l.charAt(0)==='#')return;var i=l.indexOf('=');if(i<0)return;var k=l.slice(0,i).trim().toLowerCase(),v=l.slice(i+1).trim().toLowerCase();if(k==='[account-level]')k='';if(!DEPT[v]||v==='unmapped')return;out[k]=v;});return out;}
+function accountItsvc(services){return r2(services.filter(function(s){return ACCOUNT_ITSVC.indexOf(s.name)>=0;}).reduce(function(a,s){return a+s.net;},0));}
+function appliances(services){return r2(services.filter(function(s){return APPLIANCE.some(function(p){return s.name.indexOf(p)===0;});}).reduce(function(a,s){return a+s.net;},0));}
+function gcpSplit(projRows,services,map){var tot=zeroDepts(),unknown=[];projRows.forEach(function(r){var b=map[r.pid];if(b==null){unknown.push(r);return;}tot[b]+=r.net;});var move=accountItsvc(services);tot.cyber-=move;tot.itsvc+=move;return {parts:DEPT_ORDER.map(function(k){return {key:k,net:Math.max(r2(tot[k]),0)};}),unknown:unknown};}
+function detailRows(projRows,services,map){var app=appliances(services),move=accountItsvc(services),out=[];projRows.forEach(function(r){var b=map[r.pid];if(b==null||r.net<=0)return;var L=GCP_LABELS[r.pid]||[r.name||r.pid,r.name||r.pid,'infra'];if(r.pid===HUB&&app>0){out.push({label:APPL_LABEL[0],labelAr:APPL_LABEL[1],dept:b,kind:'sec',net:app});out.push({label:L[0],labelAr:L[1],dept:b,kind:L[2],net:r2(r.net-app)});}else if(r.pid===''&&move>0){out.push({label:FORTI_LABEL[0],labelAr:FORTI_LABEL[1],dept:'itsvc',kind:'sec',net:move});out.push({label:ACCT_LABEL[0],labelAr:ACCT_LABEL[1],dept:b,kind:'sec',net:r2(r.net-move)});}else if(r.pid===''){out.push({label:ACCT_LABEL[0],labelAr:ACCT_LABEL[1],dept:b,kind:'sec',net:r.net});}else{out.push({label:L[0],labelAr:L[1],dept:b,kind:L[2],net:r.net});}});var rank={};DEPT_ORDER.forEach(function(k,i){rank[k]=i;});out.sort(function(a,b){return (rank[a.dept]-rank[b.dept])||(b.net-a.net);});return out;}
+function pinned(services){var exact=zeroDepts(),total=0;services.forEach(function(s){var b=SERVICE_MAP[s.name];if(!b&&APPLIANCE.some(function(p){return s.name.indexOf(p)===0;}))b='itsvc';if(b){exact[b]+=s.net;total+=s.net;}});return {exact:exact,total:r2(total)};}
+function residualMix(ref){var got={};(ref.departments||[]).forEach(function(d){got[d.key]=d.net;});var ex=pinned(ref.services||[]).exact,resid={},total=0;DEPT_ORDER.forEach(function(k){resid[k]=Math.max((got[k]||0)-ex[k],0);total+=resid[k];});var mix={};if(total)DEPT_ORDER.forEach(function(k){if(resid[k]>0)mix[k]=resid[k]/total;});return mix;}
+function fromServices(services,mix){var p=pinned(services),net=sum(services,'net'),tot=zeroDepts();DEPT_ORDER.forEach(function(k){tot[k]=p.exact[k];});var resid=r2(net-p.total);if(resid>0)Object.keys(mix).forEach(function(k){tot[k]+=resid*mix[k];});return {parts:DEPT_ORDER.map(function(k){return {key:k,net:Math.max(r2(tot[k]),0)};}),exact:p.total,resid:Math.max(resid,0)};}
+
+/* ---------- state ---------- */
+var RESUMED=false,MIGRATED=false;var S=loadState();
+function fillDefaults(t,d){if(Array.isArray(d)){if(!Array.isArray(t))return clone(d);if(d.length&&typeof d[0]==='object')t.forEach(function(row){if(!row||typeof row!=='object')return;var ref=d.filter(function(x){return x&&x.name===row.name;})[0]||d[0];Object.keys(ref).forEach(function(k){if(!(k in row))row[k]=clone(ref[k]);});});return t;}
+ if(d&&typeof d==='object'){if(!t||typeof t!=='object')return clone(d);Object.keys(d).forEach(function(k){t[k]=(k in t)?fillDefaults(t[k],d[k]):clone(d[k]);});return t;}return t;}
+function migrate(s){var out=clone(BASE);['edition','statement'].forEach(function(k){out[k]=fillDefaults(clone(s[k]||{}),BASE[k]);});
+ ['gcp','azure'].forEach(function(c){var sc=(s.clouds||{})[c]||{},bc=BASE.clouds[c],periods={};Object.keys(bc.periods||{}).forEach(function(k){periods[k]=clone(bc.periods[k]);});Object.keys(sc.periods||{}).forEach(function(k){var p=sc.periods[k];if(p&&p.source==='upload')periods[k]=p;});var merged=fillDefaults(clone(sc),bc);merged.periods=periods;out.clouds[c]=merged;});
+ out.meta=clone(BASE.meta);out.meta.migratedFrom=s.meta&&s.meta.stamp;out.meta.savedAt=s.meta&&s.meta.savedAt;return out;}
+function loadState(){try{var raw=localStorage.getItem(STORE);if(raw){var s=JSON.parse(raw);if(s&&s.meta&&s.clouds&&s.edition){RESUMED=true;if(s.meta.stamp===BASE.meta.stamp)return s;MIGRATED=true;return migrate(s);}}}catch(e){}return clone(BASE);}
+function save(){try{S.meta.savedAt=new Date().toISOString();localStorage.setItem(STORE,JSON.stringify(S));}catch(e){}}
+function FX(){return +S.edition.fx||3.75;}
+
+/* ---------- periods ---------- */
+function periodsOf(c){var P=S.clouds[c].periods||{},arr=Object.keys(P).map(function(k){return P[k];}).filter(Boolean);
+ function endMonth(k){var m=/^(\d{4})-([qh])(\d)$/.exec(k);if(!m)return [0,0,0];return [+m[1],m[2]==='h'?+m[3]*6:+m[3]*3,m[2]==='h'?1:0];}
+ return {month:arr.filter(function(p){return p.kind==='month';}).sort(function(a,b){return b.key.localeCompare(a.key);}),
+  quarter:arr.filter(function(p){return p.kind==='quarter';}).sort(function(a,b){var x=endMonth(a.key),y=endMonth(b.key);return (y[0]-x[0])||(y[1]-x[1])||(y[2]-x[2]);}),
+  todate:arr.filter(function(p){return p.kind==='todate';})};}
+function refExact(c){var P=periodsOf(c);var pick=function(list){return list.filter(function(p){return p.deptMethod==='exact'&&p.departments&&p.services&&p.services.length;})[0];};return pick(P.quarter)||pick(P.todate)||pick(P.month)||null;}
+function exactPctOf(p){if(p.exactPct!=null)return p.exactPct;var net=p.totals?p.totals.net:0;if(!net)return 0;return Math.round(pinned(p.services||[]).total/net*100);}
+
+function recomputeGcp(p){var svc=p.services||[];p.totals={net:r2(sum(svc,'net')),gross:r2(sum(svc,'gross'))};p.totals.discounts=r2(p.totals.gross-p.totals.net);
+ var sb=p.sandboxServices||[];p.sandbox=sb.length?{net:r2(sum(sb,'net')),gross:r2(sum(sb,'gross')),discounts:r2(sum(sb,'gross')-sum(sb,'net'))}:null;
+ p.discountTrap=svc.length>0&&p.totals.gross>0&&svc.every(function(s){return Math.abs(s.gross-s.net)<0.005;});
+ var map=parseMap(S.clouds.gcp.projectMapText);
+ p.sparkDepts=null;p.sparkRows=null;
+ if(p.projectsRaw&&p.projectsRaw.length){var sp=sparkSplit(p.projectsRaw,map);if(sp.rows.length){p.sparkDepts=sp.parts;p.sparkRows=sp.rows;p.sparkProjTotal=r2(sum(sp.rows,'net'));}
+  var r=gcpSplit(p.projectsRaw,svc,map);p.departments=r.parts;p.unmapped=r.unknown.map(function(u){return u.pid||u.name||'(blank id)';});p.deptMethod='exact';p.projects=detailRows(p.projectsRaw,svc,map);p.projTotal=r2(sum(p.projectsRaw,'net'));delete p.exactPct;
+  var acct=p.projectsRaw.filter(function(x){return x.pid==='';})[0];var sec=svc.filter(function(s){return ['Chronicle','Security Command Center','Fortinet Security SaaS'].indexOf(s.name)>=0;}).reduce(function(a,s){return a+s.net;},0);p.acctCheck=acct?{bucket:r2(acct.net),security:r2(sec),diff:r2(acct.net-sec)}:null;}
+ else{var ref=refExact('gcp'),mix=ref?residualMix(ref):{},d=fromServices(svc,mix);p.departments=d.parts;p.exactPct=p.totals.net?Math.round(d.exact/p.totals.net*100):0;p.deptMethod='derived';p.projects=null;p.unmapped=[];p.acctCheck=null;}}
+function recomputeAzure(p){var svc=p.services||[];p.totals={net:r2(sum(svc,'net')),gross:r2(sum(svc,'net')),discounts:0};
+ var def=svc.filter(function(s){return /defender/i.test(s.name);})[0];p.security=def?{name:def.name,net:def.net,share:p.totals.net?def.net/p.totals.net*100:0}:null;
+ if(p.subsRaw&&p.subsRaw.length){var map=parseMap(S.clouds.azure.subMapText),tot=zeroDepts(),unknown=[];
+  var bucket=function(r){return map[(r.name||'').toLowerCase()]||map[(r.id||'').toLowerCase()]||null;};
+  p.subsRaw.forEach(function(r){var b=bucket(r);if(!b){unknown.push(r.name||r.id);return;}tot[b]+=r.net;});
+  p.departments=DEPT_ORDER.map(function(k){return {key:k,net:r2(tot[k])};});p.unmapped=unknown;p.deptMethod='exact';p.subTotal=r2(sum(p.subsRaw,'net'));
+  p.subs=p.subsRaw.map(function(r){return {label:r.name||r.id,dept:bucket(r)||'unmapped',net:r.net};}).sort(byNetDesc);}
+ else{p.departments=null;p.deptMethod='none';p.unmapped=[];p.subs=null;}
+ if(p.kind==='month'){var prev=S.clouds.azure.periods[prevMonth(p.key)];if(prev&&prev.services&&prev.services.length){var pm={};prev.services.forEach(function(s){pm[s.name]=s.net;});svc.forEach(function(s){var pv=pm[s.name];s.chg=pv==null?'New':Math.abs(pv)<0.005?(s.net>0?'New':'0%'):Math.round((s.net-pv)/pv*100)+'%';});p.prevNet=prev.totals.net;p.prevLabel=prev.label;p.prevLabelAr=prev.labelAr;}else{svc.forEach(function(s){s.chg=s.chg||'n/a';});p.prevNet=null;}}}
+
+/* ---------- CSV parsing ---------- */
+function parseCSV(text){var rows=[],row=[],cur='',inQ=false;for(var i=0;i<text.length;i++){var ch=text[i];if(inQ){if(ch==='"'){if(text[i+1]==='"'){cur+='"';i++;}else inQ=false;}else cur+=ch;}else if(ch==='"')inQ=true;else if(ch===','){row.push(cur);cur='';}else if(ch==='\n'||ch==='\r'){if(cur!==''||row.length){row.push(cur);rows.push(row);row=[];cur='';}if(ch==='\r'&&text[i+1]==='\n')i++;}else cur+=ch;}
+ if(cur!==''||row.length){row.push(cur);rows.push(row);}if(!rows.length)return [];var head=rows.shift().map(function(h){return h.replace(/^﻿/,'').trim();});
+ return rows.filter(function(r){return r.length>1;}).map(function(r){var o={};head.forEach(function(h,i){o[h]=(r[i]||'').trim();});return o;});}
+function fnum(v){return parseFloat(String(v==null?'':v).replace(/[,\s$]/g,''))||0;}
+function gcpServices(rows,fx){var out=[];rows.forEach(function(r){var n=(r['Service description']||'').trim();if(!n)return;out.push({name:n,gross:r2(fnum(r['List cost ($)'])*fx),net:r2(fnum(r['Subtotal ($)'])*fx),chg:(r['Percent change in subtotal compared to previous period']||'').trim()});});return out.sort(byNetDesc);}
+function gcpProjects(rows,fx){var out=[];rows.forEach(function(r){var name=(r['Project name']||'').trim(),pid=(r['Project ID']||'').trim().toLowerCase();if(!name&&!pid)return;var v=fnum(r['Subtotal ($)']);out.push({name:name,pid:pid,net:r2(v*fx)});});return out;}
+function azureRows(rows,fx,currency){if(!rows.length)throw new Error('the file has no data rows');var head=Object.keys(rows[0]);var norm=function(h){return h.toLowerCase().replace(/[^a-z]/g,'');};
+ var find=function(c){for(var i=0;i<head.length;i++){if(c.indexOf(norm(head[i]))>=0)return head[i];}return null;};
+ var nameCol=find(['servicename','metercategory','subscriptionname','resourcegroup','resourcegroupname','resourcelocation','resourcetype','servicefamily','service','subscription','location']);
+ var idCol=find(['subscriptionid','subscriptionguid']);var usdCol=find(['costusd','costinusd','pretaxcostusd']);var costCol=find(['cost','pretaxcost','costinbillingcurrency','actualcost','costamount']);var curCol=find(['currency','billingcurrency','billingcurrencycode']);
+ if(!nameCol)throw new Error('no name column (ServiceName, SubscriptionName, ResourceGroup or ResourceLocation) in the header');
+ if(!usdCol&&!costCol)throw new Error('no Cost or CostUSD column in the header');
+ var acc={};rows.forEach(function(r){var n=(r[nameCol]||'').trim();if(!n)return;var v;if(currency==='SAR'&&costCol)v=fnum(r[costCol]);else if(usdCol)v=fnum(r[usdCol])*fx;else{var cur=curCol?(r[curCol]||'').toUpperCase():'';v=cur==='SAR'?fnum(r[costCol]):fnum(r[costCol])*fx;}var a=acc[n]||(acc[n]={name:n,id:idCol?(r[idCol]||'').trim():'',net:0});a.net+=v;});
+ var out=Object.keys(acc).map(function(k){acc[k].net=r2(acc[k].net);return acc[k];}).sort(byNetDesc);return {rows:out,by:norm(nameCol)};}
+
+/* ---------- rendering: shared pieces ---------- */
+function chgHtml(chg){chg=(chg||'').trim();if(chg===''||chg==='n/a')return '<span class="flat">n/a</span>';if(chg==='New')return '<span class="flat">New</span>';var v=parseFloat(chg.replace(/[%,+]/g,''));if(isNaN(v))return '<span class="flat">'+esc(chg)+'</span>';if(v>0)return '<span class="up">&#8593; '+fmtPct(v)+'</span>';if(v<0)return '<span class="down">&#8595; '+fmtPct(Math.abs(v))+'</span>';return '<span class="flat">0%</span>';}
+function bars(rows,top){rows=(rows||[]).slice().sort(byNetDesc);var net=sum(rows,'net'),head=rows.slice(0,top),tail=rows.slice(top);var items=head.map(function(r){return {name:r.name,net:r.net,chg:r.chg};});if(tail.length)items.push({name:'Other ('+tail.length+' services)',nameAr:'أخرى ('+tail.length+' خدمات)',net:sum(tail,'net'),chg:'n/a',other:true});var peak=Math.max.apply(null,[1].concat(items.map(function(i){return Math.abs(i.net);})));
+ return '<div class="bars">'+items.map(function(it,i){var share=net?it.net/net*100:0,col=i<PAL.length?PAL[i]:(it.other?OTHERC:EXTRA),disp=SHORT[it.name]||it.name;return '<div class="bar-row"><div class="bar-head"><span class="bar-name">'+(it.nameAr?tw(esc(disp),esc(it.nameAr)):esc(disp))+'</span><span class="bar-val">'+money(it.net)+'</span><span class="bar-share">'+pctS(share)+'</span><span class="bar-chg">'+chgHtml(it.chg)+'</span></div><div class="bar-track"><i style="width:'+Math.max(Math.abs(it.net)/peak*100,0.6).toFixed(1)+'%;background:'+col+'"></i></div></div>';}).join('')+'</div>';}
+var CX=180,CY=150,RR=128,SW=38,GAP=(2.4/128)*180/Math.PI;
+function pt(deg){var a=deg*Math.PI/180;return [CX+RR*Math.sin(a),CY-RR*Math.cos(a)];}
+function donutSvg(parts){var o='<circle cx="'+CX+'" cy="'+CY+'" r="'+RR+'" fill="none" stroke="#E9EDF3" stroke-width="'+SW+'"></circle>',cum=0;
+ parts.forEach(function(q){var a0=cum*360+GAP,a1=(cum+q.share)*360-GAP;cum+=q.share;if(a1<=a0)return;var p0=pt(a0),p1=pt(a1),large=(a1-a0)>180?1:0;o+='<path d="M'+p0[0].toFixed(1)+' '+p0[1].toFixed(1)+' A'+RR+' '+RR+' 0 '+large+' 1 '+p1[0].toFixed(1)+' '+p1[1].toFixed(1)+'" fill="none" stroke="'+q.color+'" stroke-width="'+SW+'"><title>'+esc(q.name)+': '+num(q.net,2)+' ('+Math.round(q.share*100)+'%)</title></path>';
+  if(q.share>=0.03){var m=pt((a0+a1)/2),fs=q.share>=.12?15:(q.share>=.06?12.5:10.5);o+='<text fill="#fff" font-size="'+fs+'" font-weight="700" text-anchor="middle" x="'+m[0].toFixed(1)+'" y="'+(m[1]+fs*.37).toFixed(1)+'">'+pctS(q.share*100)+'</text>';}});
+ return '<svg role="img" aria-label="Share of net spend" viewBox="26 -4 308 308">'+o+'</svg>';}
+function insight(label,body){return '<div class="insight"><b>'+label+'</b> '+body+'</div>';}
+function details(title,head,rowsHtml){return '<details><summary>'+tw('View details','عرض التفاصيل')+'<span class="detail-icon" aria-hidden="true">&#8599;</span></summary><h4>'+title+'</h4><div class="cw"><table><thead><tr>'+head+'</tr></thead><tbody>'+rowsHtml+'</tbody></table></div></details>';}
+function detailsServices(rows,azure){rows=(rows||[]).slice().sort(function(a,b){return azure?b.net-a.net:b.gross-a.gross;});
+ if(azure)return details(tw('Service list · actual cost after credits','قائمة الخدمات · التكلفة الفعلية بعد الأرصدة'),'<th>'+tw('Service','الخدمة')+'</th><th class="n">'+tw('Actual cost','التكلفة الفعلية')+' '+RS+'</th><th class="n">'+tw('Change vs previous month','التغير عن الشهر السابق')+'</th>',rows.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td class="n">'+num(r.net,2)+'</td><td class="n">'+esc(r.chg||'n/a')+'</td></tr>';}).join(''));
+ return details(tw('Service list · gross usage before discounts','قائمة الخدمات · إجمالي الاستهلاك قبل الخصومات'),'<th>'+tw('Service','الخدمة')+'</th><th class="n">'+tw('Gross before discounts','إجمالي الاستهلاك قبل الخصومات')+' '+RS+'</th><th class="n">'+tw('Net after discounts','الصافي بعد الخصومات')+' '+RS+'</th><th class="n">'+tw('Change vs previous','التغير عن الفترة السابقة')+'</th>',rows.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td class="n">'+num(r.gross,2)+'</td><td class="n">'+num(r.net,2)+'</td><td class="n">'+esc(r.chg||'n/a')+'</td></tr>';}).join(''));}
+function summaryBar(l,r){var half=function(h,cls){return '<div class="summary-half '+cls+'"><div class="summary-kicker">'+h.kicker+'</div><div class="summary-value">'+h.value+'</div><div class="summary-label">'+h.label+'</div><div class="summary-sub">'+(h.sub||'')+'</div><div class="summary-note">'+(h.note||'')+'</div></div>';};return '<div class="summary-bar" role="group" aria-label="Key spend figures">'+half(l,'summary-half--gcp')+'<div class="summary-divider" aria-hidden="true"><span class="summary-blade"></span></div>'+half(r,'summary-half--sandbox')+'</div>';}
+function autoHighlight(rows,L,LA){var net=sum(rows,'net'),best=null,bestv=null;rows.forEach(function(r){if(!net||r.net/net<0.03)return;var v=parseFloat((r.chg||'').replace(/[%,+]/g,''));if(isNaN(v))return;if(v>0&&(bestv===null||v>bestv)){best=r;bestv=v;}});
+ if(best){var nm=esc(SHORT[best.name]||best.name),pv=Math.round(bestv).toLocaleString('en-US');return tw('Watch '+nm+': net spend of '+money(best.net,0)+' for '+L+', +'+pv+'% against the previous period. Review whether the increase comes from approved workloads, sizing, or idle resources.','راقب '+nm+': بلغ صافي الإنفاق '+money(best.net,0)+' خلال '+LA+' بارتفاع '+pv+'% عن الفترة السابقة. يُنصح بمراجعة ما إذا كان الارتفاع ناتجاً عن أحمال معتمدة أو عن الحجم أو عن موارد خاملة.');}
+ var top=rows.slice().sort(byNetDesc).slice(0,3),share=net?sum(top,'net')/net*100:0,names=top.map(function(r){return esc(SHORT[r.name]||r.name);}).join(', ');return tw('Concentration: '+names+' carry '+Math.round(share)+'% of net spend for '+L+'.','التركّز: تستحوذ '+names+' على '+Math.round(share)+'% من صافي الإنفاق خلال '+LA+'.');}
+var DEPT_METHOD_EN='Every charge is assigned to the department that owns the application it pays for, read from the billing project it sits in. Cybersecurity owns the security monitoring platform (Chronicle and Security Command Center) and security operations. IT Services GD owns the platforms and appliances it operates, including F5 BIG-IP, FortiGate, the Fortinet platform, key management, the landing zone, the databases, the delivery pipelines and central logging. Business departments own their own applications plus the platform the business applications moving to GCP land on: the migration landing zone, the databases, the delivery pipelines and the management engine. That bucket is split per department once the ownership map exists. Digital Transformation GD and Digital Enterprise Architecture appear as their own lines as soon as a project or subscription is mapped to them.';
+var DEPT_METHOD_AR='يُنسب كل بند إلى الإدارة المالكة للتطبيق الذي يخصه، وفق مشروع الفوترة الذي يقع تحته. فالأمن السيبراني يملك منصة مراقبة الأمن (Chronicle وSecurity Command Center) وعمليات الأمن. أما الإدارة العامة لخدمات تقنية المعلومات فتملك المنصات والأجهزة التي تشغّلها، ومنها F5 BIG-IP وFortiGate ومنصة Fortinet وإدارة المفاتيح ومنطقة الهبوط والسجلات المركزية. وتملك الإدارات المعنية بالأعمال تطبيقاتها الخاصة إضافة إلى المنصة التي تهبط عليها تطبيقات الأعمال المنتقلة إلى GCP: منطقة هبوط الترحيل وقواعد البيانات وخطوط التسليم ومحرك الإدارة. وسيُقسَّم هذا البند حسب كل إدارة عند اكتمال خريطة الملكية. وتظهر الإدارة العامة للتحول الرقمي وهندسة المؤسسة الرقمية كبندين مستقلين فور ربط مشروع أو اشتراك بأي منهما.';
+function derivedNote(p,L,LA){var ep=exactPctOf(p),rp=100-ep;if(rp<=0)return tw('Every charge in '+L+' sits on a service that belongs to one general department, so this split is read straight from the billing data with nothing apportioned.','يقع كل بند في '+LA+' على خدمة تخص إدارة عامة واحدة، ولذلك يُقرأ هذا التوزيع مباشرة من بيانات الفوترة دون أي توزيع تقديري.');
+ return tw(ep+'% of '+L+' is read straight from the billing data: the security services, the F5 BIG-IP and FortiGate appliances and the AI search platform each belong to one general department, and those identities were checked to the cent against the by-project export. The remaining '+rp+'% is platform infrastructure (compute, network, storage, logging) and is apportioned on the verified ownership split of the latest period that carries a by-project export. A by-project export for this date range would make the whole figure exact.','تُقرأ نسبة '+ep+'% من '+LA+' مباشرة من بيانات الفوترة: فخدمات الأمن وأجهزة F5 BIG-IP وFortiGate ومنصة البحث بالذكاء الاصطناعي تخص كل منها إدارة عامة واحدة، وقد جرى التحقق من ذلك حتى الهللة مقابل التقرير حسب المشروع. أما النسبة المتبقية وقدرها '+rp+'% فهي بنية تحتية مشتركة (الحوسبة والشبكة والتخزين والسجلات) وتُوزَّع وفق توزيع الملكية المتحقق منه لأحدث فترة تحمل تقريراً حسب المشروع. ويكفي سحب تقرير حسب المشروع لهذه الفترة ليصبح الرقم كاملاً دقيقاً.');}
+function ownerHighlight(p){var it=(p.departments||[]).filter(function(d){return d.key==='itsvc';})[0];if(!it||!it.net)return '';var sec=r2(appliances(p.services||[])+accountItsvc(p.services||[]));if(sec<=0)return '';var rest=r2(it.net-sec),share=pctS(sec/it.net*100);
+ var body=rest<1?tw('Of the '+money(it.net,0)+' IT Services GD carries, all of it is security tooling it operates: the F5 BIG-IP and FortiGate appliances and the Fortinet platform. Credits covered the platform underneath them for this period.','من أصل '+money(it.net,0)+' تحملها الإدارة العامة لخدمات تقنية المعلومات، جميعها أدوات أمن تشغّلها: أجهزة F5 BIG-IP وFortiGate ومنصة Fortinet. أما المنصة تحتها فقد غطتها الأرصدة في هذه الفترة.')
+  :tw('Of the '+money(it.net,0)+' IT Services GD carries, '+money(sec,0)+' ('+share+') is security tooling it operates: the F5 BIG-IP and FortiGate appliances and the Fortinet platform. The remaining '+money(rest,0)+' is the landing zone, the databases, the delivery pipelines and central logging.','من أصل '+money(it.net,0)+' تحملها الإدارة العامة لخدمات تقنية المعلومات، هناك '+money(sec,0)+' ('+share+') أدوات أمن تشغّلها: أجهزة F5 BIG-IP وFortiGate ومنصة Fortinet. أما المتبقي وقدره '+money(rest,0)+' فهو منطقة الهبوط وقواعد البيانات وخطوط التسليم والسجلات المركزية.');
+ return insight(tw('Who owns what:','من يملك ماذا:'),body);}
+function deptCard(c,p,stack){var L=esc(p.label),LA=esc(p.labelAr),net=p.totals?p.totals.net:0;var head='<h3>'+tw('Spend per general department','الإنفاق حسب الإدارة العامة')+'</h3>';
+ if(!p.departments||p.deptMethod==='none'){return '<div class="card">'+head+'<p class="note">'+tw('Spend per general department for Azure arrives with the by-subscription export (Cost analysis grouped by Subscription name, mapped to departments in the Studio). This period was loaded without it.','يُعرض الإنفاق حسب الإدارة العامة لـ Azure عند توفر تقرير التكلفة حسب الاشتراك (تحليل التكلفة مجمّعاً حسب اسم الاشتراك، مع خريطة الملكية في الاستوديو). وقد حُمِّلت هذه الفترة بدونه.')+'</p></div>';}
+ var parts=p.departments.slice().filter(function(d){return d.net>0;}).sort(byNetDesc),tot=sum(parts,'net')||1;var dparts=parts.map(function(d){return {name:DEPT[d.key].en,net:d.net,share:d.net/tot,color:DEPT[d.key].c};});
+ var leg='<ul class="dleg">'+parts.map(function(d){return '<li><span class="dot" style="background:'+DEPT[d.key].c+'"></span><span class="dl-name">'+tw(esc(DEPT[d.key].en),esc(DEPT[d.key].ar))+'</span><span class="dl-val">'+money(d.net,0)+'</span><span class="dl-share">'+pctS(d.net/tot*100)+'</span></li>';}).join('')+'</ul>';
+ var chart='<div class="dchart">'+donutSvg(dparts)+'<div class="dcentre"><span class="dc-lab">'+tw('Total net spend','إجمالي صافي الإنفاق')+'</span><span class="dc-val">'+money(net,0)+'</span></div></div>';
+ var tail='';
+ if(c==='gcp'){if(p.deptMethod==='exact'){tail='<p class="note">'+tw(DEPT_METHOD_EN,DEPT_METHOD_AR)+'</p>'+(p.projects&&p.projects.length?details(tw('Every project, its general department and what it is','كل مشروع وإدارته العامة وطبيعته'),'<th>'+tw('Project','المشروع')+'</th><th>'+tw('General department','الإدارة العامة')+'</th><th>'+tw('Type','النوع')+'</th><th class="n">'+tw('Net spend','صافي الإنفاق')+' '+RS+'</th>',p.projects.map(function(r){return '<tr><td>'+tw(esc(r.label),esc(r.labelAr||r.label))+'</td><td>'+tw(esc(DEPT[r.dept].en),esc(DEPT[r.dept].ar))+'</td><td>'+tw(KIND[r.kind].en,KIND[r.kind].ar)+'</td><td class="n">'+num(r.net,2)+'</td></tr>';}).join('')):'');}
+  else tail='<p class="note">'+derivedNote(p,L,LA)+'</p>';tail+=ownerHighlight(p);}
+ else{tail='<p class="note">'+tw('Every charge is assigned to the department that owns the subscription it sits in, read from the Cost analysis export grouped by subscription. The subscription map lives in the Studio and is applied to every period the same way.','يُنسب كل بند إلى الإدارة المالكة للاشتراك الذي يقع تحته، وفق تقرير تحليل التكلفة مجمّعاً حسب الاشتراك. وتُحفظ خريطة الاشتراكات في الاستوديو وتُطبَّق على كل الفترات بالطريقة نفسها.')+'</p>'+(p.subs?details(tw('Every subscription and its general department','كل اشتراك وإدارته العامة'),'<th>'+tw('Subscription','الاشتراك')+'</th><th>'+tw('General department','الإدارة العامة')+'</th><th class="n">'+tw('Actual cost','التكلفة الفعلية')+' '+RS+'</th>',p.subs.map(function(r){return '<tr><td>'+esc(r.label)+'</td><td>'+tw(esc(DEPT[r.dept].en),esc(DEPT[r.dept].ar))+'</td><td class="n">'+num(r.net,2)+'</td></tr>';}).join('')):'');}
+ return '<div class="card">'+head+'<div class="dwrap'+(stack?' stack':'')+'">'+chart+leg+'</div>'+tail+'</div>';}
+
+function deltaChip(p,c){if(p.kind!=='month')return '';var prev=S.clouds[c].periods[prevMonth(p.key)];if(!prev||!prev.totals||!prev.totals.net||!p.totals||!p.totals.net)return '';var d=(p.totals.net-prev.totals.net)/prev.totals.net*100,a=Math.abs(d).toFixed(1)+'%';return ' <span class="delta '+(d>=0?'up':'down')+'"><span aria-hidden="true">'+(d>=0?'&#9650;':'&#9660;')+'</span> '+a+' <i>'+tw('vs '+esc(prev.label),'مقابل '+esc(prev.labelAr))+'</i></span>';}
+/* ---------- rendering: GCP period block ---------- */
+function sparkMark(){return A.spark?'<img class="spark-mark" src="'+A.spark+'" alt="SPARK">':'<b class="spark-word">SPARK</b>';}
+function sparkCountCard(){var known=sparkUseCases(),head='<h3>'+tw('SPARK use cases per general department','حالات الاستخدام في سبارك حسب الإدارة العامة')+'</h3>';
+ if(!known.length)return '<div class="card">'+head+'<p class="note">'+tw('The SPARK use-case list is empty, so there is nothing to count. It is edited in step 4 of the Studio.','قائمة حالات الاستخدام في سبارك فارغة، فلا يوجد ما يُعدّ. وتُحرَّر في الخطوة 4 من الاستوديو.')+'</p></div>';
+ var cnt=zeroDepts();known.forEach(function(r){cnt[r.dept]+=1;});
+ var parts=DEPT_ORDER.map(function(k){return {key:k,net:cnt[k]};}).filter(function(d){return d.net>0;}).sort(byNetDesc),tot=sum(parts,'net')||1;
+ var dparts=parts.map(function(d){return {name:DEPT[d.key].en,net:d.net,share:d.net/tot,color:DEPT[d.key].c};});
+ var leg='<ul class="dleg">'+parts.map(function(d){return '<li><span class="dot" style="background:'+DEPT[d.key].c+'"></span><span class="dl-name">'+tw(esc(DEPT[d.key].en),esc(DEPT[d.key].ar))+'</span><span class="dl-val">'+num(d.net,0)+'</span><span class="dl-share">'+pctS(d.net/tot*100)+'</span></li>';}).join('')+'</ul>';
+ var chart='<div class="dchart">'+donutSvg(dparts)+'<div class="dcentre"><span class="dc-lab">'+tw('Use cases','حالات الاستخدام')+'</span><span class="dc-val">'+num(tot,0)+'</span></div></div>';
+ var det=details(tw('Every SPARK use case and its general department','كل حالة استخدام في سبارك وإدارتها العامة'),'<th>'+tw('Use case','حالة الاستخدام')+'</th><th>'+tw('General department','الإدارة العامة')+'</th><th>'+tw('Billing project','مشروع الفوترة')+'</th>',known.map(function(r){return '<tr><td>'+esc(r.label)+'</td><td>'+tw(esc(DEPT[r.dept].en),esc(DEPT[r.dept].ar))+'</td><td>'+(r.pid?esc(r.pid):'<i>'+tw('not recorded','غير مسجَّل')+'</i>')+'</td></tr>';}).join(''));
+ return '<div class="card">'+head+'<div class="dwrap stack">'+chart+leg+'</div><p class="note">'+tw('Counted from the SPARK use-case list, not from the exports, so a use case that spent nothing this month, or has no billing project yet, still shows. The shared development environment every use case builds on is the platform rather than a use case, so it is not counted here; its spend still sits inside the SPARK figures.','يُحتسب العدد من قائمة حالات الاستخدام في سبارك لا من التقارير، فتظهر الحالة حتى إن لم تُنفق شيئاً هذا الشهر أو لم يُنشأ لها مشروع فوترة بعد. أما بيئة التطوير المشتركة التي تُبنى عليها الحالات فهي المنصة لا حالة استخدام، فلا تُعدّ هنا، ويظل إنفاقها ضمن أرقام سبارك.')+'</p>'+det+'</div>';}
+function sparkBlock(p,t,L,LA){var sb=p.sandbox,C=S.clouds.gcp,month=p.kind==='month';
+ var kick='<div class="kick">'+tw('04 · SPARK · ','04 · سبارك · ')+'<bdi>'+tw(L,LA)+'</bdi><span class="clar">'+tw('The Ministry\'s AI experimentation platform, inside the SPARK folder of this billing account.','منصة الوزارة لتجارب الذكاء الاصطناعي، داخل مجلد سبارك في حساب الفوترة هذا.')+'</span></div><h2>'+tw('What is running inside SPARK?','ماذا يعمل داخل سبارك؟')+'</h2>';
+ var mark='<div class="spark-head">'+sparkMark()+'<span class="spark-cap">'+tw('The Ministry\'s AI experimentation platform','منصة الوزارة لتجارب الذكاء الاصطناعي')+'</span></div>';
+ if(!sb)return kick+mark+'<div class="card"><h3>'+tw('SPARK spend','إنفاق سبارك')+'</h3><p class="note">'+tw('The SPARK-filtered export for this period has not been loaded.','لم يُحمَّل تقرير سبارك لهذه الفترة.')+'</p></div>';
+ var share=t.net?sb.net/t.net*100:0,ps=pctS(share);
+ var uc=sparkUseCases(),n=uc.length,d=0,seenD={};uc.forEach(function(r){if(!seenD[r.dept]){seenD[r.dept]=1;d++;}});
+ var lead=month&&n?tw('For '+L+', SPARK ran '+n+' use cases across '+d+' general departments and spent '+money(sb.net,0)+', which is '+ps+' of total GCP net spend.','خلال '+LA+'، ضمّت سبارك '+n+' حالة استخدام في '+d+' إدارات عامة بإنفاق قدره '+money(sb.net,0)+'، أي '+ps+' من إجمالي صافي الإنفاق على GCP.')
+  :tw('For '+L+', SPARK net spend was '+money(sb.net,0)+', which is '+ps+' of total GCP net spend, on the services below.','خلال '+LA+'، بلغ صافي إنفاق سبارك '+money(sb.net,0)+'، أي '+ps+' من إجمالي صافي الإنفاق على GCP، على الخدمات أدناه.');
+ var link='<p class="lead">'+lead+'</p>';
+ var svc='<div class="card"><h3>'+tw('SPARK spend by service','إنفاق سبارك حسب الخدمة')+'</h3>';
+ if(r2(sb.net)===0)svc+='<p class="note">'+tw('Every riyal of SPARK usage in '+L+' was covered by credit, so there is no net spend to divide. The service list below shows the usage behind it.','غُطي كل ريال من استهلاك سبارك خلال '+LA+' من الرصيد، فلا يوجد صافي إنفاق يُوزَّع. وتعرض قائمة الخدمات أدناه الاستهلاك الكامن خلفه.')+'</p>';
+ else svc+=bars(p.sandboxServices,6);
+ svc+=detailsServices(p.sandboxServices,false);
+ var sbh=r2(sb.net)===0?tw('SPARK usage of '+money(sb.gross,0)+' for '+L+' was fully covered by credit, so net spend was nil. Project-level budgets, spend alerts and automated provisioning keep it bounded.','غُطي استهلاك سبارك البالغ '+money(sb.gross,0)+' خلال '+LA+' بالكامل من الرصيد، فلم يكن هناك صافي إنفاق. وتظل المنصة محكومة بميزانيات على مستوى المشاريع وتنبيهات الإنفاق والتجهيز الآلي.')
+  :tw('SPARK net spend of '+money(sb.net,0)+' for '+L+' is '+ps+' of total GCP net spend. Project-level budgets, spend alerts and automated provisioning keep it bounded.','بلغ صافي إنفاق سبارك '+money(sb.net,0)+' خلال '+LA+'، أي '+ps+' من إجمالي صافي الإنفاق على GCP. وتظل المنصة محكومة بميزانيات على مستوى المشاريع وتنبيهات الإنفاق والتجهيز الآلي.');
+ svc+=insight(tw('Key highlight:','أبرز ملاحظة:'),sbh)+'</div>';
+ return kick+link+mark+(month?'<div class="twocol">'+sparkCountCard()+svc+'</div>':svc);}
+function gcpBlock(p){var L=esc(p.label),LA=esc(p.labelAr),t=p.totals||{net:0,gross:0,discounts:0},sb=p.sandbox,fx=FX(),C=S.clouds.gcp;
+ var kick1='<div class="kick">'+tw('01 · Key figures · ','01 · المؤشرات الرئيسية · ')+'<bdi>'+tw(L,LA)+'</bdi><span class="clar">'+tw('Metered GCP usage in this billing account, after discounts and credits, from 1 October 2025.','الاستهلاك المقاس على GCP في حساب الفوترة هذا، بعد الخصومات والأرصدة، منذ 1 أكتوبر 2025.')+'</span></div>';
+ var left={kicker:tw('GCP cloud spend','إنفاق GCP السحابي'),value:money(t.net,0),label:tw('Net spend','صافي الإنفاق')+deltaChip(p,'gcp'),sub:tw('Gross usage before discounts: '+money(t.gross,0),'إجمالي الاستهلاك قبل الخصومات: '+money(t.gross,0)),note:tw('Discounts applied: '+money(t.discounts,0)+' · Riyals at '+fx+' to the US dollar.','إجمالي الخصومات: '+money(t.discounts,0)+' · الريال مقابل الدولار عند '+fx+'.')};
+ var right=sb?{kicker:tw('SPARK spend','إنفاق سبارك'),value:money(sb.net,0),label:tw('Net spend','صافي الإنفاق'),sub:tw('Gross usage before discounts: '+money(sb.gross,0),'إجمالي الاستهلاك قبل الخصومات: '+money(sb.gross,0)),note:tw('Discounts applied: '+money(sb.discounts,0)+' · Governed by SPARK guardrails.','إجمالي الخصومات: '+money(sb.discounts,0)+' · الإنفاق محكوم بضوابط سبارك.')}
+  :{kicker:tw('SPARK spend','إنفاق سبارك'),value:tw('n/a','غير متاح'),label:tw('SPARK export not loaded','لم يُحمَّل تقرير سبارك'),sub:'',note:tw('Drop the SPARK-filtered Reports CSV for this period in the Studio.','أضف تقرير سبارك لهذه الفترة في الاستوديو.')};
+ var lead='<p class="lead">'+tw('For '+L+', gross usage before discounts reached '+money(t.gross,0)+' and net spend was '+money(t.net,0)+' after total discounts of '+money(t.discounts,0)+'.','خلال '+LA+'، بلغ إجمالي الاستهلاك قبل الخصومات '+money(t.gross,0)+'، بينما بلغ صافي الإنفاق '+money(t.net,0)+' بعد خصومات إجمالية قدرها '+money(t.discounts,0)+'.')+'</p>';
+ var hl=C.highlights&&C.highlights[kindKey(p)];
+ var svcCard='<div class="card"><h3>'+tw('Overall spend by service','إجمالي الإنفاق حسب الخدمة')+'</h3>'+bars(p.services,6)+'<p class="note">'+tw(esc(C.notes.creditsEn),esc(C.notes.creditsAr))+'</p>'+detailsServices(p.services,false)+insight(tw('Key highlight:','أبرز ملاحظة:'),hl?tw(esc(hl),esc(hl)):autoHighlight(p.services||[],L,LA))+'</div>';
+ return kick1+summaryBar(left,right)+'<div class="kick">'+tw('02 · GCP spend · ','02 · إنفاق GCP · ')+'<bdi>'+tw(L,LA)+'</bdi></div><h2>'+tw('Where did the money go?','أين ذهب الإنفاق؟')+'</h2>'+lead+'<div class="twocol">'+deptCard('gcp',p,true)+svcCard+'</div>'+sparkBlock(p,t,L,LA);}
+
+/* ---------- rendering: Azure period block ---------- */
+function changeWords(cur,prev,ar){var d=(cur-prev)/prev*100,a=Math.abs(d).toFixed(1)+'%';if(ar)return d>=0?'بارتفاع '+a:'بانخفاض '+a;return d>=0?'up '+a:'down '+a;}
+function azureBlock(p){var L=esc(p.label),LA=esc(p.labelAr),t=p.totals||{net:0},sec=p.security,fx=FX(),C=S.clouds.azure,sar=S.edition.azureCurrency==='SAR';
+ var clar=sar?tw('Actual cost in Cost analysis after Microsoft credits, billed in Riyals.','التكلفة الفعلية في تحليل التكلفة بعد أرصدة Microsoft، مفوترة بالريال.'):tw('Actual cost in Cost analysis after Microsoft credits, converted at '+fx+' Riyals to the US dollar.','التكلفة الفعلية في تحليل التكلفة بعد أرصدة Microsoft، محوّلة بسعر '+fx+' ريال للدولار الأمريكي.');
+ var kick1='<div class="kick">'+tw('01 · Key figures · ','01 · المؤشرات الرئيسية · ')+'<bdi>'+tw(L,LA)+'</bdi><span class="clar">'+clar+'</span></div>';
+ var svc=(p.services||[]).slice().sort(byNetDesc),top=svc[0];
+ var sub=tw(svc.length+' services carried a charge','عدد الخدمات التي حملت تكلفة: '+svc.length);
+ var left={kicker:tw('Azure cloud spend','إنفاق Azure السحابي'),value:money(t.net,0),label:tw('Actual cost','التكلفة الفعلية')+deltaChip(p,'azure'),sub:sub,note:sar?tw('Microsoft invoices in Riyals.','تصدر Microsoft فواتيرها بالريال.'):tw('Microsoft invoices in US dollars · Riyals at '+fx+' to the US dollar.','تصدر Microsoft فواتيرها بالدولار الأمريكي · الريال مقابل الدولار عند '+fx+'.')};
+ var right=sec?{kicker:tw('Security tooling','أدوات الأمن'),value:money(sec.net,0),label:'Microsoft Defender for Cloud',sub:tw(pctS(sec.share)+' of Azure spend','نسبتها '+pctS(sec.share)+' من إنفاق Azure'),note:tw('A global service; see the residency note under the region table.','خدمة عالمية؛ انظر ملاحظة موقع البيانات أسفل جدول المناطق.')}
+  :top?{kicker:tw('Largest service','أكبر خدمة'),value:money(top.net,0),label:esc(top.name),sub:tw(pctS(t.net?top.net/t.net*100:0)+' of Azure spend','نسبتها '+pctS(t.net?top.net/t.net*100:0)+' من إنفاق Azure'),note:''}:{kicker:tw('Largest service','أكبر خدمة'),value:tw('n/a','غير متاح'),label:'',sub:'',note:''};
+ var lead='<p class="lead">'+tw('For '+L+', Azure actual cost after credits was '+money(t.net,0)+(sec?', of which '+money(sec.net,0)+' ('+pctS(sec.share)+') was Microsoft Defender for Cloud':'')+'.','خلال '+LA+'، بلغت التكلفة الفعلية على Azure بعد الأرصدة '+money(t.net,0)+(sec?'، منها '+money(sec.net,0)+' ('+pctS(sec.share)+') لخدمة Microsoft Defender for Cloud':'')+'.')+'</p>';
+ var hl=C.highlights&&C.highlights[kindKey(p)];
+ var svcCard='<div class="card"><h3>'+tw('Spend by service','الإنفاق حسب الخدمة')+'</h3>'+bars(svc,6)+'<p class="note">'+tw(esc(C.notes.servicesEn),esc(C.notes.servicesAr))+(p.note?' '+tw(esc(p.note),esc(p.noteAr||p.note)):'')+'</p>'+detailsServices(svc,true)+insight(tw('Key highlight:','أبرز ملاحظة:'),hl?tw(esc(hl),esc(hl)):autoHighlight(svc,L,LA))+'</div>';
+ var reg='';
+ if(p.regions&&p.regions.length){var rs=p.regions.slice().sort(byNetDesc),rt=sum(rs,'net')||1,topR=rs[0],unk=rs.filter(function(r){return /unknown/i.test(r.name);})[0],saudi=rs.filter(function(r){return /saudi|ksa|riyadh|dammam|jeddah/i.test(r.name);});var sd=sum(saudi,'net');
+  var rowsHtml=rs.map(function(r){return '<tr><td>'+esc(r.name)+'</td><td class="n">'+num(r.net,2)+'</td><td class="n">'+pctS(r.net/rt*100)+'</td></tr>';}).join('');
+  var resEn=pctS(topR.net/rt*100)+' of Azure spend runs in '+esc(topR.name)+(unk?' and '+pctS(unk.net/rt*100)+' is of unknown region':'')+'; '+(sd>0?pctS(sd/rt*100)+' is in a Saudi region.':'none is in a Saudi region.')+' Worth confirming this profile is intentional given the Ministry\'s data residency posture (Defender for Cloud is a global service, but the profile deserves a documented confirmation).';
+  var resAr='يجري '+pctS(topR.net/rt*100)+' من إنفاق Azure في '+esc(topR.name)+(unk?' و'+pctS(unk.net/rt*100)+' في منطقة غير معروفة':'')+'؛ '+(sd>0?pctS(sd/rt*100)+' منه في منطقة سعودية.':'ولا شيء منه في منطقة سعودية.')+' يجدر التأكد من أن هذا التوزيع مقصود في ضوء سياسة الوزارة لموقع البيانات (خدمة Defender for Cloud خدمة عالمية، لكن التوزيع يستحق تأكيداً موثقاً).';
+  reg='<div class="card"><h3>'+tw('Spend by region','الإنفاق حسب المنطقة')+'</h3><div class="cw"><table><thead><tr><th>'+tw('Region','المنطقة')+'</th><th class="n">'+tw('Actual cost','التكلفة الفعلية')+' '+RS+'</th><th class="n">'+tw('Share','الحصة')+'</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>'+insight(tw('Residency note:','ملاحظة موقع البيانات:'),tw(resEn,resAr))+'</div>';}
+ return kick1+summaryBar(left,right)+'<div class="kick">'+tw('02 · Azure spend · ','02 · إنفاق Azure · ')+'<bdi>'+tw(L,LA)+'</bdi></div><h2>'+tw('Where did the money go?','أين ذهب الإنفاق؟')+'</h2>'+lead+'<div class="twocol">'+deptCard('azure',p,true)+svcCard+'</div>'+reg;}
+
+/* ---------- rendering: hero pieces ---------- */
+function tokenMap(ar){var E=S.edition,m=E.month,g=S.clouds.gcp,a=S.clouds.azure,gp=g.periods[m],ap=a.periods[m],gprev=g.periods[prevMonth(m)],aprev=a.periods[prevMonth(m)];
+ var top=function(p){if(!p||!p.services||!p.services.length)return null;var s=p.services.slice().sort(byNetDesc)[0];return {name:SHORT[s.name]||s.name,share:p.totals&&p.totals.net?s.net/p.totals.net*100:0};};
+ var change=function(p,pp){return (p&&pp&&pp.totals&&pp.totals.net)?changeWords(p.totals.net,pp.totals.net,ar):null;};
+ var gt=top(gp),at=top(ap),gc=creditCalc('gcp'),ac=creditCalc('azure'),gok=gc.basis!=='none';if(!a.enabled){ap=null;aprev=null;at=null;ac={remainingSar:null};}
+ return {month:monthLabel(m,ar),prevMonth:monthLabel(prevMonth(m),ar),
+  'gcp.net':gp?money(gp.totals.net,0):null,'gcp.gross':gp?money(gp.totals.gross,0):null,'gcp.discounts':gp?money(gp.totals.discounts,0):null,'gcp.change':change(gp,gprev),'gcp.sandbox':gp&&gp.sandbox?money(gp.sandbox.net,0):null,'gcp.top.name':gt?esc(gt.name):null,'gcp.top.share':gt?pctS(gt.share):null,'gcp.td.net':g.periods.td?money(g.periods.td.totals.net,0):null,'gcp.credit.remaining':gok?money(gc.remainingSar,0):null,'gcp.credit.pct':gok&&gc.startingSar?(gc.remainingSar/gc.startingSar*100).toFixed(1)+'%':null,'gcp.credit.consumption':gok?money(gc.consumptionSar,0):null,'gcp.credit.committed':gok?money(gc.commitRemainingSar,0):null,'gcp.credit.uncommitted':gok?money(gc.uncommittedSar,0):null,
+  'azure.net':ap?money(ap.totals.net,0):null,'azure.change':change(ap,aprev),'azure.top.name':at?esc(at.name):null,'azure.top.share':at?pctS(at.share):null,'azure.credit.remaining':ac.remainingSar!=null?money(ac.remainingSar,0):null};}
+function tokens(text,ar){var T=tokenMap(ar),m=S.edition.month;return esc(text||'').replace(/\{\{([\w.]+)\}\}/g,function(all,k){if(!(k in T))return all;if(T[k]==null)return '<span class="tok-missing">['+(ar?'بانتظار بيانات '+monthLabel(m,true):'awaiting '+monthLabel(m,false)+' data')+']</span>';return T[k];});}
+var STMT_FIELDS=[['headEn','Headline (EN)'],['bodyEn','Statement (EN)'],['dirEn','Where we are heading (EN)'],['headAr','Headline (AR)'],['bodyAr','Statement (AR)'],['dirAr','Where we are heading (AR)']];
+function missingTokens(){if(S.edition.showStatement===false)return [];var T=tokenMap(false),st=S.statement,out=[],seen={},re=/\{\{([\w.]+)\}\}/g,azOff=!S.clouds.azure.enabled;STMT_FIELDS.forEach(function(f){var txt=String(st[f[0]]||''),m;re.lastIndex=0;while((m=re.exec(txt))){var k=m[1];if(!(k in T)||T[k]!=null)continue;var o=seen[k];if(!o){o=seen[k]={tok:k,fields:[],azure:azOff&&k.indexOf('azure.')===0};out.push(o);}if(o.fields.indexOf(f[1])<0)o.fields.push(f[1]);}});return out;}
+function dropAzureLines(){var st=S.statement,n=0;['bodyEn','bodyAr','dirEn','dirAr'].forEach(function(k){var before=String(st[k]||'').split(/\r?\n/),after=before.filter(function(l){return !/\{\{azure\./.test(l);});n+=before.length-after.length;st[k]=after.join('\n');});['headEn','headAr'].forEach(function(k){if(/\{\{azure\./.test(st[k]||'')){st[k]=String(st[k]).replace(/\s*\{\{azure\.[\w.]+\}\}\s*/g,' ').trim();n++;}});return n;}
+function statement(openAll){var T=S.statement,E=S.edition;var bodyEn=lines(T.bodyEn).map(function(p){return '<p>'+tokens(p,false)+'</p>';}).join(''),bodyAr=lines(T.bodyAr).map(function(p){return '<p>'+tokens(p,true)+'</p>';}).join('');var dEn=lines(T.dirEn).slice(0,3),dAr=lines(T.dirAr).slice(0,3);
+ var more=(bodyEn||bodyAr)?'<details class="more"'+(openAll?' open':'')+'><summary>'+tw('Read the full statement','اقرأ البيان كاملاً')+'</summary><div class="more-body"><div class="en">'+bodyEn+'</div><div class="ar blk">'+bodyAr+'</div></div></details>':'';
+ return '<section class="stmt" aria-label="FinOps statement of the month"><div class="eyebrow">'+tw('FinOps statement of the month','بيان FinOps لهذا الشهر')+'<span class="ed">'+tw(esc(E.labelEn),esc(E.labelAr))+'</span></div><h2>'+tw(tokens(T.headEn,false),tokens(T.headAr,true))+'</h2>'+(dEn.length?'<div class="dir-h">'+tw('Where we are heading','إلى أين نتجه')+'</div><div class="dir">'+dEn.map(function(d,i){return '<div>'+tw(tokens(d,false),tokens(dAr[i]||d,true))+'</div>';}).join('')+'</div>':'')+more+'<div class="sign">'+tw(esc(T.signEn),esc(T.signAr))+'</div></section>';}
+function cloudSwitch(){if(!S.clouds.azure.enabled)return '';return '<div class="cloudsw" role="radiogroup" aria-label="Cloud"><label for="c-gcp"><span class="small">'+tw('Cloud','المنصة السحابية')+'</span><span class="big">Google Cloud</span></label><label for="c-azure"><span class="small">'+tw('Cloud','المنصة السحابية')+'</span><span class="big">Microsoft Azure</span></label></div>';}
+function fill(s,T){return esc(s||'').replace(/\{\{(\w+)\}\}/g,function(a,k){return k in T?T[k]:a;});}
+function matchName(name,names){var xn=String(name||'').toLowerCase();return names.some(function(n){return xn===n||xn.indexOf(n)>=0;});}
+function shiftMonth(iso,d){var p=ym(iso),y=p[0],m=p[1]+d;while(m<1){m+=12;y--;}while(m>12){m-=12;y++;}return y+'-'+(m<10?'0':'')+m;}
+function monthsIncl(a,b){var x=ym(a),y=ym(b);if(!x[1]||!y[1])return 0;return (y[0]-x[0])*12+(y[1]-x[1])+1;}
+function detectStart(names,inst){var months=periodsOf('gcp').month.slice().sort(function(a,b){return a.key.localeCompare(b.key);}),first=null,sumGross=0;
+ months.forEach(function(p){var g=0;(p.services||[]).forEach(function(x){if(matchName(x.name,names))g+=x.gross;});if(g>0.5){if(!first)first=p.key;sumGross+=g;}});
+ var td=S.clouds.gcp.periods.td,tdGross=0;if(td&&td.services)td.services.forEach(function(x){if(matchName(x.name,names))tdGross+=x.gross;});
+ if(!first)return {start:null,estimated:true,leftover:r2(tdGross),first:null,back:0};
+ var leftover=r2(tdGross-sumGross),back=(inst>0&&leftover>inst*0.02)?Math.min(12,Math.ceil(leftover/inst)):0;
+ return {start:shiftMonth(first,-back),estimated:back>0,leftover:leftover,first:first,back:back};}
+function ledgerCur(){return S.edition.ledgerCurrency==='SAR'?'SAR':'USD';}
+function ledgerUnit(){return ledgerCur()==='SAR'?'SAR ':'$';}
+function creditCalc(c){var C=S.clouds[c].credit||{},fx=FX(),P=S.clouds[c].periods||{},td=P.td,lc=ledgerCur(),r={fx:fx,cloud:c,ledger:lc,ledgerConfirmed:!!S.edition.ledgerConfirmed};var sar=function(u){return lc==='SAR'?r2(+u||0):r2((+u||0)*fx);},toL=function(v){return lc==='SAR'?r2(v):r2(v/fx);};r.toL=toL;
+ if(c==='gcp'){var po=C.purchaseOrders||[],fixed=C.fixed||[],com=C.commitments||[];
+  r.po=po.map(function(x){return {name:x.name,nameAr:x.nameAr,usd:+x.usd||0,sar:sar(x.usd),sarLedger:+x.sar||0,status:x.status||'live'};});r.startingUsd=r2(sum(r.po,'usd'));r.startingSar=sar(r.startingUsd);
+  r.fixed=fixed.map(function(f){return {name:f.name,nameAr:f.nameAr,noteEn:f.noteEn,noteAr:f.noteAr,usd:+f.usd||0,sar:sar(f.usd)};});r.fixedUsd=r2(sum(r.fixed,'usd'));r.fixedSar=sar(r.fixedUsd);
+  r.basis=(td&&td.totals&&td.services&&td.services.length)?(td.source==='upload'?'upload':'baseline'):'none';
+  r.consumptionSar=r.basis==='none'?0:r2(td.totals.net);r.consumptionUsd=toL(r.consumptionSar);r.rangeEn=td?td.label:'';r.rangeAr=td?td.labelAr:'';
+  r.consumedSar=r2(r.fixedSar+r.consumptionSar);r.consumedUsd=toL(r.consumedSar);r.remainingSar=r2(r.startingSar-r.consumedSar);r.remainingUsd=toL(r.remainingSar);r.pct=r.startingSar?r.remainingSar/r.startingSar*100:0;
+  r.commitments=com.map(function(k){var names=(k.services||[]).map(function(n){return String(n).trim().toLowerCase();}).filter(Boolean),total=sar(k.usd),term=Math.max(1,Math.round(+k.term||12)),inst=r2(total/term),billedNet=0,billedGross=0,matched=[];
+   if(td&&td.services)td.services.forEach(function(x){if(matchName(x.name,names)){billedNet+=x.net;billedGross+=x.gross;matched.push(x.name);}});
+   var used=r2(billedNet);
+   return {name:k.name,nameAr:k.nameAr,usd:+k.usd||0,sar:total,term:term,instalmentSar:inst,usedSar:used,remainingSar:Math.max(r2(total-used),0),found:matched.length>0,matched:matched,billedNetSar:used,billedGrossSar:r2(billedGross),services:k.services||[]};});
+  r.commitRemainingSar=r2(sum(r.commitments,'remainingSar'));r.uncommittedSar=r2(r.remainingSar-r.commitRemainingSar);
+  r.incentives=(C.incentives||[]).map(function(i){return {name:i.name,nameAr:i.nameAr,sar:sar(i.usd),status:i.status||'full'};});}
+ else{var st=(C.starting!==''&&C.starting!=null)?+C.starting:null;r.startingSar=st;r.basis=(td&&td.totals)?(td.source==='upload'?'upload':'baseline'):'none';r.consumptionSar=r.basis==='none'?null:r2(td.totals.net);r.rangeEn=td?td.label:'';r.rangeAr=td?td.labelAr:'';
+  if(st!=null&&r.consumptionSar!=null){r.remainingSar=r2(st-r.consumptionSar);r.computed=true;}else{r.remainingSar=(C.remaining!==''&&C.remaining!=null)?+C.remaining:null;r.computed=false;}
+  r.pct=(st&&r.remainingSar!=null)?r.remainingSar/st*100:null;}
+ return r;}
+function calcDetails(r){var two=r.ledger==='SAR',row=function(l,la,sarV,usdV,cls){return '<tr class="'+(cls||'')+'"><td>'+tw(l,la)+'</td><td class="n">'+num(sarV,2)+'</td>'+(two?'':'<td class="n">'+num(usdV,2)+'</td>')+'</tr>';};
+ var h='<details class="calc"><summary>'+tw('How the balance is computed','كيف يُحسب الرصيد')+'</summary><div class="cw"><table><thead><tr><th>'+tw('Line','البند')+'</th><th class="n">'+RS+'</th>'+(two?'':'<th class="n">'+tw('USD ledger','دفتر الدولار')+'</th>')+'</tr></thead><tbody>';
+ h+=row('Total starting credit (purchase orders, net of VAT)','إجمالي الرصيد الابتدائي (أوامر الشراء، صافي الضريبة)',r.startingSar,r.startingUsd,'total');
+ r.fixed.forEach(function(f){h+=row('&minus; '+esc(f.name)+(f.noteEn?' <small>'+esc(f.noteEn)+'</small>':''),'&minus; '+esc(f.nameAr||f.name)+(f.noteAr?' <small>'+esc(f.noteAr)+'</small>':''),f.sar,f.usd,'sub');});
+ h+=row('&minus; Total consumption based on the GCP dashboard, '+esc(r.rangeEn),'&minus; إجمالي الاستهلاك بحسب لوحة GCP، '+esc(r.rangeAr),r.consumptionSar,r.consumptionUsd,'sub');
+ h+=row('= Remaining balance','= الرصيد المتبقي',r.remainingSar,r.remainingUsd,'total');
+ h+='<tr class="head"><td colspan="'+(two?2:3)+'">'+tw('What is remaining from MoEnergy commitments','المتبقي من التزامات الوزارة')+'</td></tr>';
+ r.commitments.forEach(function(k){var en=esc(k.name)+': '+money(k.sar,0)+' committed, '+money(k.usedSar,0)+' paid towards it to date'+(k.found?' <small>Read from the '+esc(k.matched.join(', '))+' rows of the contract-to-date export.</small>':' <small>No matching service row in the contract-to-date export, so it reads as fully remaining.</small>'),
+   ar=esc(k.nameAr||k.name)+': '+money(k.sar,0)+' ملتزم به، وسُدد منه '+money(k.usedSar,0)+' حتى تاريخه'+(k.found?' <small>مقروء من بنود '+esc(k.matched.join('، '))+' في تقرير الإنفاق منذ بداية العقد.</small>':' <small>لا يوجد بند مطابق في تقرير الإنفاق منذ بداية العقد، فيُحتسب متبقياً بالكامل.</small>');
+  h+=row(en,ar,k.remainingSar,r.toL(k.remainingSar),'sub');});
+ h+=row('= Remaining commitment','= الالتزام المتبقي',r.commitRemainingSar,r.toL(r.commitRemainingSar),'total');
+ h+=row('= Uncommitted balance','= الرصيد غير الملتزم به',r.uncommittedSar,r.toL(r.uncommittedSar),'total');
+ var basisEn=two?'Ledger values are in Riyals net of 15% VAT and are used as they are.':'Ledger values are in US dollars net of 15% VAT, converted at '+r.fx+' Riyals to the US dollar.',basisAr=two?'قيم الدفتر بالريال صافي ضريبة القيمة المضافة 15% وتُستخدم كما هي.':'قيم الدفتر بالدولار الأمريكي صافي ضريبة القيمة المضافة 15% ومحوّلة بسعر '+r.fx+' ريال للدولار.';
+ var confEn=r.ledgerConfirmed?'':' The currency of the ledger column is still being confirmed with procurement; until it is, this edition keeps the basis the July 2026 edition used.',confAr=r.ledgerConfirmed?'':' ولا تزال عملة عمود الدفتر قيد التأكيد مع إدارة المشتريات؛ وإلى أن يتم ذلك، يعتمد هذا الإصدار الأساس نفسه الذي اعتمده إصدار يوليو 2026.';
+ return h+'</tbody></table></div><p class="calc-note">'+tw(basisEn+' Consumption is the net figure of the contract-to-date export, after discounts and credits, so the Google incentives are already inside it. Commitments are contracted totals paid as the service is used; what has been paid is the usage the billing dashboard shows for those services, and the remainder is what is still to be drawn.'+confEn,basisAr+' والاستهلاك هو الرقم الصافي لتقرير الإنفاق منذ بداية العقد بعد الخصومات والأرصدة، ولذلك تُحتسب حوافز Google ضمنه. والالتزامات إجماليات تعاقدية تُسدَّد مع الاستخدام؛ والمسدَّد منها هو الاستهلاك الذي تُظهره لوحة الفوترة لتلك الخدمات، والباقي هو ما لم يُسحب بعد.'+confAr)+'</p></details>';}
+function creditCard(c){var C=S.clouds[c].credit||{},E=S.edition,r=creditCalc(c),asAt=esc(E.dataAsOf),asAtAr=esc(E.dataAsOfAr);
+ if(c==='gcp'){var none=r.basis==='none';
+  var drawn=r.fixed.map(function(f){return '<div class="s sub"><span class="n">'+tw('&minus; '+esc(f.name),'&minus; '+esc(f.nameAr||f.name))+'</span><span class="st">'+tw('drawn from this order','مسحوب من هذا الأمر')+'</span><span class="a">'+money(f.sar,2)+'</span></div>';}).join('');
+  var src=r.po.map(function(p,pi){var full=p.status==='full',last=pi===r.po.length-1;return '<div class="s'+(!full&&drawn?' with-sub':'')+'"><span class="n">'+tw(esc(p.name),esc(p.nameAr))+'</span>'+(full?'<span class="st">'+tw('Fully utilized','مستهلك بالكامل')+'</span>':'<span class="st live">'+(none?tw('live','قائم'):tw(money(r.remainingSar,2)+' remaining','متبقٍ '+money(r.remainingSar,2)))+'</span>')+'<span class="a'+(full?' done':' live')+'">'+money(p.sar,2)+'</span></div>'+((!full&&last)?drawn:'');}).join('')
+   +r.incentives.map(function(i){var full=i.status==='full';return '<div class="s"><span class="n">'+tw(esc(i.name),esc(i.nameAr))+'</span><span class="st'+(full?'':' live')+'">'+(full?tw('Fully utilized','مستهلك بالكامل'):tw('Open','مفتوح'))+'</span><span class="a'+(full?' done':' live')+'">'+money(i.sar,2)+'</span></div>';}).join('');
+  var parts=num(r.remainingSar,2).split('.');
+  var main='<div class="eyebrow">'+tw('Main figure','الرقم الرئيسي')+'</div><div class="mfig-value">'+(none?tw('n/a','غير متاح'):RS+parts[0]+'<small>.'+(parts[1]||'00')+'</small>')+'</div><div class="mfig-label">'+tw('Remaining credit balance as at '+asAt,'الرصيد الائتماني المتبقي حتى '+asAtAr)+'</div>';
+  if(!none)main+='<div class="mfig-meter"><div class="meter"><i style="width:'+Math.max(0,Math.min(100,100-r.pct)).toFixed(1)+'%"></i></div><div class="meter-cap">'+tw((100-r.pct).toFixed(1)+'% of starting credit consumed · '+r.pct.toFixed(1)+'% remaining',(100-r.pct).toFixed(1)+'% من الرصيد الابتدائي مستهلك · '+r.pct.toFixed(1)+'% متبقٍ')+'</div></div>';
+  main+='<div class="mfig-desc">'+(none?tw('The balance is computed from the contract-to-date export, which has not been loaded for this edition.','يُحسب الرصيد من تقرير الإنفاق منذ بداية العقد، ولم يُحمَّل لهذا الإصدار بعد.'):tw('Of '+money(r.startingSar,2)+' in purchase-order credit, '+money(r.consumedSar,2)+' has been consumed to date: '+money(r.fixedSar,2)+' of enhanced support and back-end drawdowns that never appear as usage, and '+money(r.consumptionSar,2)+' of dashboard usage ('+esc(r.rangeEn)+').','من أصل '+money(r.startingSar,2)+' من رصيد أوامر الشراء، استُهلك '+money(r.consumedSar,2)+' حتى تاريخه: '+money(r.fixedSar,2)+' دعماً متقدماً وسحوبات خلفية لا تظهر كاستهلاك، و'+money(r.consumptionSar,2)+' استهلاكاً ظاهراً في لوحة الفوترة ('+esc(r.rangeAr)+').'))+'</div>';
+  main+='<div class="mfig-clar">'+tw('Contract position as at '+asAt+', from contract start on 1 June 2025. The spend figures below are metered usage in this billing account from 1 October 2025; the balance already subtracts them.','الموقف التعاقدي حتى '+asAtAr+'، منذ بداية العقد في 1 يونيو 2025. أما أرقام الإنفاق أدناه فهي الاستهلاك المقاس في حساب الفوترة هذا منذ 1 أكتوبر 2025، وقد خُصمت من الرصيد.')+'</div>';
+  if(!none)main+=calcDetails(r);
+  var foot=none?'':'<div class="mfig-foot"><span class="eyebrow">'+tw('Of the remaining balance','من الرصيد المتبقي')+'</span><span><b>'+money(r.commitRemainingSar,2)+'</b> '+tw('committed ('+r.commitments.map(function(k){return esc(k.name);}).join(' + ')+')','ملتزم به ('+r.commitments.map(function(k){return esc(k.nameAr||k.name);}).join(' + ')+')')+'</span><span><b class="g">'+money(r.uncommittedSar,2)+'</b> '+tw('uncommitted','غير ملتزم به')+'</span></div>';
+  return '<div class="mfig-card for-gcp"><div class="mfig-row"><div class="mfig-side"><div class="eyebrow">'+tw('Credit sources','مصادر الائتمان')+'</div><div class="src">'+src+'</div></div><div class="mfig-main">'+main+'</div></div>'+foot+'</div>';}
+ var st=r.startingSar,rem=r.remainingSar,noneA=rem==null,partsA=noneA?['0','00']:num(rem,2).split('.');
+ var TE={starting:st!=null?money(st,2):'',remaining:noneA?'':money(rem,2),asAt:asAt},TA={starting:st!=null?money(st,2):'',remaining:noneA?'':money(rem,2),asAt:asAtAr};
+ var srcA='<div class="s"><span class="n">'+tw('Microsoft credit · three-year total','رصيد Microsoft · إجمالي ثلاث سنوات')+'</span>'+(st!=null?'<span class="st live">'+tw(money(rem,2)+' remaining','متبقٍ '+money(rem,2))+'</span><span class="a live">'+money(st,2)+'</span>':'<span class="st live">'+tw('balance as read in the portal','الرصيد كما يظهر في البوابة')+'</span><span class="a req">'+tw('starting amount requested','المبلغ الابتدائي مطلوب')+'</span>')+'</div>';
+ var mainA='<div class="eyebrow">'+tw('Main figure','الرقم الرئيسي')+'</div><div class="mfig-value">'+(noneA?tw('n/a','غير متاح'):RS+partsA[0]+'<small>.'+(partsA[1]||'00')+'</small>')+'</div><div class="mfig-label">'+tw(esc(C.labelEn||('Microsoft credit balance available as at '+E.dataAsOf)),esc(C.labelAr||('رصيد Microsoft المتاح حتى '+E.dataAsOfAr)))+'</div>';
+ if(r.pct!=null)mainA+='<div class="mfig-meter"><div class="meter"><i style="width:'+Math.max(0,Math.min(100,100-r.pct)).toFixed(1)+'%"></i></div><div class="meter-cap">'+tw((100-r.pct).toFixed(1)+'% of starting credit consumed · '+r.pct.toFixed(1)+'% remaining',(100-r.pct).toFixed(1)+'% من الرصيد الابتدائي مستهلك · '+r.pct.toFixed(1)+'% متبقٍ')+'</div></div>';
+ mainA+='<div class="mfig-desc">'+tw(fill(C.descEn,TE),fill(C.descAr,TA))+'</div><div class="mfig-clar">'+(r.computed?tw('Computed as the starting credit less Azure spend to date ('+esc(r.rangeEn)+'). ','يُحسب بطرح إنفاق Azure حتى تاريخه ('+esc(r.rangeAr)+') من الرصيد الابتدائي. '):tw('Balance as read in Cost Management + Billing. ','الرصيد كما يظهر في إدارة التكلفة والفوترة. '))+tw(fill(C.clarEn,TE),fill(C.clarAr,TA))+'</div>';
+ var footA=C.footEn?'<div class="mfig-foot"><span>'+tw(fill(C.footEn,TE),fill(C.footAr,TA))+'</span></div>':'';
+ return '<div class="mfig-card for-azure"><div class="mfig-row"><div class="mfig-side"><div class="eyebrow">'+tw('Credit sources','مصادر الائتمان')+'</div><div class="src">'+srcA+'</div></div><div class="mfig-main">'+mainA+'</div></div>'+footA+'</div>';}
+function periodStrip(c,P){var segs=[];var opts=function(list){return list.map(function(p){return '<span class="opt o-'+c+'-'+p.key+'">'+tw(esc(p.label),esc(p.labelAr))+'</span>';}).join('');};var dd=function(list,name){return list.length>1?'<details class="dd" name="'+name+'"><summary aria-label="Choose period"><span class="dd-caret"></span></summary><div class="dd-list">'+list.map(function(p){return '<label class="dd-opt" for="p-'+c+'-'+p.key+'">'+tw(esc(p.label),esc(p.labelAr))+'</label>';}).join('')+'</div></details>':'';};
+ if(P.month.length)segs.push('<div class="seg s-m'+(P.month.length>1?'':' plain')+'"><label for="pv-'+c+'-m"><span class="small">'+tw('Month','الشهر')+'</span><span class="big">'+opts(P.month)+'</span></label>'+dd(P.month,'pm-'+c)+'</div>');
+ if(P.quarter.length)segs.push('<div class="seg s-q'+(P.quarter.length>1?'':' plain')+'"><label for="pv-'+c+'-q"><span class="small">'+tw('Quarter','الربع')+'</span><span class="big">'+opts(P.quarter)+'</span></label>'+dd(P.quarter,'pm-'+c)+'</div>');
+ if(P.todate.length)segs.push('<div class="seg s-t plain"><label for="pv-'+c+'-t"><span class="small">'+tw('Contract to date','منذ بداية العقد')+'</span><span class="big">'+tw(esc(P.todate[0].label),esc(P.todate[0].labelAr))+'</span></label></div>');
+ if(!segs.length)return '';return '<div class="sw for-'+c+' n'+segs.length+'" role="radiogroup" aria-label="Reporting period">'+segs.join('')+'</div>';}
+function emptyCloud(c){var E=S.edition,name=c==='gcp'?'Google Cloud':'Microsoft Azure';return '<div class="empty studio-only"><b>'+esc(name)+': no period loaded yet.</b><br>Drop the '+esc(monthLabel(E.month))+' exports in the Studio to build this view.</div>';}
+function awaiting(c){var E=S.edition,m=E.month;if(S.clouds[c].periods[m])return '';var name=c==='gcp'?'Google Cloud':'Microsoft Azure';var need=c==='gcp'?'the by-service, by-project and SPARK Reports CSVs':'the by-service and by-subscription Cost analysis CSVs';return '<div class="await for-'+c+' studio-only"><b>'+esc(monthLabel(m))+' data for '+name+' has not been loaded.</b> The preview shows the latest period that has data. Drop '+need+' for '+esc(monthLabel(m))+' in the Studio above; the report cannot be generated until they are in.</div>';}
+function gbar(){return '<div class="gbar"><span class="gmk"><b>FINOPS</b><i class="orb" aria-hidden="true"></i><img class="gdew" src="'+A.gdew+'" alt="Digital Energy"></span><span class="gdesc">'+tw(esc(barName(false))+' · IT Strategy &amp; Planning',esc(barName(true))+' · استراتيجية وتخطيط تقنية المعلومات')+'</span><label class="lsw" for="lang" title="English / العربية"><span class="kn"></span><b>EN</b><b>ع</b></label></div>';}
+function footer(){var E=S.edition,az=S.clouds.azure.enabled;return '<footer class="foot"><div class="init">'+tw('Prepared for the eyes of','أُعد لاطلاع')+'</div><img src="'+A.moe+'" alt="Ministry of Energy"><div>'+tw('Ministry of Energy · Information Technology and Digital Transformation','وزارة الطاقة · تقنية المعلومات والتحول الرقمي')+'</div><div>'+tw('Version v'+esc(E.version)+' · Compiled from Google Cloud Billing'+(az?' and Azure Cost Management':' console')+' exports · Data as of '+esc(E.dataAsOf)+' · Published '+esc(E.published),'الإصدار v'+esc(E.version)+' · مجمّع من تقارير الفوترة في Google Cloud'+(az?' وإدارة التكلفة في Azure':'')+' · البيانات حتى '+esc(E.dataAsOfAr)+' · نُشر في '+esc(E.publishedAr))+'</div><div>'+tw('Prepared and maintained by the IT Strategy &amp; Planning Department','إعداد ومتابعة إدارة استراتيجية وتخطيط تقنية المعلومات')+'</div><div class="studio-only">Preview rendered by FinOps Report Studio v1.3</div></footer>';}
+
+/* ---------- rendering: the whole report ---------- */
+var ACTIVE='background:linear-gradient(135deg,rgba(1,128,233,.92),rgba(11,143,146,.9));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.27),0 8px 20px rgba(1,128,233,.24)';
+function buildReport(published,sel){sel=sel||{pv:{},p:{}};var E=S.edition,clouds=['gcp'].concat(S.clouds.azure.enabled?['azure']:[]),fx=FX(),sar=E.azureCurrency==='SAR';
+ var radios='<input type="radio" name="cloud" id="c-gcp"'+((sel.cloud||'gcp')==='gcp'?' checked':'')+'><input type="radio" name="cloud" id="c-azure"'+(sel.cloud==='azure'?' checked':'')+'><input type="checkbox" id="lang"'+(sel.lang?' checked':'')+'>';
+ var dyn='',view={},sample=false,mains='',strips='',cards='',awaits='',pp='';
+ clouds.forEach(function(c){var P=periodsOf(c);if(published&&E.showQuarter===false)P.quarter=[];view[c]=P;
+  var kindsAll=[['m','month'],['q','quarter'],['t','todate']].filter(function(k){return P[k[1]].length;}),kinds=kindsAll.map(function(k){return k[0];});
+  var pv=(sel.pv[c]&&kinds.indexOf(sel.pv[c])>=0)?sel.pv[c]:kinds[0];
+  radios+=kinds.map(function(k){return '<input type="radio" name="pv-'+c+'" id="pv-'+c+'-'+k+'"'+(k===pv?' checked':'')+'>';}).join('');
+  ['month','quarter','todate'].forEach(function(kind){var list=P[kind];if(!list.length)return;var want=(sel.p[c]&&sel.p[c][kind])||(kind==='month'?E.month:(kind==='quarter'?quarterKey(E.month):null));var def=list.filter(function(p){return p.key===want;})[0]||list[0];radios+=list.map(function(p){return '<input type="radio" name="p-'+c+'-'+kind+'" id="p-'+c+'-'+p.key+'"'+(p===def?' checked':'')+'>';}).join('');
+   list.forEach(function(p){if(p.sample)sample=true;dyn+='#p-'+c+'-'+p.key+':checked~* .mv-'+c+'-'+p.key+'{display:block}#p-'+c+'-'+p.key+':checked~* .o-'+c+'-'+p.key+'{display:inline}#p-'+c+'-'+p.key+':checked~* .dd-opt[for="p-'+c+'-'+p.key+'"]{color:#0180E9;background:#eef4fb}#p-'+c+'-'+p.key+':checked~* .pp-'+c+'-'+p.key+'{display:inline}';});});
+  kinds.forEach(function(k){dyn+='#pv-'+c+'-'+k+':checked~* .v-'+c+'-'+k+'{display:block}#pv-'+c+'-'+k+':checked~* .sw.for-'+c+' .seg.s-'+k+'>label{'+ACTIVE+'}#pv-'+c+'-'+k+':checked~* .sw.for-'+c+' .seg.s-'+k+' .small{color:rgba(255,255,255,.76)}#pv-'+c+'-'+k+':checked~* .ppk-'+c+'-'+k+'{display:inline}';});
+  cards+=creditCard(c);strips+=periodStrip(c,P);if(!published)awaits+=awaiting(c);
+  pp+='<span class="for-'+c+'">'+kindsAll.map(function(k){return '<span class="ppk ppk-'+c+'-'+k[0]+'">'+P[k[1]].map(function(p){return '<span class="pp pp-'+c+'-'+p.key+'">'+tw(esc(p.label),esc(p.labelAr))+'</span>';}).join('')+'</span>';}).join('')+'</span>';
+  var body='';if(!kindsAll.length)body='<div class="wrap">'+emptyCloud(c)+'</div>';else kindsAll.forEach(function(k){body+='<section class="view v-'+c+'-'+k[0]+'"><div class="wrap">'+P[k[1]].map(function(p){return '<div class="mv mv-'+c+'-'+p.key+'">'+(c==='gcp'?gcpBlock(p):azureBlock(p))+'</div>';}).join('')+'</div></section>';});
+  mains+='<div class="cloud for-'+c+'">'+body+'</div>';});
+ var subEn='Prepared by the IT Strategy &amp; Planning Department, this is the recurring monthly report for IT leadership on the Ministry of Energy\'s cloud spend. It presents '+(S.clouds.azure.enabled?'Google Cloud and Microsoft Azure side by side':'Google Cloud')+', explains the key spend figures, and reports in Saudi Riyals at the official rate of '+fx+' Riyals to the US dollar'+(S.clouds.azure.enabled&&sar?'; Google invoices in US dollars and Microsoft in Riyals.':', the currency the provider'+(S.clouds.azure.enabled?'s invoice':' invoices')+' in.');
+ var subAr='أعدّت هذا التقرير إدارة استراتيجية وتخطيط تقنية المعلومات، وهو التقرير الشهري الدوري لقيادة تقنية المعلومات عن الإنفاق السحابي لوزارة الطاقة. يعرض '+(S.clouds.azure.enabled?'Google Cloud وMicrosoft Azure جنباً إلى جنب':'Google Cloud')+'، ويشرح أرقام الإنفاق الرئيسية، ويُعرض بالريال السعودي وفق السعر الرسمي '+fx+' ريال للدولار الأمريكي'+(S.clouds.azure.enabled&&sar?'؛ إذ تصدر Google فواتيرها بالدولار وMicrosoft بالريال.':'، وهي العملة التي تصدر بها الفواتير.');
+ var chips='<div class="chips"><span class="chip">'+tw('Data as of '+esc(E.dataAsOf),'البيانات حتى '+esc(E.dataAsOfAr))+'</span><span class="chip">'+tw('Published '+esc(E.published),'نُشر في '+esc(E.publishedAr))+'</span><span class="chip">'+tw('All figures in ','جميع المبالغ بـ')+RS+'</span>'+(sample?'<span class="chip sample">'+tw('Sample data: invented figures loaded','بيانات تجريبية: أرقام مُختلقة')+'</span>':'')+'</div>';
+ var hero='<header class="hero">'+motifs()+'<div class="wrap"><div class="brandrow">'+lockup()+'<div class="moewrap"><div class="init">'+tw('ITDT · IT Strategy &amp; Planning','تقنية المعلومات · استراتيجية وتخطيط تقنية المعلومات')+'</div><img src="'+A.moe+'" alt="Ministry of Energy"></div></div><h1>'+tw(esc(reportName(false)),esc(reportName(true)))+'</h1>'+(E.showLead===false?'':'<p class="sub">'+tw(subEn,subAr)+'</p>')+chips+(E.showStatement===false?'':statement())+cloudSwitch()+cards+strips+awaits+'<div class="print-period">'+tw('Reporting period: ','فترة التقرير: ')+pp+'</div></div></header>';
+ return radios+'<style>'+dyn+'</style>'+gbar()+hero+'<main>'+mains+'</main>'+footer();}
+/* ---------- hero: the v20 motion layer, the animated lockup, the report name ---------- */
+function barName(ar){var both=S.clouds.azure.enabled;return ar?(both?'تقرير الإنفاق السحابي':'تقرير الإنفاق على GCP'):(both?'Cloud Spend Report':'GCP Spend Report');}
+function reportName(ar){var both=S.clouds.azure.enabled;return ar?(both?'تقرير الإنفاق السحابي':'تقرير الإنفاق على GCP'):(both?'Cloud FinOps Report':'GCP FinOps Report');}
+function motifs(){var glass='<div class="de-mo__i"><div class="de-glass"><div class="de-glass__glow"></div><div class="de-glass__sheen"></div><div class="de-glass__spec"></div><div class="de-glass__ring"></div></div></div>';
+ return '<div class="de-motifs" aria-hidden="true"><div class="de-motifs__depth"></div><div class="de-motifs__refract"><i></i><i></i><i></i><i></i></div><div class="de-motifs__key"></div>'
+  +['diamond','coral','square','circle'].map(function(k){return '<div class="de-mo de-mo--'+k+'">'+glass+'</div>';}).join('')+'</div>';}
+function lockup(){var still='<img class="dew-static" src="'+A.dew+'" alt="Digital Energy" width="112" height="59">';
+ return '<div class="hero-motion-lockup" aria-label="FINOPS and Digital Energy"><span class="finops-word">FINOPS</span><i class="orb" aria-hidden="true"></i><span class="dew-animation-wrap">'+still
+  +(A.dewm?'<img class="dew-motion dew-motion-image" src="'+A.dewm+'" alt="Digital Energy animated logo" decoding="async" onerror="document.documentElement.classList.add(\'logo-fallback\')">':'')+'</span></div>';}
+/* The pointer lean. Self-contained on purpose: its source is written into the generated report as the one script it carries. */
+function heroMotion(){
+ var hero=document.querySelector('#report .hero')||document.querySelector('.hero');
+ var layer=hero&&hero.querySelector('.de-motifs');
+ if(!hero||!layer)return;
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ if(!window.matchMedia('(hover: hover) and (pointer: fine)').matches)return;
+ var raf=0;
+ hero.addEventListener('mousemove',function(e){
+  if(raf)return;
+  raf=requestAnimationFrame(function(){
+   raf=0;
+   var r=hero.getBoundingClientRect();
+   var nx=(e.clientX-r.left)/r.width-0.5;
+   var ny=(e.clientY-r.top)/r.height-0.5;
+   layer.style.setProperty('--px',(-nx*34).toFixed(2)+'px');
+   layer.style.setProperty('--py',(-ny*22).toFixed(2)+'px');
+  });
+ });
+ hero.addEventListener('mouseleave',function(){layer.style.setProperty('--px','0px');layer.style.setProperty('--py','0px');});
+}
+function currentSelection(){var root=$('#report'),sel={cloud:$('#c-azure',root)&&$('#c-azure',root).checked?'azure':'gcp',lang:!!($('#lang',root)&&$('#lang',root).checked),pv:{},p:{}};
+ ['gcp','azure'].forEach(function(c){['m','q','t'].forEach(function(k){var r=$('#pv-'+c+'-'+k,root);if(r&&r.checked)sel.pv[c]=k;});sel.p[c]={};$$('input[name="p-'+c+'-month"]:checked',root).forEach(function(r){sel.p[c].month=r.id.replace('p-'+c+'-','');});$$('input[name="p-'+c+'-quarter"]:checked',root).forEach(function(r){sel.p[c].quarter=r.id.replace('p-'+c+'-','');});});return sel;}
+var focus=null;
+function renderPreview(){var root=$('#report');var sel=root.children.length?currentSelection():null;
+ if(focus&&sel){sel.cloud=focus.cloud;sel.pv[focus.cloud]=focus.k;['gcp','azure'].forEach(function(c){sel.p[c]=sel.p[c]||{};var has=S.clouds[c].periods[focus.key];if(focus.k==='m'&&(c===focus.cloud||has))sel.p[c].month=focus.key;if(focus.k==='q'&&(c===focus.cloud||has))sel.p[c].quarter=focus.key;if(c!==focus.cloud&&has)sel.pv[c]=focus.k;});focus=null;}
+ root.innerHTML=buildReport(false,sel);heroMotion();}
+
