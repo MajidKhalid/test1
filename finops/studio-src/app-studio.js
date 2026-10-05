@@ -23,11 +23,20 @@ function classify(name,rows){var E=S.edition,head=Object.keys(rows[0]||{}),has=f
  else{var hs=head.map(function(h){return h.toLowerCase().replace(/[^a-z]/g,'');}),hasN=function(c){return hs.some(function(h){return c.indexOf(h)>=0;});};
   if(hasN(['costusd','cost','pretaxcost','costinbillingcurrency','actualcost','costinusd'])){cloud='azure';part=hasN(['subscriptionname','subscription','subscriptionid'])?'sub':hasN(['resourcelocation','location'])?'region':hasN(['servicename','metercategory','service','servicefamily'])?'service':null;}}
  if(!cloud||!part)return null;
- if(cloud==='gcp'&&part==='service'){var gross=rows.reduce(function(a,r){return a+fnum(r['List cost ($)']);},0);if(/sandbox|spark|iw-sb|sb-dev|_sb[._-]/.test(lower)||(rows.length<=14&&gross<25000))part='sandbox';}
  var dates=name.match(/\d{4}-\d{2}-\d{2}/g)||[],k='m',key=E.month,detected=null;
  if(dates.length>=2){var a=dates[0],b=dates[dates.length-1],am=a.slice(0,7),bm=b.slice(0,7),n=monthsBetween(am,bm);detected=a+' to '+b;
   if(n<=1){k='m';key=am;}else if(n===3&&(ym(am)[1]-1)%3===0){k='q';key=quarterKey(am);}else if(n===6&&(ym(am)[1]===1||ym(am)[1]===7)){k='q';key=ym(am)[0]+'-h'+(ym(am)[1]===1?'1':'2');}else{k='t';key='td';}}
  else{var one=name.match(/(\d{4})-(\d{2})(?!-?\d)/);if(/to-?date|todate|contract/.test(lower)){k='t';key='td';}else if(/\bq[1-4]\b|quarter/.test(lower)){k='q';key=quarterKey(E.month);}else if(one){k='m';key=one[1]+'-'+one[2];}}
+ /* SPARK is a strict subset of all GCP, so it is told apart by size, not by a magic number:
+    against the by-project total already loaded for the same period when there is one, and only
+    then by a small-file guess. A simultaneous drop is settled in ingestFiles instead. */
+ if(cloud==='gcp'&&part==='service'){
+  if(/sandbox|spark|iw-sb|sb-dev|_sb[._-]/.test(lower))part='sandbox';
+  else{var pp=S.clouds.gcp.periods[key],pt=pp&&pp.projTotal,
+       netSar=rows.reduce(function(a,r){return a+fnum(r['Subtotal ($)']);},0)*FX(),
+       gross=rows.reduce(function(a,r){return a+fnum(r['List cost ($)']);},0);
+   if(pt)part=(netSar<pt*0.5)?'sandbox':'service';
+   else if(rows.length<=14&&gross<25000)part='sandbox';}}
  var warn=null;if(k==='m'&&key!==E.month)warn='covers '+monthLabel(key)+' but the edition is '+monthLabel(E.month);
  return {cloud:cloud,part:part,k:k,key:key,warn:warn,detected:detected};}
 function normalizeRows(cloud,part,rows){if(cloud==='gcp')return part==='project'?gcpProjects(rows,FX()):gcpServices(rows,FX());var parsed=azureRows(rows,FX(),S.edition.azureCurrency);return parsed.rows.map(function(r){return {name:r.name,id:r.id||'',net:r.net,gross:r.net,chg:'n/a'};});}
@@ -48,10 +57,24 @@ function ingestOne(file,forced){return file.text().then(function(text){var rows=
   if(!route)throw new Error('not a GCP Reports CSV (needs Service description or Project ID plus Subtotal ($)) and not an Azure Cost analysis CSV (needs a name column plus Cost or CostUSD)');
   if(route.cloud==='gcp'){if(route.part==='project'&&!('Project ID' in rows[0]))throw new Error('this is not a by-project Reports CSV');if(route.part!=='project'&&!('Service description' in rows[0]))throw new Error('this is not a by-service Reports CSV');}
   var data=normalizeRows(route.cloud,route.part,rows);if(!data.length)throw new Error('no usable rows after parsing');
-  place(route.cloud,route.part,route.k,route.key,file.name,data);
-  if(route.cloud==='azure'&&!S.clouds.azure.enabled){S.clouds.azure.enabled=true;syncInputs();}
-  return {file:file.name,route:route};}).then(function(r){return r;},function(e){return {file:file.name,error:e.message};});}
+  return {file:file.name,route:route,data:data};}).then(function(r){return r;},function(e){return {file:file.name,error:e.message};});}
+/* Two by-service files can land on the same period: all GCP and SPARK. Settle it on the numbers
+   rather than on which promise resolved first. The all-GCP file is the one whose total matches the
+   by-project total for that period; with no by-project file, the larger of the two. */
+function settleSpark(ok){var g={};
+ ok.forEach(function(r){if(r.route.cloud!=='gcp')return;var key=r.route.k+'|'+r.route.key;(g[key]=g[key]||[]).push(r);});
+ Object.keys(g).forEach(function(key){var set=g[key],
+   svc=set.filter(function(r){return r.route.part==='service'||r.route.part==='sandbox';});
+  if(svc.length<2)return;
+  var tot=function(r){return r.data.reduce(function(a,x){return a+x.net;},0);},
+      proj=set.filter(function(r){return r.route.part==='project';})[0],all=null;
+  if(proj){var pt=tot(proj);all=svc.slice().sort(function(a,b){return Math.abs(tot(a)-pt)-Math.abs(tot(b)-pt);})[0];}
+  else all=svc.slice().sort(function(a,b){return tot(b)-tot(a);})[0];
+  svc.forEach(function(r){r.route.part=(r===all)?'service':'sandbox';});});}
 function ingestFiles(files,forced){var list=Array.prototype.slice.call(files);Promise.all(list.map(function(f){return ingestOne(f,forced);})).then(function(results){var ok=results.filter(function(r){return r.route;}),bad=results.filter(function(r){return r.error;});
+  if(!forced)settleSpark(ok);
+  ok.forEach(function(r){place(r.route.cloud,r.route.part,r.route.k,r.route.key,r.file,r.data);
+   if(r.route.cloud==='azure'&&!S.clouds.azure.enabled){S.clouds.azure.enabled=true;syncInputs();}});
   bad.forEach(function(r){toast('Could not read '+r.file+': '+r.error,'err');});
   ok.filter(function(r){return r.route.warn;}).forEach(function(r){toast(r.file+' '+r.route.warn+'. It is filed under '+monthLabel(r.route.key)+'.','warn');});
   if(ok.length===1){var r=ok[0];toast('Loaded '+r.file+' as '+cloudName(r.route.cloud)+' · '+slotLabel(r.route.cloud,r.route.part,r.route.k),'ok');}

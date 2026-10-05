@@ -10,11 +10,35 @@ const OUT = path.join(os.tmpdir(), 'finops-verify');
 const R = OUT + '/route/';
 // copies of the sample files under the names Google writes, so the routing by file name is exercised too
 fs.mkdirSync(R, { recursive: true });
-fs.copyFileSync(D + 'SAMPLE_gcp_cost_by_service_2026-08.csv', R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31.csv');
-fs.copyFileSync(D + 'SAMPLE_gcp_sandbox_by_service_2026-08.csv', R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31 (1).csv');
-fs.copyFileSync(D + 'SAMPLE_gcp_cost_by_service_2026-08.csv', R + 'SAMPLE_gcp_cost_by_service_to-date.csv');
-fs.copyFileSync(D + 'SAMPLE_gcp_sandbox_by_service_2026-08.csv', R + 'SAMPLE_gcp_sandbox_by_service_to-date.csv');
-fs.copyFileSync(D + 'SAMPLE_azure_cost_by_service_2026-08.csv', R + 'SAMPLE_azure_cost_by_service_to-date.csv');
+// Google hands every export the same name and only a date range tells them apart, so the routed
+// copies carry ranges rather than descriptive names: that is what the Studio actually has to cope
+// with, and it keeps the suite independent of what the sample files in data/ are called.
+const M = '2026-09-01 #U2014 2026-09-30', T = '2025-10-01 #U2014 2026-09-30';
+const route = (src, name) => { fs.copyFileSync(D + src, R + name); return R + name; };
+const G_M_SVC = route('SAMPLE_gcp_cost_by_service_2026-08.csv', `SAMPLE_Reports, ${M}.csv`);
+const G_M_SPK = route('SAMPLE_gcp_sandbox_by_service_2026-08.csv', `SAMPLE_Reports, ${M} (1).csv`);
+const G_M_PRJ = route('SAMPLE_gcp_cost_by_project_2026-08.csv', `SAMPLE_Reports, ${M} (2).csv`);
+const G_T_SVC = route('SAMPLE_gcp_cost_by_service_2026-08.csv', `SAMPLE_Reports, ${T}.csv`);
+// The contract-to-date SPARK export is the shape that used to defeat the router: 14 rows, but
+// 47k of gross, so the old "small file" guess filed it as the all-GCP by-service file and it
+// overwrote the real one. Built here at that exact shape so the regression cannot come back.
+const spkHead = 'Service description,Service ID,List cost ($),Negotiated savings ($),Savings programs ($),Other savings ($),Unrounded subtotal ($),Subtotal ($),Percent change in subtotal compared to previous period';
+const spkRows = Array.from({ length: 14 }, (_, i) => `SPARK service ${i + 1},0000-0000-000${i},${(47460.52 / 14).toFixed(2)},0.00,0.00,0.00,${(8851.58 / 14).toFixed(6)},${(8851.58 / 14).toFixed(2)},New`);
+fs.writeFileSync(R + `SAMPLE_Reports, ${T} (1).csv`, [spkHead, ...spkRows, ',,,,,,,8851.58,'].join('\n'));
+const G_T_SPK = R + `SAMPLE_Reports, ${T} (1).csv`;
+const A_M_SVC = route('SAMPLE_azure_cost_by_service_2026-08.csv', `SAMPLE_az, ${M}.csv`);
+const A_M_SUB = route('SAMPLE_azure_cost_by_subscription_2026-08.csv', `SAMPLE_az, ${M} (1).csv`);
+const A_M_LOC = route('SAMPLE_azure_cost_by_location_2026-08.csv', `SAMPLE_az, ${M} (2).csv`);
+const A_T_SVC = route('SAMPLE_azure_cost_by_service_2026-08.csv', `SAMPLE_az, ${T}.csv`);
+// September closes a quarter, and the month-on-month delta needs the month before it
+const Q = '2026-07-01 #U2014 2026-09-30', P = '2026-08-01 #U2014 2026-08-31';
+const G_Q_SVC = route('SAMPLE_gcp_cost_by_service_2026-08.csv', `SAMPLE_Reports, ${Q}.csv`);
+const G_Q_SPK = route('SAMPLE_gcp_sandbox_by_service_2026-08.csv', `SAMPLE_Reports, ${Q} (1).csv`);
+const G_Q_PRJ = route('SAMPLE_gcp_cost_by_project_2026-08.csv', `SAMPLE_Reports, ${Q} (2).csv`);
+const G_P_SVC = route('SAMPLE_gcp_cost_by_service_2026-08.csv', `SAMPLE_Reports, ${P}.csv`);
+const G_P_PRJ = route('SAMPLE_gcp_cost_by_project_2026-08.csv', `SAMPLE_Reports, ${P} (1).csv`);
+const A_Q_SVC = route('SAMPLE_azure_cost_by_service_2026-08.csv', `SAMPLE_az, ${Q}.csv`);
+const A_Q_SUB = route('SAMPLE_azure_cost_by_subscription_2026-08.csv', `SAMPLE_az, ${Q} (1).csv`);
 const near = (a, b, tol) => Math.abs(a - b) <= (tol || 0.06);
 const fails = [];
 const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name + (extra !== undefined ? ' | ' + JSON.stringify(extra) : '')); if (!ok) fails.push(name); };
@@ -30,16 +54,16 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   const today = await p.evaluate(() => { const M = ['January','February','March','April','May','June','July','August','September','October','November','December']; const d = new Date(); return d.getDate() + ' ' + M[d.getMonth()] + ' ' + d.getFullYear(); });
   // ---- step 1: version and published derivation
   let s = await p.evaluate(() => ({ version: document.getElementById('f-version').value, note: document.getElementById('ver-note').textContent, derived: document.getElementById('derived').textContent, published: window.FinOpsStudio.state().edition.published, resumed: window.FinOpsStudio.resumed() }));
-  check('fresh load: version derived as 21', s.version === '21', s.note);
+  check('fresh load: version derived as 22', s.version === '22', s.note);
   check('fresh load: published refreshed to today', s.published === today, s.published);
-  check('fresh load: derived chips show version and refresh note', /Version\s*v21/.test(s.derived) && /refreshed on download/.test(s.derived));
+  check('fresh load: derived chips show version and refresh note', /Version\s*v22/.test(s.derived) && /refreshed on download/.test(s.derived));
   check('fresh load: not resumed', s.resumed === false);
-  await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(300);
+  await p.selectOption('#f-month', '2026-10'); await p.waitForTimeout(300);
   s = await p.evaluate(() => ({ version: document.getElementById('f-version').value, note: document.getElementById('ver-note').textContent }));
-  check('month 2026-09 derives v22', s.version === '22', s.note);
+  check('month 2026-10 derives v23', s.version === '23', s.note);
   await p.selectOption('#f-month', '2026-07'); await p.waitForTimeout(300);
   check('month 2026-07 derives v20', (await p.inputValue('#f-version')) === '20');
-  await p.selectOption('#f-month', '2026-08'); await p.waitForTimeout(300);
+  await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(300);
   await p.fill('#f-version', '25'); await p.waitForTimeout(300);
   await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(300);
   s = await p.evaluate(() => ({ version: document.getElementById('f-version').value, note: document.getElementById('ver-note').textContent, manual: window.FinOpsStudio.state().edition.versionManual }));
@@ -51,8 +75,8 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await p.click('#btn-derive'); await p.waitForTimeout(300);
   s = await p.evaluate(() => ({ version: document.getElementById('f-version').value, pub: window.FinOpsStudio.state().edition.published, vm: window.FinOpsStudio.state().edition.versionManual, pm: window.FinOpsStudio.state().edition.publishedManual }));
   check('refill returns version and published to derived', s.version === '22' && s.pub === today && !s.vm && !s.pm, s);
-  await p.selectOption('#f-month', '2026-08'); await p.waitForTimeout(300);
-  check('back on August: v21', (await p.inputValue('#f-version')) === '21');
+  await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(300);
+  check('back on September: v22', (await p.inputValue('#f-version')) === '22');
   // ---- the August edition as shipped: no opening paragraph, no statement, Google Cloud only
   s = await p.evaluate(() => ({ lead: !!document.querySelector('#report .hero .wrap > p.sub'), stmt: !!document.querySelector('#report .stmt'), sw: !!document.querySelector('#report .cloudsw'), off: [...document.querySelectorAll('#checklist li.ok')].some(l => /statement of the month is switched off/.test(l.textContent)) }));
   check('as shipped: no opening paragraph, no statement, no cloud switch, and the statement check passes as switched off', !s.lead && !s.stmt && !s.sw && s.off, s);
@@ -122,10 +146,8 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await p.click('[data-panel="2"] details.guide > summary'); await p.waitForTimeout(200);
   await p.screenshot({ path: OUT + '/studio_v13_files.png', fullPage: false });
   await p.setInputFiles('#bigzone input', [
-    R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31.csv',
-    R + 'cntxt-ministry.of.energy-moenergy.gov.sa-002_Reports, 2026-08-01 #U2014 2026-08-31 (1).csv',
-    D + 'SAMPLE_gcp_cost_by_project_2026-08.csv', R + 'SAMPLE_gcp_cost_by_service_to-date.csv', R + 'SAMPLE_gcp_sandbox_by_service_to-date.csv',
-    D + 'SAMPLE_azure_cost_by_service_2026-08.csv', D + 'SAMPLE_azure_cost_by_subscription_2026-08.csv', D + 'SAMPLE_azure_cost_by_location_2026-08.csv', R + 'SAMPLE_azure_cost_by_service_to-date.csv',
+    G_M_SVC, G_M_SPK, G_M_PRJ, G_T_SVC, G_T_SPK, G_Q_SVC, G_Q_SPK, G_Q_PRJ, G_P_SVC, G_P_PRJ,
+    A_M_SVC, A_M_SUB, A_M_LOC, A_T_SVC, A_Q_SVC, A_Q_SUB,
   ]);
   await p.waitForTimeout(1500);
   c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
@@ -134,7 +156,7 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('the uploaded to-date export resets what has been paid towards each commitment', near(c.commitments[0].usedSar, 270112.5) && near(c.commitments[0].remainingSar, SEC - 270112.5) && near(c.commitments[1].usedSar, 27750) && near(c.commitments[1].remainingSar, SCC - 27750) && c.commitments[0].found, c.commitments.map(k => [k.name, k.usedSar, k.remainingSar, k.matched]));
   // ---- where did the money go: department on the left, service on the right; SPARK below with the same pairing
   s = await p.evaluate(() => {
-    const mv = document.querySelector('#report .mv-gcp-2026-08'), cols = [...mv.querySelectorAll('.twocol')];
+    const mv = document.querySelector('#report .mv-gcp-2026-09'), cols = [...mv.querySelectorAll('.twocol')];
     const heads = e => [...e.children].map(c => (c.querySelector('h3') || {}).textContent || '');
     const kinds = e => [...e.children].map(c => c.querySelector('.dwrap') ? 'donut' : c.querySelector('.bars') ? 'bars' : '?');
     const sp = cols[1];
@@ -148,10 +170,12 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
       sparkRows: sp ? sp.children[0].querySelectorAll('details table tbody tr').length : 0,
       sandbox: /sandbox/i.test(mv.textContent) };
   });
+  const tdf = await p.evaluate(() => { const t = window.FinOpsStudio.state().clouds.gcp.periods.td; return { svc: t.files.service, spk: t.files.sandbox, svcNet: t.totals.net, spkNet: t.sandbox && t.sandbox.net, spkRows: (t.sandboxServices || []).length }; });
+  check('a SPARK export too large for the small-file guess still lands in the SPARK slot, not over the all-GCP one', /\(1\)\.csv$/.test(tdf.spk) && !/\(1\)\.csv$/.test(tdf.svc) && tdf.spkRows === 14 && tdf.svcNet > tdf.spkNet * 10, tdf);
   check('the money-go row pairs the department donut on the left with the service bars on the right', s.cols === 2 && /Spend per general department/.test(s.heads[0][0]) && /Overall spend by service/.test(s.heads[0][1]) && s.kinds[0].join() === 'donut,bars' && s.stacked, [s.heads[0], s.kinds[0]]);
-  check('the SPARK row pairs the use-case donut with its service bars, under the SPARK mark and its own numbered header', s.mark && /SPARK use cases per general department/.test(s.heads[1][0]) && /SPARK spend by service/.test(s.heads[1][1]) && s.kinds[1].join() === 'donut,bars' && /04 · SPARK/.test(s.sparkKick) && /What is running inside SPARK\?/.test(s.sparkH2) && /SPARK ran 7 use cases across 2 general departments/.test(s.sparkLead), [s.heads[1], s.kinds[1], s.sparkKick]);
-  check('the SPARK donut counts the use-case list, not the exports, and the word sandbox is gone', s.sparkLeg.length === 2 && JSON.stringify(s.sparkCounts) === JSON.stringify([['Digital Transformation GD', '5'], ['Digital Enterprise Architecture', '2']]) && s.sparkLeg.some(t => /Digital Enterprise Architecture/.test(t)) && s.sparkRows === 7 && !s.sandbox, [s.sparkCounts, s.sparkRows, s.sandbox]);
-  s = await p.evaluate(() => { const d = window.FinOpsStudio.state().clouds.gcp.periods['2026-08']; return { parts: (d.sparkDepts || []).filter(x => x.net > 0).map(x => [x.key, +x.net.toFixed(2)]), tot: d.sparkProjTotal }; });
+  check('the SPARK row pairs the use-case donut with its service bars, under the SPARK mark and its own numbered header', s.mark && /SPARK use cases per general department/.test(s.heads[1][0]) && /SPARK spend by service/.test(s.heads[1][1]) && s.kinds[1].join() === 'donut,bars' && /04 · SPARK/.test(s.sparkKick) && /What is running inside SPARK\?/.test(s.sparkH2) && /SPARK ran 8 use cases across 2 general departments/.test(s.sparkLead), [s.heads[1], s.kinds[1], s.sparkKick]);
+  check('the SPARK donut counts the use-case list, not the exports, and the word sandbox is gone', s.sparkLeg.length === 2 && JSON.stringify(s.sparkCounts) === JSON.stringify([['Digital Transformation GD', '5'], ['Digital Enterprise Architecture', '3']]) && s.sparkLeg.some(t => /Digital Enterprise Architecture/.test(t)) && s.sparkRows === 8 && !s.sandbox, [s.sparkCounts, s.sparkRows, s.sandbox]);
+  s = await p.evaluate(() => { const d = window.FinOpsStudio.state().clouds.gcp.periods['2026-09']; return { parts: (d.sparkDepts || []).filter(x => x.net > 0).map(x => [x.key, +x.net.toFixed(2)]), tot: d.sparkProjTotal }; });
   check('SPARK per-department spend is still read from the project ids inside the folder', JSON.stringify(s.parts) === JSON.stringify([['dtgd', 0.04], ['dea', 2826.72]]) && near(s.tot, 2826.76, 0.02), s);
   s = await p.evaluate(() => { const q = document.querySelector('#report .mv-gcp-td') || document.querySelector('#report .mv-gcp-2026-h1'); const cols = q ? [...q.querySelectorAll('.twocol')] : []; return { cols: cols.length, sparkCards: q ? [...q.querySelectorAll('.card h3')].map(h => h.textContent).filter(t => /SPARK/.test(t)) : [], lead: [...(q ? q.querySelectorAll('p.lead') : [])].map(e => e.textContent).find(t => /SPARK/.test(t)) || '' }; });
   check('a period other than the month carries one SPARK card, services only', s.cols === 1 && s.sparkCards.length === 1 && /SPARK spend by service/.test(s.sparkCards[0]) && /on the services below/.test(s.lead), s);
@@ -161,31 +185,31 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('ownership picker offers the six departments', await p.evaluate(() => { const o = [...document.querySelector('#qm-azure select[data-qm]').options].map(x => x.value).filter(Boolean); return o.length === 6 && o.includes('dtgd') && o.includes('dea'); }));
   for (const [name, dept] of Object.entries({ 'MOE-SEC-PRD': 'cyber', 'MOE-INFRA-HUB': 'itsvc', 'MOE-BUSINESS-APPS': 'dtgd' })) { await p.selectOption(`#qm-azure select[data-qm="${name}"]`, dept); await p.waitForTimeout(250); }
   await p.waitForTimeout(400);
-  s = await p.evaluate(() => { const d = window.FinOpsStudio.state().clouds.azure.periods['2026-08'].departments; const leg = [...document.querySelectorAll('#report .mv-azure-2026-08 .dleg li')].map(l => l.textContent); return { dtgd: (d.find(x => x.key === 'dtgd') || {}).net, legend: leg.length, hasName: leg.some(t => /Digital Transformation GD/.test(t)), zeroShown: leg.some(t => /Digital Enterprise Architecture/.test(t)) }; });
+  s = await p.evaluate(() => { const d = window.FinOpsStudio.state().clouds.azure.periods['2026-09'].departments; const leg = [...document.querySelectorAll('#report .mv-azure-2026-09 .dleg li')].map(l => l.textContent); return { dtgd: (d.find(x => x.key === 'dtgd') || {}).net, legend: leg.length, hasName: leg.some(t => /Digital Transformation GD/.test(t)), zeroShown: leg.some(t => /Digital Enterprise Architecture/.test(t)) }; });
   check('a subscription mapped to Digital Transformation GD shows in the legend; the unused department stays out', s.dtgd > 0 && s.hasName && !s.zeroShown && s.legend === 3, s);
   // ---- step 6: one-click download, result panel, open in a new tab, secondary downloads
   await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
   s = await p.evaluate(() => ({ errs: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent.slice(0, 80)), gen: document.getElementById('btn-gen').textContent, disabled: document.getElementById('btn-gen').disabled, stable: !!document.getElementById('btn-gen-stable'), bar: document.getElementById('bar-status').textContent, keep: [...document.querySelectorAll('#checklist li.ok')].some(l => /keeps every edit/.test(l.textContent)) }));
-  check('step 6: one primary button, no stable button, reminder about the saved state', s.gen === 'Download FinOps_Dashboard_v21.html' && !s.stable && s.keep, s);
+  check('step 6: one primary button, no stable button, reminder about the saved state', s.gen === 'Download FinOps_Dashboard_v22.html' && !s.stable && s.keep, s);
   console.log('   blockers left (sample files expected):', s.errs);
   // sample files block the download: prove it, then lift the block by pretending the files are real
   await p.evaluate(() => window.FinOpsStudio.generate()); await p.waitForTimeout(300);
   check('download refused while blockers remain', await p.evaluate(() => document.getElementById('gen-result').hidden === true && !window.FinOpsStudio.lastGen()));
   await p.evaluate(() => { const S = window.FinOpsStudio.state(); ['gcp', 'azure'].forEach(c => Object.values(S.clouds[c].periods).forEach(pp => { if (pp.sample) { pp.sample = false; Object.keys(pp.files).forEach(k => { pp.files[k] = pp.files[k].replace(/^SAMPLE_/i, 'real_'); }); } })); });
-  await p.click('#st-steps button[data-step="1"]'); await p.waitForTimeout(100); await p.selectOption('#f-month', '2026-08'); await p.waitForTimeout(400); await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
+  await p.click('#st-steps button[data-step="1"]'); await p.waitForTimeout(100); await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(400); await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
   s = await p.evaluate(() => ({ errs: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent.slice(0, 80)), disabled: document.getElementById('btn-gen').disabled }));
   check('no blockers once real files are in', s.errs.length === 0 && !s.disabled, s.errs);
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btn-gen')]);
   const dlName = dl.suggestedFilename(); const dlPath = OUT + '/' + dlName; await dl.saveAs(dlPath);
   await p.waitForTimeout(500);
   s = await p.evaluate(() => ({ hidden: document.getElementById('gen-result').hidden, text: document.getElementById('gen-result').textContent, btns: ['btn-open', 'btn-stable', 'btn-state'].map(id => !!document.getElementById(id)), published: window.FinOpsStudio.state().edition.published }));
-  check('one click downloads the versioned standalone file', dlName === 'FinOps_Dashboard_v21.html', dlName);
+  check('one click downloads the versioned standalone file', dlName === 'FinOps_Dashboard_v22.html', dlName);
   check('result panel: standalone wording and the three secondary buttons', !s.hidden && /no internet connection, no Studio/.test(s.text) && s.btns.every(Boolean) && new RegExp('published ' + today).test(s.text));
   await p.screenshot({ path: OUT + '/studio_v13_result.png', fullPage: false });
   const [dl2] = await Promise.all([p.waitForEvent('download'), p.click('#btn-stable')]);
   check('stable copy downloads as FinOps_Dashboard.html', dl2.suggestedFilename() === 'FinOps_Dashboard.html');
   const [dl3] = await Promise.all([p.waitForEvent('download'), p.click('#btn-state')]);
-  check('edition state downloads as JSON for the month', dl3.suggestedFilename() === 'finops_edition_2026-08.json');
+  check('edition state downloads as JSON for the month', dl3.suggestedFilename() === 'finops_edition_2026-09.json');
   const [np] = await Promise.all([ctx.waitForEvent('page'), p.click('#btn-open')]);
   await np.waitForLoadState(); await np.waitForTimeout(400);
   const npReqs = []; np.on('request', r => { if (!r.url().startsWith('blob:')) npReqs.push(r.url()); });
@@ -217,7 +241,7 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   const g = await ctx2.newPage(); const reqs2 = []; g.on('request', r => { if (!r.url().startsWith('file:')) reqs2.push(r.url()); });
   await g.goto('file://' + dlPath); await g.waitForTimeout(400);
   const vis = sel => g.evaluate(s => { const e = document.querySelector(s); return e ? getComputedStyle(e).display : 'MISSING'; }, sel);
-  const t = { aug: await vis('.mv-gcp-2026-08'), moreSummary: await vis('.stmt .more>summary'), bodyBefore: await g.evaluate(() => document.querySelector('.stmt .more-body p').checkVisibility()) };
+  const t = { aug: await vis('.mv-gcp-2026-09'), moreSummary: await vis('.stmt .more>summary'), bodyBefore: await g.evaluate(() => document.querySelector('.stmt .more-body p').checkVisibility()) };
   await g.click('.stmt .more>summary'); await g.waitForTimeout(200);
   t.bodyAfter = await g.evaluate(() => document.querySelector('.stmt .more-body p').checkVisibility());
   check('generated (no JS): Read more opens the paragraphs', t.moreSummary !== 'none' && t.bodyBefore === false && t.bodyAfter === true, t);
@@ -226,7 +250,7 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await g.click('.calc>summary'); await g.waitForTimeout(150); t.calcOpenRows = await g.evaluate(() => document.querySelectorAll('.calc[open] tbody tr').length);
   t.calcNote = await g.evaluate(() => document.querySelector('.calc-note .en').textContent);
   check('generated: calc table opens and states the ledger basis plus the unconfirmed line', t.calcOpenRows >= 8 && /converted at 3.75/.test(t.calcNote) && /still being confirmed/.test(t.calcNote));
-  await g.click('label[for="c-azure"]'); await g.waitForTimeout(150); t.azure = await vis('.mv-azure-2026-08');
+  await g.click('label[for="c-azure"]'); await g.waitForTimeout(150); t.azure = await vis('.mv-azure-2026-09');
   await g.click('label[for="lang"]'); await g.waitForTimeout(150); t.rtl = await g.evaluate(() => getComputedStyle(document.querySelector('main')).direction);
   t.arMore = await g.evaluate(() => getComputedStyle(document.querySelector('.stmt .more>summary .ar')).display);
   check('generated: cloud switch, RTL flip, Arabic Read more label', t.aug === 'block' && t.azure === 'block' && t.rtl === 'rtl' && t.arMore !== 'none', t);
@@ -236,7 +260,7 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('generated (print): statement paragraphs and calc table open, summary hidden', pr.summary === 'none' && pr.body === true && pr.calc === true && pr.period === 'block', pr);
   await g.emulateMedia({ media: 'screen' }); await g.waitForTimeout(100);
   const q = await g.evaluate(() => ({ tab: !!document.getElementById('pv-gcp-q'), opts: [...document.querySelectorAll('.sw.for-gcp .seg.s-q .dd-opt')].map(l => l.textContent.replace(/\s+/g, ' ')) }));
-  check('generated: the Quarter tab is present with Q1 2026, Q2 2026 and H1 2026, as in v20', q.tab && q.opts.length === 3 && q.opts.some(t => /Q1 2026/.test(t)) && q.opts.some(t => /Q2 2026/.test(t)) && q.opts.some(t => /H1 2026/.test(t)), q.opts);
+  check('generated: the Quarter tab carries Q1, Q2 and H1 2026 as in v20, with the quarter this edition closes at the top', q.tab && q.opts.length === 4 && /Q3 2026/.test(q.opts[0]) && q.opts.some(t => /Q1 2026/.test(t)) && q.opts.some(t => /Q2 2026/.test(t)) && q.opts.some(t => /H1 2026/.test(t)), q.opts);
   check('generated: zero external requests', reqs2.length === 0);
   await b.close();
   console.log(fails.length ? 'FAILED CHECKS: ' + fails.join(' ; ') : 'ALL CHECKS PASSED');

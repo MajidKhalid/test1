@@ -1,18 +1,18 @@
 {
  "meta": {
   "studio": 1,
-  "stamp": "2026-09-09T16:15:23Z",
+  "stamp": "2026-10-05T12:39:59Z",
   "builtFrom": "FinOps_Dashboard_v20 (July 2026) + Q2 2026 quarterly report"
  },
  "edition": {
-  "month": "2026-08",
-  "version": 21,
-  "dataAsOf": "31 August 2026",
-  "dataAsOfAr": "31 أغسطس 2026",
-  "published": "7 September 2026",
-  "publishedAr": "7 سبتمبر 2026",
-  "labelEn": "September 2026 edition · August 2026 data",
-  "labelAr": "إصدار سبتمبر 2026 · بيانات أغسطس 2026",
+  "month": "2026-09",
+  "version": 22,
+  "dataAsOf": "30 September 2026",
+  "dataAsOfAr": "30 سبتمبر 2026",
+  "published": "5 October 2026",
+  "publishedAr": "5 أكتوبر 2026",
+  "labelEn": "October 2026 edition · September 2026 data",
+  "labelAr": "إصدار أكتوبر 2026 · بيانات سبتمبر 2026",
   "fx": 3.75,
   "azureCurrency": "USD",
   "showQuarter": true,
@@ -36,8 +36,8 @@
  "clouds": {
   "gcp": {
    "enabled": true,
-   "tdLabelEn": "October 2025 to August 2026",
-   "tdLabelAr": "أكتوبر 2025 إلى أغسطس 2026",
+   "tdLabelEn": "October 2025 to September 2026",
+   "tdLabelAr": "أكتوبر 2025 إلى سبتمبر 2026",
    "credit": {
     "purchaseOrders": [
      {
@@ -111,9 +111,9 @@
     "q": "",
     "t": ""
    },
-   "projectMapText": "# project id = cyber | itsvc | dtgd | dea | business | other\n# [account-level] is the bucket [Charges not specific to a project]; it is split by service.\n[account-level] = cyber\nmoe-secops-484408 = cyber\nprj-moenergy-prd-security-kms = itsvc\nprj-moenergy-dev-security-kms = itsvc\nprj-moenergy-prd-hub = itsvc\nprj-moenergy-dmz-host = itsvc\nprj-moenergy-dmz-srv = itsvc\nprj-moenergy-prd-host = itsvc\nprj-moenergy-dev-host = itsvc\nprj-moenergy-bootstrap = itsvc\nprj-moenergy-billexp = itsvc\nprj-moenergy-prd-bc-centlogs = itsvc\nprj-moenergy-dev-centlogs = itsvc\nprj-moenergy-iw-sb-development = dea\nprj-moenergy-iw-spark-admin = dea\nprj-moenergy-prd-bc-website = business\nprj-moenergy-migration-host-hq = business\nprj-moenergy-prd-data-dbs = business\nprj-moenergy-dev-data-dbs = business\nprj-moenergy-prd-bs-devops = dtgd\nprj-moenergy-dev-bs-devops = dtgd\nprj-moenergy-prd-infra-mngeng = business\nprj-moenergy-test-host = business\nmoe-notebooklm = other\nprj-moenergy-iw-it-eagd-ea-nf = dea\nprj-moenergy-iw-it-dtgd-ad-ne = dtgd\nprj-moenergy-iw-it-dtgd-et-fs = dtgd\nprj-moenergy-preprd-bc-websit = business\nprj-moenergy-dev-bc-website = business\nprj-moenergy-test-bc-website = business\nprj-moenergy-pre-prd-data-dbss = business\nprj-moenergy-test-data-dbss = business\nprj-moenergy-prd-bc-labware = business\nprj-moenergy-dev-bc-labware = business\nprj-moenergy-pre-prd-host = itsvc\n",
+   "projectMapText": "# project id = cyber | itsvc | dtgd | dea | business | other\n# [account-level] is the bucket [Charges not specific to a project]; it is split by service.\n[account-level] = cyber\nmoe-secops-484408 = cyber\nprj-moenergy-prd-security-kms = itsvc\nprj-moenergy-dev-security-kms = itsvc\nprj-moenergy-prd-hub = itsvc\nprj-moenergy-dmz-host = itsvc\nprj-moenergy-dmz-srv = itsvc\nprj-moenergy-prd-host = itsvc\nprj-moenergy-dev-host = itsvc\nprj-moenergy-bootstrap = itsvc\nprj-moenergy-billexp = itsvc\nprj-moenergy-prd-bc-centlogs = itsvc\nprj-moenergy-dev-centlogs = itsvc\nprj-moenergy-iw-sb-development = dea\nprj-moenergy-iw-spark-admin = dea\nprj-moenergy-prd-bc-website = business\nprj-moenergy-migration-host-hq = business\nprj-moenergy-prd-data-dbs = business\nprj-moenergy-dev-data-dbs = business\nprj-moenergy-prd-bs-devops = dtgd\nprj-moenergy-dev-bs-devops = dtgd\nprj-moenergy-prd-infra-mngeng = business\nprj-moenergy-test-host = business\nmoe-notebooklm = other\nprj-moenergy-iw-it-eagd-ea-nf = dea\nprj-moenergy-iw-it-dtgd-ad-ne = dtgd\nprj-moenergy-iw-it-dtgd-et-fs = dtgd\nprj-moenergy-preprd-bc-websit = business\nprj-moenergy-dev-bc-website = business\nprj-moenergy-test-bc-website = business\nprj-moenergy-pre-prd-data-dbss = business\nprj-moenergy-test-data-dbss = business\nprj-moenergy-prd-bc-labware = business\nprj-moenergy-dev-bc-labware = business\nprj-moenergy-test-bc-labware = business\nprj-moenergy-iw-it-dtgd-ad-dge = dtgd\nprj-moenergy-iw-it-eagd-p-seai = dea\ntesting-444715 = other\nprj-moenergy-pre-prd-host = itsvc\n",
    "sparkProjectsText": "# project ids inside the SPARK folder (969004756048). A trailing * matches a prefix.\nprj-moenergy-iw-*\n",
-   "sparkUseCasesText": "# One line per SPARK use case: Name | billing project id = department.\n# The project id is optional, so a use case with no billing project yet still counts.\n# prj-moenergy-iw-sb-development is the shared platform everyone builds on, not a use\n# case, so it is not listed here; its spend still counts towards SPARK and towards DEA.\nNawaf | prj-moenergy-iw-it-eagd-ea-nf = dea\nSPARK Admin | prj-moenergy-iw-spark-admin = dea\nprj-moenergy-iw-it-dtgd-et-fs | prj-moenergy-iw-it-dtgd-et-fs = dtgd\nprj-moenergy-iw-it-dtgd-ad-ne | prj-moenergy-iw-it-dtgd-ad-ne = dtgd\nAssisted Testing = dtgd\nDashboard Testing = dtgd\nGoogle DevOps Testing = dtgd\n",
+   "sparkUseCasesText": "# One line per SPARK use case: Name | billing project id = department.\n# The project id is optional, so a use case with no billing project yet still counts.\n# prj-moenergy-iw-sb-development is the shared platform everyone builds on, not a use\n# case, so it is not listed here; its spend still counts towards SPARK and towards DEA.\nNawaf | prj-moenergy-iw-it-eagd-ea-nf = dea\nSPARK Admin | prj-moenergy-iw-spark-admin = dea\nprj-moenergy-iw-it-dtgd-et-fs | prj-moenergy-iw-it-dtgd-et-fs = dtgd\nprj-moenergy-iw-it-dtgd-ad-ne | prj-moenergy-iw-it-dtgd-ad-ne = dtgd\nAssisted Testing = dtgd\nDashboard Testing = dtgd\nGoogle DevOps Testing | prj-moenergy-iw-it-dtgd-ad-dge = dtgd\nSPARK MoEnergy Enterprise AI | prj-moenergy-iw-it-eagd-p-seai = dea\n",
    "periods": {
     "2026-07": {
      "key": "2026-07",

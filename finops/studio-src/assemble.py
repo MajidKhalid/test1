@@ -59,5 +59,5 @@ open(REPO+'/FinOps_Studio_v1.html','w',encoding='utf-8').write(html)
 if os.environ.get('STUDIO_ARTIFACT'):
     art=html.split('<head>')[1].split('</head>')[0].replace('<meta charset="utf-8">','').replace('<meta name="viewport" content="width=device-width,initial-scale=1">','')+html.split('<body class="studio-mode">')[1].split('</body>')[0]
     open(os.environ['STUDIO_ARTIFACT'],'w',encoding='utf-8').write('<title>FinOps Report Studio</title>\n'+art)
-json.dump(state,open(REPO+'/data/2026-08.edition.baseline.json','w',encoding='utf-8'),ensure_ascii=False,indent=1)
+json.dump(state,open(REPO+'/data/'+extra['edition']['month']+'.edition.baseline.json','w',encoding='utf-8'),ensure_ascii=False,indent=1)
 print('written %.0f KB (visible %.0f KB); baseline periods gcp=%d azure=%d; stamp %s' % (len(html.encode())/1024, len(visible.encode())/1024, len(periods), len(azp), stamp))
