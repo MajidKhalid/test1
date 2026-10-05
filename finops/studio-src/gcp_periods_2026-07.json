@@ -3088,6 +3088,183 @@
     "notes": [
      "For October 2025 to July 2026, gross usage before discounts reached 5,896,378 and net spend was 3,128,009 after total discounts of 2,768,369."
     ]
+   },
+   "aug": {
+    "key": "2026-08",
+    "kind": "month",
+    "label": "August 2026",
+    "labelAr": "أغسطس 2026",
+    "source": "derived from the Q3 2026 export less July 2026 and September 2026",
+    "services": [
+     {
+      "name": "Chronicle",
+      "gross": 1251052.51,
+      "net": 269796.87,
+      "chg": "0%"
+     },
+     {
+      "name": "Compute Engine",
+      "gross": 187464.94,
+      "net": 165688.66,
+      "chg": "11%"
+     },
+     {
+      "name": "F5 BIG-IP BEST with IPI and Threat Campaigns (PAYG, 1Gbps)",
+      "gross": 46760.4,
+      "net": 46760.4,
+      "chg": "0%"
+     },
+     {
+      "name": "FortiGate Next-Generation Firewall (PAYG)",
+      "gross": 36716.4,
+      "net": 36716.4,
+      "chg": "0%"
+     },
+     {
+      "name": "Security Command Center",
+      "gross": 28174.5,
+      "net": 28174.5,
+      "chg": "0%"
+     },
+     {
+      "name": "Networking",
+      "gross": 23558.63,
+      "net": 22993.69,
+      "chg": "153%"
+     },
+     {
+      "name": "Cloud Logging",
+      "gross": 3775.39,
+      "net": 3775.39,
+      "chg": "43%"
+     },
+     {
+      "name": "Backup and DR Service",
+      "gross": 3384.56,
+      "net": 3384.56,
+      "chg": "155%"
+     },
+     {
+      "name": "Cloud Storage",
+      "gross": 1421.55,
+      "net": 1421.55,
+      "chg": "12%"
+     },
+     {
+      "name": "Cloud Pub/Sub",
+      "gross": 500.07,
+      "net": 500.07,
+      "chg": "41%"
+     },
+     {
+      "name": "Cloud Monitoring",
+      "gross": 384.6,
+      "net": 384.6,
+      "chg": "8%"
+     },
+     {
+      "name": "Network Security",
+      "gross": 232.54,
+      "net": 232.54,
+      "chg": "904%"
+     },
+     {
+      "name": "Cloud Key Management Service (KMS)",
+      "gross": 36.38,
+      "net": 36.38,
+      "chg": "-13%"
+     },
+     {
+      "name": "Cloud DNS",
+      "gross": 32.93,
+      "net": 32.93,
+      "chg": "24%"
+     },
+     {
+      "name": "Cloud Build",
+      "gross": 0.67,
+      "net": 0.67,
+      "chg": "-64%"
+     },
+     {
+      "name": "BigQuery",
+      "gross": 0.04,
+      "net": 0.04,
+      "chg": "0%"
+     },
+     {
+      "name": "Cloud Run",
+      "gross": 1.12,
+      "net": 0.0,
+      "chg": "-100%"
+     },
+     {
+      "name": "VM Manager",
+      "gross": 13.12,
+      "net": 0.0,
+      "chg": "0%"
+     }
+    ],
+    "sandboxServices": [
+     {
+      "name": "Compute Engine",
+      "gross": 2834.74,
+      "net": 2834.74,
+      "chg": "2604%"
+     },
+     {
+      "name": "Networking",
+      "gross": 18.56,
+      "net": 15.86,
+      "chg": "-72%"
+     },
+     {
+      "name": "Cloud Logging",
+      "gross": 0.26,
+      "net": 0.26,
+      "chg": "0%"
+     },
+     {
+      "name": "Cloud Storage",
+      "gross": 0.01,
+      "net": 0.01,
+      "chg": "-99%"
+     },
+     {
+      "name": "Cloud Run",
+      "gross": 0.45,
+      "net": 0.0,
+      "chg": "-100%"
+     }
+    ],
+    "departments": [
+     {
+      "key": "cyber",
+      "net": 298471.35
+     },
+     {
+      "key": "itsvc",
+      "net": 193911.63
+     },
+     {
+      "key": "dtgd",
+      "net": 12127.4
+     },
+     {
+      "key": "dea",
+      "net": 2846.96
+     },
+     {
+      "key": "business",
+      "net": 72542.09
+     },
+     {
+      "key": "other",
+      "net": 0.0
+     }
+    ],
+    "deptMethod": "exact",
+    "unmapped": []
    }
   }
  }

@@ -11,11 +11,28 @@ fonts=("@font-face{font-family:'Lafet';src:url(data:font/otf;base64,%s) format('
  + ''.join("@font-face{font-family:'IBM Plex Sans Arabic';src:url(data:font/woff2;base64,%s) format('woff2');font-weight:%s;font-display:swap}" % (b64(ASSETS+'/plex-%s.woff2'%w), w) for w in ('400','600','700')))
 rs=rd(ASSETS+'/rs.css'); report_css=rd(B+'/report.css')+'\n'+rd(B+'/motion.css'); studio_css=rd(B+'/studio.css'); body=rd(B+'/body.html'); app=rd(B+'/app.js')+'\n'+rd(B+'/app-studio.js')
 gcp=json.load(open(HERE+'/gcp_periods_2026-07.json',encoding='utf-8')); extra=json.load(open(B+'/baseline_extra.json',encoding='utf-8'))
-KEYMAP={'jan':'2026-01','feb':'2026-02','mar':'2026-03','apr':'2026-04','may':'2026-05','jun':'2026-06','jul':'2026-07','q1':'2026-q1','q2':'2026-q2','h1':'2026-h1','td':'td'}
+KEYMAP={'jan':'2026-01','feb':'2026-02','mar':'2026-03','apr':'2026-04','may':'2026-05','jun':'2026-06','jul':'2026-07','aug':'2026-08','q1':'2026-q1','q2':'2026-q2','h1':'2026-h1','td':'td'}
+DEPT_ORDER=['cyber','itsvc','dtgd','dea','business','other']
+# The July stream was lifted from v20, which predates two ownership decisions: the DevOps pipelines
+# moved to Digital Transformation GD, and the shared SPARK development environment to Digital
+# Enterprise Architecture. Applied here to every baseline period so a reader flipping from January
+# to September sees one consistent ownership map rather than a department appearing mid-series.
+DEPT_FIX={'DevOps pipeline (production)':'dtgd','DevOps pipeline (development)':'dtgd','AI sandbox':'dea'}
+RELABEL={'AI sandbox':('SPARK shared development environment','بيئة التطوير المشتركة في سبارك')}
+def restate(q):
+    rows=q.get('projects')
+    if not rows: return
+    for r in rows:
+        if r['label'] in DEPT_FIX: r['dept']=DEPT_FIX[r['label']]
+        if r['label'] in RELABEL: r['labelAr']=RELABEL[r['label']][1]; r['label']=RELABEL[r['label']][0]
+    tot={k:0.0 for k in DEPT_ORDER}
+    for r in rows: tot[r['dept']]=tot[r['dept']]+r['net']
+    q['departments']=[{'key':k,'net':r2(tot[k])} for k in DEPT_ORDER]
 periods={}
 for k,p in gcp['gcp']['periods'].items():
-    nk=KEYMAP[k]; q=dict(p); q['key']=nk; q['files']={}; q['sample']=False; q['source']='FinOps_Dashboard_v20.html (July 2026 edition)'
+    nk=KEYMAP[k]; q=dict(p); q['key']=nk; q['files']={}; q['sample']=False; q['source']=p.get('source','FinOps_Dashboard_v20.html (July 2026 edition)')
     for drop in ('month','insights','notes'): q.pop(drop,None)
+    restate(q)
     # totals at two decimals from the service rows (the published headline was rounded to the riyal)
     if q.get('services'):
         net=r2(sum(x['net'] for x in q['services'])); gross=r2(sum(x['gross'] for x in q['services']))
