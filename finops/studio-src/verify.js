@@ -107,14 +107,14 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('ledger USD: starting credit 9,685,235.81', near(c.startingSar, 9685235.81) && c.ledger === 'USD');
   const exp0 = 9685235.81 - (235520 + 128517.64) * 3.75 - 3128008.84;
   check('baseline remaining hand check', near(c.remainingSar, exp0), [c.remainingSar, exp0.toFixed(2)]);
-  s = await p.evaluate(() => ({ warn: [...document.querySelectorAll('#checklist li.warn')].map(l => l.textContent).filter(t => /ledger/.test(t)).length, note: document.querySelector('#report .mfig-card.for-gcp .calc-note .en').textContent, cols: document.querySelectorAll('#report .mfig-card.for-gcp .calc thead th').length, basis: document.querySelector('#balance .basis').textContent, poLabel: document.querySelector('#ceditors .ceditor th:nth-child(3)').textContent }));
+  s = await p.evaluate(() => ({ warn: [...document.querySelectorAll('#checklist li.warn')].map(l => l.textContent).filter(t => /ledger/.test(t)).length, note: document.querySelector('#report .mfig-card.for-gcp .calc-note .en').textContent, cols: document.querySelector('#report .mfig-card.for-gcp .calc thead').querySelectorAll('th').length, basis: document.querySelector('#balance .basis').textContent, poLabel: document.querySelector('#ceditors .ceditor th:nth-child(3)').textContent }));
   check('unconfirmed ledger: amber checklist item, note in the report, 3 columns', s.warn === 1 && /still being confirmed with procurement/.test(s.note) && s.cols === 3 && /not yet confirmed/.test(s.basis) && s.poLabel === 'Price ($, net of VAT)', s);
   await p.check('input[data-bind="edition.ledgerConfirmed"]'); await p.waitForTimeout(400);
   s = await p.evaluate(() => ({ warn: [...document.querySelectorAll('#checklist li.warn')].map(l => l.textContent).filter(t => /ledger/.test(t)).length, note: document.querySelector('#report .mfig-card.for-gcp .calc-note .en').textContent }));
   check('confirmed ledger: warning and note gone', s.warn === 0 && !/still being confirmed/.test(s.note) && /converted at 3.75/.test(s.note));
   await p.selectOption('#f-ledger', 'SAR'); await p.waitForTimeout(400);
   c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
-  s = await p.evaluate(() => ({ cols: document.querySelectorAll('#report .mfig-card.for-gcp .calc thead th').length, note: document.querySelector('#report .mfig-card.for-gcp .calc-note .en').textContent, poLabel: document.querySelector('#ceditors .ceditor th:nth-child(3)').textContent, err: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent).filter(t => /negative/.test(t)).length }));
+  s = await p.evaluate(() => ({ cols: document.querySelector('#report .mfig-card.for-gcp .calc thead').querySelectorAll('th').length, note: document.querySelector('#report .mfig-card.for-gcp .calc-note .en').textContent, poLabel: document.querySelector('#ceditors .ceditor th:nth-child(3)').textContent, err: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent).filter(t => /negative/.test(t)).length }));
   check('ledger SAR: starting 2,582,729.55, two columns, negative balance blocks', near(c.startingSar, 2582729.55) && s.cols === 2 && /used as they are/.test(s.note) && s.poLabel === 'Price (SAR, net of VAT)' && s.err === 1, [c.startingSar, c.remainingSar, s]);
   await p.selectOption('#f-ledger', 'USD'); await p.uncheck('input[data-bind="edition.ledgerConfirmed"]'); await p.waitForTimeout(400);
   c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
@@ -273,6 +273,14 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await g.emulateMedia({ media: 'screen' }); await g.waitForTimeout(100);
   const q = await g.evaluate(() => ({ tab: !!document.getElementById('pv-gcp-q'), opts: [...document.querySelectorAll('.sw.for-gcp .seg.s-q .dd-opt')].map(l => l.textContent.replace(/\s+/g, ' ')) }));
   check('generated: the Quarter tab carries Q1, Q2 and H1 2026 as in v20, with the quarter this edition closes at the top', q.tab && q.opts.length === 4 && /Q3 2026/.test(q.opts[0]) && q.opts.some(t => /Q1 2026/.test(t)) && q.opts.some(t => /Q2 2026/.test(t)) && q.opts.some(t => /H1 2026/.test(t)), q.opts);
+  const mf = await g.evaluate(() => {
+    const vis = () => [...document.querySelectorAll('.mfig-card.for-gcp')].filter(e => e.offsetParent !== null);
+    const grab = () => { const c = vis()[0]; return { n: vis().length, label: c.querySelector('.mfig-label .en').textContent.trim(), val: c.querySelector('.mfig-value').textContent.trim() }; };
+    const before = grab();
+    const l = document.querySelector('label[for="p-gcp-2026-08"]'); l.closest('details').open = true; l.click();
+    return { before, after: grab() };
+  });
+  check('generated (no JS): the main figure follows the chosen period, one card at a time', mf.before.n === 1 && mf.after.n === 1 && /30 September 2026/.test(mf.before.label) && /31 August 2026/.test(mf.after.label) && mf.before.val !== mf.after.val, mf);
   const ddOff = await g.evaluate(() => { const d = document.querySelector('details.dd'); d.open = true; const o = d.querySelector('.dd-opt'); const id = o.getAttribute('for'); o.click(); return { picked: document.getElementById(id).checked, stillOpen: d.open }; });
   check('generated (no JS): the period choice still works, the menu simply stays open', ddOff.picked === true && ddOff.stillOpen === true, ddOff);
   check('generated: zero external requests', reqs2.length === 0);

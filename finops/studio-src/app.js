@@ -28,6 +28,14 @@ var MEN=['January','February','March','April','May','June','July','August','Sept
 var MAR=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 var QAR=['الربع الأول','الربع الثاني','الربع الثالث','الربع الرابع'];
 function ym(iso){var m=/^(\d{4})-(\d{2})/.exec(iso||'');return m?[+m[1],+m[2]]:[0,0];}
+function lastDayOf(iso){var q=ym(iso);return new Date(q[0],q[1],0).getDate();}
+function asAtLabel(iso,ar){var q=ym(iso);if(!q[1])return '';return lastDayOf(iso)+' '+(ar?MAR[q[1]-1]:MEN[q[1]-1])+' '+q[0];}
+var QEND={q1:'03',q2:'06',q3:'09',q4:'12',h1:'06',h2:'12'};
+function latestMonthKey(c){var ms=periodsOf(c||'gcp').month.map(function(x){return x.key;}).sort();return ms.length?ms[ms.length-1]:S.edition.month;}
+/* the last month a period covers, so the credit balance can be stated as at its end */
+function periodEnd(p,c){if(!p)return null;if(p.kind==='month')return p.key;
+ if(p.kind==='quarter'){var m=/^(\d{4})-(q[1-4]|h[12])$/.exec(p.key||'');return m&&QEND[m[2]]?m[1]+'-'+QEND[m[2]]:null;}
+ return latestMonthKey(c);}
 function monthLabel(iso,ar){var p=ym(iso);if(!p[1])return iso||'';return (ar?MAR[p[1]-1]:MEN[p[1]-1])+' '+p[0];}
 function prevMonth(iso){var p=ym(iso),y=p[0],m=p[1]-1;if(m<1){m=12;y--;}return y+'-'+(m<10?'0':'')+m;}
 function quarterKey(iso){var p=ym(iso);return p[0]+'-q'+Math.ceil(p[1]/3);}
@@ -292,6 +300,35 @@ function creditCalc(c){var C=S.clouds[c].credit||{},fx=FX(),P=S.clouds[c].period
   if(st!=null&&r.consumptionSar!=null){r.remainingSar=r2(st-r.consumptionSar);r.computed=true;}else{r.remainingSar=(C.remaining!==''&&C.remaining!=null)?+C.remaining:null;r.computed=false;}
   r.pct=(st&&r.remainingSar!=null)?r.remainingSar/st*100:null;}
  return r;}
+/* The balance as at the end of a chosen period: consumption to date less every month after it.
+   Only when every month in between is loaded, otherwise the subtraction would be wrong and the
+   edition figure stands. The drawdowns are treated as already made, which is how both published
+   editions state them; dating them per drawdown is the refinement if an older period needs it. */
+function creditAt(c,endKey){var r=creditCalc(c);
+ if(c!=='gcp'||!endKey||r.basis==='none')return r;
+ var months=periodsOf('gcp').month.slice().sort(function(a,b){return a.key<b.key?-1:1;});
+ if(!months.length)return r;
+ var latest=months[months.length-1].key;if(endKey>=latest)return r;
+ var after=months.filter(function(x){return x.key>endKey;}),need=0,k=shiftMonth(endKey,1);
+ while(k<=latest){need++;k=shiftMonth(k,1);}
+ if(after.length!==need)return r;
+ var toL=function(v){return r.ledger==='SAR'?r2(v):r2(v/r.fx);},q={};
+ Object.keys(r).forEach(function(z){q[z]=r[z];});
+ var back=r2(after.reduce(function(a,x){return a+((x.totals&&x.totals.net)||0);},0));
+ q.asOfMonth=endKey;q.partial=true;
+ q.consumptionSar=r2(r.consumptionSar-back);q.consumptionUsd=toL(q.consumptionSar);
+ q.consumedSar=r2(r.fixedSar+q.consumptionSar);q.consumedUsd=toL(q.consumedSar);
+ q.remainingSar=r2(r.startingSar-q.consumedSar);q.remainingUsd=toL(q.remainingSar);
+ q.pct=r.startingSar?q.remainingSar/r.startingSar*100:0;
+ q.rangeEn=(r.rangeEn||'').replace(/ to .*$/,' to '+monthLabel(endKey));
+ q.rangeAr=(r.rangeAr||'').replace(/ إلى .*$/,' إلى '+monthLabel(endKey,true));
+ q.commitments=r.commitments.map(function(km){
+  var names=(km.services||[]).map(function(n){return String(n).trim().toLowerCase();}).filter(Boolean),b=0;
+  after.forEach(function(x){(x.services||[]).forEach(function(y){if(matchName(y.name,names))b+=y.net;});});
+  var used=Math.max(r2(km.usedSar-b),0),o={};Object.keys(km).forEach(function(z){o[z]=km[z];});
+  o.usedSar=used;o.billedNetSar=used;o.remainingSar=Math.max(r2(km.sar-used),0);return o;});
+ q.commitRemainingSar=r2(sum(q.commitments,'remainingSar'));q.uncommittedSar=r2(q.remainingSar-q.commitRemainingSar);
+ return q;}
 function calcDetails(r){var two=r.ledger==='SAR',row=function(l,la,sarV,usdV,cls){return '<tr class="'+(cls||'')+'"><td>'+tw(l,la)+'</td><td class="n">'+num(sarV,2)+'</td>'+(two?'':'<td class="n">'+num(usdV,2)+'</td>')+'</tr>';};
  var h='<details class="calc"><summary>'+tw('How the balance is computed','كيف يُحسب الرصيد')+'</summary><div class="cw"><table><thead><tr><th>'+tw('Line','البند')+'</th><th class="n">'+RS+'</th>'+(two?'':'<th class="n">'+tw('USD ledger','دفتر الدولار')+'</th>')+'</tr></thead><tbody>';
  h+=row('Total starting credit (purchase orders, net of VAT)','إجمالي الرصيد الابتدائي (أوامر الشراء، صافي الضريبة)',r.startingSar,r.startingUsd,'total');
@@ -307,7 +344,12 @@ function calcDetails(r){var two=r.ledger==='SAR',row=function(l,la,sarV,usdV,cls
  var basisEn=two?'Ledger values are in Riyals net of 15% VAT and are used as they are.':'Ledger values are in US dollars net of 15% VAT, converted at '+r.fx+' Riyals to the US dollar.',basisAr=two?'قيم الدفتر بالريال صافي ضريبة القيمة المضافة 15% وتُستخدم كما هي.':'قيم الدفتر بالدولار الأمريكي صافي ضريبة القيمة المضافة 15% ومحوّلة بسعر '+r.fx+' ريال للدولار.';
  var confEn=r.ledgerConfirmed?'':' The currency of the ledger column is still being confirmed with procurement; until it is, this edition keeps the basis the July 2026 edition used.',confAr=r.ledgerConfirmed?'':' ولا تزال عملة عمود الدفتر قيد التأكيد مع إدارة المشتريات؛ وإلى أن يتم ذلك، يعتمد هذا الإصدار الأساس نفسه الذي اعتمده إصدار يوليو 2026.';
  return h+'</tbody></table></div><p class="calc-note">'+tw(basisEn+' Consumption is the net figure of the contract-to-date export, after discounts and credits, so the Google incentives are already inside it. Commitments are contracted totals paid as the service is used; what has been paid is the usage the billing dashboard shows for those services, and the remainder is what is still to be drawn.'+confEn,basisAr+' والاستهلاك هو الرقم الصافي لتقرير الإنفاق منذ بداية العقد بعد الخصومات والأرصدة، ولذلك تُحتسب حوافز Google ضمنه. والالتزامات إجماليات تعاقدية تُسدَّد مع الاستخدام؛ والمسدَّد منها هو الاستهلاك الذي تُظهره لوحة الفوترة لتلك الخدمات، والباقي هو ما لم يُسحب بعد.'+confAr)+'</p></details>';}
-function creditCard(c){var C=S.clouds[c].credit||{},E=S.edition,r=creditCalc(c),asAt=esc(E.dataAsOf),asAtAr=esc(E.dataAsOfAr);
+/* One credit card per period, switched by the same two radios the period views use, so the main
+   figure follows the chosen period with no script involved. Azure keeps its single card. */
+function creditCards(c,P){if(c!=='gcp')return creditCard(c,null);
+ return [['m','month'],['q','quarter'],['t','todate']].filter(function(k){return P[k[1]].length;})
+  .map(function(k){return '<div class="cv cv-'+c+'-'+k[0]+'">'+P[k[1]].map(function(p){return creditCard(c,p);}).join('')+'</div>';}).join('');}
+function creditCard(c,p){var C=S.clouds[c].credit||{},E=S.edition,end=p?periodEnd(p,c):null,r=creditAt(c,end),asAt=esc(end?asAtLabel(end):E.dataAsOf),asAtAr=esc(end?asAtLabel(end,true):E.dataAsOfAr);
  if(c==='gcp'){var none=r.basis==='none';
   var drawn=r.fixed.map(function(f){return '<div class="s sub"><span class="n">'+tw('&minus; '+esc(f.name),'&minus; '+esc(f.nameAr||f.name))+'</span><span class="st">'+tw('drawn from this order','مسحوب من هذا الأمر')+'</span><span class="a">'+money(f.sar,2)+'</span></div>';}).join('');
   var src=r.po.map(function(p,pi){var full=p.status==='full',last=pi===r.po.length-1;return '<div class="s'+(!full&&drawn?' with-sub':'')+'"><span class="n">'+tw(esc(p.name),esc(p.nameAr))+'</span>'+(full?'<span class="st">'+tw('Fully utilized','مستهلك بالكامل')+'</span>':'<span class="st live">'+(none?tw('live','قائم'):tw(money(r.remainingSar,2)+' remaining','متبقٍ '+money(r.remainingSar,2)))+'</span>')+'<span class="a'+(full?' done':' live')+'">'+money(p.sar,2)+'</span></div>'+((!full&&last)?drawn:'');}).join('')
@@ -319,7 +361,7 @@ function creditCard(c){var C=S.clouds[c].credit||{},E=S.edition,r=creditCalc(c),
   main+='<div class="mfig-clar">'+tw('Contract position as at '+asAt+', from contract start on 1 June 2025. The spend figures below are metered usage in this billing account from 1 October 2025; the balance already subtracts them.','الموقف التعاقدي حتى '+asAtAr+'، منذ بداية العقد في 1 يونيو 2025. أما أرقام الإنفاق أدناه فهي الاستهلاك المقاس في حساب الفوترة هذا منذ 1 أكتوبر 2025، وقد خُصمت من الرصيد.')+'</div>';
   if(!none)main+=calcDetails(r);
   var foot=none?'':'<div class="mfig-foot"><span class="eyebrow">'+tw('Of the remaining balance','من الرصيد المتبقي')+'</span><span><b>'+money(r.commitRemainingSar,2)+'</b> '+tw('committed ('+r.commitments.map(function(k){return esc(k.name);}).join(' + ')+')','ملتزم به ('+r.commitments.map(function(k){return esc(k.nameAr||k.name);}).join(' + ')+')')+'</span><span><b class="g">'+money(r.uncommittedSar,2)+'</b> '+tw('uncommitted','غير ملتزم به')+'</span></div>';
-  return '<div class="mfig-card for-gcp"><div class="mfig-row"><div class="mfig-side"><div class="eyebrow">'+tw('Credit sources','مصادر الائتمان')+'</div><div class="src">'+src+'</div></div><div class="mfig-main">'+main+'</div></div>'+foot+'</div>';}
+  return '<div class="mfig-card for-gcp'+(p?' mc-'+c+'-'+p.key:'')+'"><div class="mfig-row"><div class="mfig-side"><div class="eyebrow">'+tw('Credit sources','مصادر الائتمان')+'</div><div class="src">'+src+'</div></div><div class="mfig-main">'+main+'</div></div>'+foot+'</div>';}
  var st=r.startingSar,rem=r.remainingSar,noneA=rem==null,partsA=noneA?['0','00']:num(rem,2).split('.');
  var TE={starting:st!=null?money(st,2):'',remaining:noneA?'':money(rem,2),asAt:asAt},TA={starting:st!=null?money(st,2):'',remaining:noneA?'':money(rem,2),asAt:asAtAr};
  var srcA='<div class="s"><span class="n">'+tw('Microsoft credit · three-year total','رصيد Microsoft · إجمالي ثلاث سنوات')+'</span>'+(st!=null?'<span class="st live">'+tw(money(rem,2)+' remaining','متبقٍ '+money(rem,2))+'</span><span class="a live">'+money(st,2)+'</span>':'<span class="st live">'+tw('balance as read in the portal','الرصيد كما يظهر في البوابة')+'</span><span class="a req">'+tw('starting amount requested','المبلغ الابتدائي مطلوب')+'</span>')+'</div>';
@@ -348,9 +390,9 @@ function buildReport(published,sel){sel=sel||{pv:{},p:{}};var E=S.edition,clouds
   var pv=(sel.pv[c]&&kinds.indexOf(sel.pv[c])>=0)?sel.pv[c]:kinds[0];
   radios+=kinds.map(function(k){return '<input type="radio" name="pv-'+c+'" id="pv-'+c+'-'+k+'"'+(k===pv?' checked':'')+'>';}).join('');
   ['month','quarter','todate'].forEach(function(kind){var list=P[kind];if(!list.length)return;var want=(sel.p[c]&&sel.p[c][kind])||(kind==='month'?E.month:(kind==='quarter'?quarterKey(E.month):null));var def=list.filter(function(p){return p.key===want;})[0]||list[0];radios+=list.map(function(p){return '<input type="radio" name="p-'+c+'-'+kind+'" id="p-'+c+'-'+p.key+'"'+(p===def?' checked':'')+'>';}).join('');
-   list.forEach(function(p){if(p.sample)sample=true;dyn+='#p-'+c+'-'+p.key+':checked~* .mv-'+c+'-'+p.key+'{display:block}#p-'+c+'-'+p.key+':checked~* .o-'+c+'-'+p.key+'{display:inline}#p-'+c+'-'+p.key+':checked~* .dd-opt[for="p-'+c+'-'+p.key+'"]{color:#0180E9;background:#eef4fb}#p-'+c+'-'+p.key+':checked~* .pp-'+c+'-'+p.key+'{display:inline}';});});
-  kinds.forEach(function(k){dyn+='#pv-'+c+'-'+k+':checked~* .v-'+c+'-'+k+'{display:block}#pv-'+c+'-'+k+':checked~* .sw.for-'+c+' .seg.s-'+k+'>label{'+ACTIVE+'}#pv-'+c+'-'+k+':checked~* .sw.for-'+c+' .seg.s-'+k+' .small{color:rgba(255,255,255,.76)}#pv-'+c+'-'+k+':checked~* .ppk-'+c+'-'+k+'{display:inline}';});
-  cards+=creditCard(c);strips+=periodStrip(c,P);if(!published)awaits+=awaiting(c);
+   list.forEach(function(p){if(p.sample)sample=true;dyn+='#p-'+c+'-'+p.key+':checked~* .mc-'+c+'-'+p.key+'{display:block}#p-'+c+'-'+p.key+':checked~* .mv-'+c+'-'+p.key+'{display:block}#p-'+c+'-'+p.key+':checked~* .o-'+c+'-'+p.key+'{display:inline}#p-'+c+'-'+p.key+':checked~* .dd-opt[for="p-'+c+'-'+p.key+'"]{color:#0180E9;background:#eef4fb}#p-'+c+'-'+p.key+':checked~* .pp-'+c+'-'+p.key+'{display:inline}';});});
+  kinds.forEach(function(k){dyn+='#pv-'+c+'-'+k+':checked~* .cv-'+c+'-'+k+'{display:block}#pv-'+c+'-'+k+':checked~* .v-'+c+'-'+k+'{display:block}#pv-'+c+'-'+k+':checked~* .sw.for-'+c+' .seg.s-'+k+'>label{'+ACTIVE+'}#pv-'+c+'-'+k+':checked~* .sw.for-'+c+' .seg.s-'+k+' .small{color:rgba(255,255,255,.76)}#pv-'+c+'-'+k+':checked~* .ppk-'+c+'-'+k+'{display:inline}';});
+  cards+=creditCards(c,P);strips+=periodStrip(c,P);if(!published)awaits+=awaiting(c);
   pp+='<span class="for-'+c+'">'+kindsAll.map(function(k){return '<span class="ppk ppk-'+c+'-'+k[0]+'">'+P[k[1]].map(function(p){return '<span class="pp pp-'+c+'-'+p.key+'">'+tw(esc(p.label),esc(p.labelAr))+'</span>';}).join('')+'</span>';}).join('')+'</span>';
   var body='';if(!kindsAll.length)body='<div class="wrap">'+emptyCloud(c)+'</div>';else kindsAll.forEach(function(k){body+='<section class="view v-'+c+'-'+k[0]+'"><div class="wrap">'+P[k[1]].map(function(p){return '<div class="mv mv-'+c+'-'+p.key+'">'+(c==='gcp'?gcpBlock(p):azureBlock(p))+'</div>';}).join('')+'</div></section>';});
   mains+='<div class="cloud for-'+c+'">'+body+'</div>';});
