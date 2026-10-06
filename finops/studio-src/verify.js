@@ -283,6 +283,30 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('generated (no JS): the main figure follows the chosen period, one card at a time', mf.before.n === 1 && mf.after.n === 1 && /30 September 2026/.test(mf.before.label) && /31 August 2026/.test(mf.after.label) && mf.before.val !== mf.after.val, mf);
   const ddOff = await g.evaluate(() => { const d = document.querySelector('details.dd'); d.open = true; const o = d.querySelector('.dd-opt'); const id = o.getAttribute('for'); o.click(); return { picked: document.getElementById(id).checked, stillOpen: d.open }; });
   check('generated (no JS): the period choice still works, the menu simply stays open', ddOff.picked === true && ddOff.stillOpen === true, ddOff);
+  /* v20 hid every background object below 1280, which left anyone on a smaller window looking at an
+     empty hero. They sit behind a transparent copy wrap, so they can never cover text; the only
+     requirement is that some of them keep to open space as the column widens. */
+  const motifs = [];
+  for (const w of [1440, 1279, 1100, 1024, 900, 820, 640]) {
+    await g.setViewportSize({ width: w, height: 900 });
+    await g.waitForTimeout(150);
+    motifs.push(await g.evaluate(() => {
+      const hero = document.querySelector('.hero').getBoundingClientRect();
+      const over = (a, b) => { const x = Math.min(a.right, b.right) - Math.max(a.left, b.left), y = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top); return (x > 0 && y > 0) ? (x * y) / (a.width * a.height) : 0; };
+      const guard = ['.moewrap', '.hero-motion-lockup', '.chips'].map(s => document.querySelector(s)).filter(Boolean).map(e => e.getBoundingClientRect());
+      const on = [...document.querySelectorAll('.de-mo')].filter(e => e.checkVisibility() && e.getBoundingClientRect().width > 4);
+      return {
+        w: innerWidth, shown: on.length,
+        inside: on.every(e => { const r = e.getBoundingClientRect(); return r.top >= hero.top - 1 && r.bottom <= hero.bottom + 1; }),
+        hits: on.filter(e => guard.some(b => over(e.getBoundingClientRect(), b) > 0.12)).map(e => e.className)
+      };
+    }));
+  }
+  const want = { 1440: 4, 1279: 3, 1100: 3, 1024: 3, 900: 2, 820: 2, 640: 0 };
+  check('generated: the background objects stay visible below 1280, inside the hero and clear of the lockups',
+    motifs.every(m => m.shown === want[m.w] && m.inside && m.hits.length === 0),
+    motifs.map(m => m.w + ':' + m.shown));
+  await g.setViewportSize({ width: 1280, height: 900 }); await g.waitForTimeout(150);
   check('generated: zero external requests', reqs2.length === 0);
   await b.close();
   console.log(fails.length ? 'FAILED CHECKS: ' + fails.join(' ; ') : 'ALL CHECKS PASSED');

@@ -134,10 +134,27 @@
    for; the depth wash, refraction field and key light stay at every width, so
    the hero keeps its glass depth on smaller screens. Re-measure with the hero
    ink boxes before widening this range. */
+/* v20 solved the placements against a 1440 hero and simply hid the objects below 1280, which left
+   anyone on a smaller window with an empty background. They sit behind the copy wrap, which is
+   transparent, so text and cards always render on top of them and nothing can be obscured: the
+   objects only need re-anchoring so they keep to the open part of the hero as the column widens. */
 @media (max-width:1279px){
   .de-motifs{--presence:.85}
-  .de-motifs .de-mo{display:none}
+  /* the hero is the same height but the copy column is wider, so the square has nowhere left to
+     sit without landing on the chips; the other three keep clear space and carry the depth */
+  .de-mo--square{display:none}
+  .de-mo--diamond{top:9%;inset-inline-end:60%;width:5.6%}
+  .de-mo--coral{top:5.5%;inset-inline-end:38%;width:6.4%}
+  .de-mo--circle{top:60%;inset-inline-end:1.5%;width:7.4%}
 }
+@media (max-width:900px){
+  .de-motifs{--presence:.7}
+  .de-mo--diamond{display:none}
+  .de-mo--coral{top:3%;inset-inline-end:46%;width:7.6%}
+  .de-mo--circle{top:58%;inset-inline-end:0.5%;width:9.4%}
+}
+/* a phone hero is too tight to carry them */
+@media (max-width:640px){.de-motifs .de-mo{display:none}}
 @media (max-width:640px){
   .de-motifs__refract{opacity:.24}
 }
