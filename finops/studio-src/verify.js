@@ -215,6 +215,18 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   const npReqs = []; np.on('request', r => { if (!r.url().startsWith('blob:')) npReqs.push(r.url()); });
   s = await np.evaluate(() => ({ title: document.title, scripts: document.querySelectorAll('script').length, more: !!document.querySelector('.stmt details.more'), url: location.protocol }));
   check('open in a new tab shows the report itself (blob, one motion script)', /FinOps Report/.test(s.title) && s.scripts === 1 && s.more && s.url === 'blob:', s);
+  // the period menu is CSS-only until the one script closes it, so prove the click actually collapses it
+  const dd = await np.evaluate(() => {
+    const d = document.querySelector('details.dd');
+    if (!d) return { none: true };
+    d.open = true;
+    const before = d.open;
+    const opt = d.querySelector('.dd-opt');
+    const id = opt.getAttribute('for');
+    opt.click();
+    return new Promise(r => setTimeout(() => r({ before, after: d.open, picked: document.getElementById(id).checked }), 60));
+  });
+  check('generated: choosing a period collapses the dropdown and selects that period', dd.before === true && dd.after === false && dd.picked === true, dd);
   await np.close();
   const published = fs.readFileSync(dlPath, 'utf8');
   check('downloaded file equals publishedHtml()', published === await p.evaluate(() => window.FinOpsStudio.publishedHtml()));
@@ -261,6 +273,8 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await g.emulateMedia({ media: 'screen' }); await g.waitForTimeout(100);
   const q = await g.evaluate(() => ({ tab: !!document.getElementById('pv-gcp-q'), opts: [...document.querySelectorAll('.sw.for-gcp .seg.s-q .dd-opt')].map(l => l.textContent.replace(/\s+/g, ' ')) }));
   check('generated: the Quarter tab carries Q1, Q2 and H1 2026 as in v20, with the quarter this edition closes at the top', q.tab && q.opts.length === 4 && /Q3 2026/.test(q.opts[0]) && q.opts.some(t => /Q1 2026/.test(t)) && q.opts.some(t => /Q2 2026/.test(t)) && q.opts.some(t => /H1 2026/.test(t)), q.opts);
+  const ddOff = await g.evaluate(() => { const d = document.querySelector('details.dd'); d.open = true; const o = d.querySelector('.dd-opt'); const id = o.getAttribute('for'); o.click(); return { picked: document.getElementById(id).checked, stillOpen: d.open }; });
+  check('generated (no JS): the period choice still works, the menu simply stays open', ddOff.picked === true && ddOff.stillOpen === true, ddOff);
   check('generated: zero external requests', reqs2.length === 0);
   await b.close();
   console.log(fails.length ? 'FAILED CHECKS: ' + fails.join(' ; ') : 'ALL CHECKS PASSED');

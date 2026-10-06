@@ -368,8 +368,16 @@ function motifs(){var glass='<div class="de-mo__i"><div class="de-glass"><div cl
 function lockup(){var still='<img class="dew-static" src="'+A.dew+'" alt="Digital Energy" width="112" height="59">';
  return '<div class="hero-motion-lockup" aria-label="FINOPS and Digital Energy"><span class="finops-word">FINOPS</span><i class="orb" aria-hidden="true"></i><span class="dew-animation-wrap">'+still
   +(A.dewm?'<img class="dew-motion dew-motion-image" src="'+A.dewm+'" alt="Digital Energy animated logo" decoding="async" onerror="document.documentElement.classList.add(\'logo-fallback\')">':'')+'</span></div>';}
-/* The pointer lean. Self-contained on purpose: its source is written into the generated report as the one script it carries. */
-function heroMotion(){
+/* The report's one script, written into the generated file from this source so the preview and the
+   published page cannot drift apart. Two jobs: the hero pointer lean, and collapsing a period
+   dropdown once a choice is made. Both are enhancements; with scripts off the report still reads. */
+function reportScript(){
+ /* a chosen period closes its menu, as the July edition did */
+ var shut=function(){Array.prototype.forEach.call(document.querySelectorAll('details.dd'),function(d){d.open=false;});};
+ Array.prototype.forEach.call(document.querySelectorAll('.dd-opt'),function(l){
+  l.addEventListener('click',function(){var d=l.parentNode&&l.parentNode.parentNode;
+   if(d&&d.tagName==='DETAILS')setTimeout(function(){d.open=false;},0);});});
+ Array.prototype.forEach.call(document.querySelectorAll('input[id^="pv-"]'),function(r){r.addEventListener('change',shut);});
  var hero=document.querySelector('#report .hero')||document.querySelector('.hero');
  var layer=hero&&hero.querySelector('.de-motifs');
  if(!hero||!layer)return;
@@ -394,5 +402,5 @@ function currentSelection(){var root=$('#report'),sel={cloud:$('#c-azure',root)&
 var focus=null;
 function renderPreview(){var root=$('#report');var sel=root.children.length?currentSelection():null;
  if(focus&&sel){sel.cloud=focus.cloud;sel.pv[focus.cloud]=focus.k;['gcp','azure'].forEach(function(c){sel.p[c]=sel.p[c]||{};var has=S.clouds[c].periods[focus.key];if(focus.k==='m'&&(c===focus.cloud||has))sel.p[c].month=focus.key;if(focus.k==='q'&&(c===focus.cloud||has))sel.p[c].quarter=focus.key;if(c!==focus.cloud&&has)sel.pv[c]=focus.k;});focus=null;}
- root.innerHTML=buildReport(false,sel);heroMotion();}
+ root.innerHTML=buildReport(false,sel);reportScript();}
 
