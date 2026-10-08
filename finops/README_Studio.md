@@ -86,7 +86,7 @@ Six steps, one at a time, on a light page: **Month** (a dropdown; dates, labels,
 | Month · SPARK by service | same as the first, filtered to the SPARK folder (969004756048), or to every project whose id starts `prj-moenergy-iw-` | yes | the SPARK figure and its service chart |
 | To date · all GCP by service | 1 Oct 2025 to today | yes | the Contract to date tab |
 | To date · by project, To date · SPARK | same ranges | optional | exact split and SPARK on the to-date tab |
-| Quarter · three slots | the quarter | optional (expected in quarter-end months) | the Quarter tab, alongside Q1, Q2 and H1 2026 |
+| Quarter · three slots | the same three exports with the range set to the whole quarter, the 1st of its first month to the last day of its third | optional (expected in quarter-end months; the Studio checks the dates in the file name) | the Quarter tab, alongside Q1, Q2 and H1 2026 |
 | Credit position | Billing > Credits plus the PO ledger | yes | the credit card in the hero |
 
 **Microsoft Azure** (Cost Management > Cost analysis, Actual cost, billing-account scope, Download CSV):
@@ -123,7 +123,7 @@ A token with no data behind it shows as an amber "awaiting August 2026 data" mar
 
 ## Publishing rules the Studio applies on generate
 
-- The Quarter tab is shown whenever quarter periods exist (Q1, Q2 and H1 2026 from the July report), as v20 did; untick "Show the Quarter tab" in step 1 to hide it. In a quarter-end month the readiness list expects that quarter's export.
+- The Quarter tab is shown whenever quarter periods exist (Q1, Q2 and H1 2026 from the July report), as v20 did; untick "Show the Quarter tab" in step 1 to hide it. In a quarter-end month the readiness list expects that quarter's export and checks the dates in its file name against the quarter the month closes: Q3 2026 has to run 1 July 2026 to 30 September 2026, and a file covering less blocks the download rather than being filed in silence. `monthsBetween` reads year and month only, so a pull that starts mid July or stops mid September still counts as three months; the day-level check is what catches it.
 - The published file opens on Google Cloud, English, the reporting month.
 - The `.studio-only` elements (the awaiting-data banner, the preview footer line) are removed.
 - Figures are Saudi Riyals at the rate in the Edition box (3.75 to the US dollar). Google invoices in US dollars; for Azure, set the billing currency in the export (USD converted at the peg, or SAR read as is).
@@ -157,4 +157,4 @@ The GCP runbook, the Python generator and the July editions live in the `finops/
 python3 finops/studio-src/assemble.py      # writes finops/FinOps_Studio_v1.html and data/2026-08.edition.baseline.json
 ```
 
-The generated report carries one inline script and nothing else; the assembler refuses to write if an em dash survives anywhere outside the base64 payloads. A verification script (`studio-src/verify.js`, Playwright) opens the Studio headless, checks the derived version and date, the ledger setting, the commitment matching, the two edition switches, the side-by-side department and service cards, the SPARK block and its per-department split, drops the sample files, downloads the report through the real button, opens it in a new tab, and then exercises the downloaded file with JavaScript disabled: Read more, cloud switch, month dropdown, to-date tab, language flip, print media, zero external requests.
+The generated report carries one inline script and nothing else; the assembler refuses to write if an em dash survives anywhere outside the base64 payloads. A verification script (`studio-src/verify.js`, Playwright) opens the Studio headless, checks the derived version and date, the ledger setting, the commitment matching, the two edition switches, the side-by-side department and service cards, the SPARK block and its per-department split, drops the sample files, downloads the report through the real button, opens it in a new tab, and then exercises the downloaded file with JavaScript disabled: Read more, cloud switch, month dropdown, to-date tab, the Quarter tab and the dates each quarter states, language flip, print media, zero external requests.

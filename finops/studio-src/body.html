@@ -57,7 +57,7 @@
       <div class="bigzone" id="bigzone" tabindex="0" role="button" aria-label="Drop CSV exports here or press Enter to choose files">
         <input type="file" multiple accept=".csv,text/csv" aria-label="Choose CSV exports">
         <div class="bz-title">Drop all the CSV files here, or click to choose them</div>
-        <div class="bz-sub">Google Cloud Reports (by service, by project, SPARK) and Azure Cost analysis (by service, subscription, location), for the month and contract to date. Each file is filed by its header and its date range; the table below shows where it landed.</div>
+        <div class="bz-sub">Google Cloud Reports (by service, by project, SPARK) and Azure Cost analysis (by service, subscription, location), for the month, the quarter in a quarter-end month, and contract to date. Each file is filed by its header and the dates in its name; the table below shows where it landed.</div>
       </div>
       <details class="adjust guide"><summary>How to pull these files (about ten minutes per cloud)</summary>
         <div class="grid2 guides">
@@ -68,6 +68,7 @@
               <li>Set the date range to the month, the 1st to the last day. Set <b>Group by: Service</b>. In the panel on the right keep every credits and discounts option <b>on</b>. Download CSV: this is the by-service file.</li>
               <li>Change to <b>Group by: Project</b> and download again: the by-project file.</li>
               <li>Back to Group by Service, filter to the <b>SPARK folder (969004756048)</b> or pick every project whose id starts <b>prj-moenergy-iw-</b>, and download again: the SPARK file.</li>
+              <li>In a quarter-end month, set the date range to the whole quarter, the 1st of its first month to the last day of its third (for Q3 2026, <b>1 July 2026 to 30 September 2026</b>), and download by Service, by Project and SPARK again: the three Quarter files. The Studio reads the dates in the name and blocks the download if a file covers less than the whole quarter.</li>
               <li>Clear the filter and set the date range to <b>1 October 2025 to today</b> for the contract-to-date by-service file. By project and SPARK for that range are optional.</li>
               <li>Keep the names Google writes: the date range in the name is how the Studio files them. Pull on the 3rd of the month or later; the data lags up to two days.</li>
             </ol>
@@ -78,8 +79,9 @@
               <li>Open <b>Cost analysis</b> with the scope set to the Ministry's billing account (needs Cost Management Reader). Leave <b>Actual cost</b> selected.</li>
               <li>Set the date range to the month. <b>Group by: Service name</b>, then Download &gt; CSV: the by-service file.</li>
               <li><b>Group by: Subscription name</b>, download again: the by-subscription file. <b>Group by: Resource location</b> for the optional region file.</li>
+              <li>In a quarter-end month, set the date range to the whole quarter (for Q3 2026, <b>1 July 2026 to 30 September 2026</b>) and download by Service name and by Subscription name again: the two Quarter files.</li>
               <li>Set the date range from the contract start to today and download by Service name again: the contract-to-date file.</li>
-              <li>Name each file with its range, for example <span class="tok">azure_by_service_2026-08-01_2026-08-31.csv</span>. A file without dates in its name is filed under the reporting month.</li>
+              <li>Name each file with its range, for example <span class="tok">azure_by_service_2026-08-01_2026-08-31.csv</span>. A file without dates in its name is filed under the reporting month, unless the name says quarter or Q1 to Q4, which files it under the quarter the reporting month closes. Keep the range in the name: it is the only way the Studio can confirm a quarter export covers the whole quarter.</li>
               <li>Read the credit or prepayment balance from Billing &gt; Credits (MCA) or Enrollment &gt; Prepayment (EA) and type it in step 3.</li>
             </ol>
           </div>

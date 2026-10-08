@@ -27,7 +27,7 @@ File 2 is what builds the "spend per general department" chart for Azure. The St
 
 ## Quarter-end months only (Mar, Jun, Sep, Dec)
 
-Repeat files 1 and 2 with the quarter as the date range and drop them in the Azure > Quarter slots. Outside quarter-end months the Quarter tab is hidden in the published report, the same rule as the GCP side.
+Repeat files 1 and 2 with the date range set to the whole quarter, the 1st of its first month to the last day of its third (for Q3 2026, 1 July 2026 to 30 September 2026), and drop them in the Azure > Quarter slots. Keep the day-level range in each file name, as in `azure_by_service_2026-07-01_2026-09-30.csv`: the Studio reads those dates and blocks the download if a quarter file covers less than the whole quarter. Outside quarter-end months the Quarter tab is hidden in the published report, the same rule as the GCP side.
 
 ## The credit or prepayment balance (file 6)
 

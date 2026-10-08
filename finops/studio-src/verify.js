@@ -199,6 +199,18 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   await p.click('#st-steps button[data-step="1"]'); await p.waitForTimeout(100); await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(400); await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
   s = await p.evaluate(() => ({ errs: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent.slice(0, 80)), disabled: document.getElementById('btn-gen').disabled }));
   check('no blockers once real files are in', s.errs.length === 0 && !s.disabled, s.errs);
+  /* monthsBetween reads year and month only, so a quarter export that starts mid July or stops mid
+     September still counts as three months. The report now states the span, so a short pull has to
+     be caught rather than filed in silence. */
+  const cl = await p.evaluate(() => { const r = [{ 'Project ID': 'p', 'Subtotal ($)': '1', 'List cost ($)': '1' }], C = window.FinOpsStudio.classify;
+    return { good: C('Reports, 2026-07-01 - 2026-09-30.csv', r), late: C('Reports, 2026-07-15 - 2026-09-30.csv', r), short: C('Reports, 2026-07-01 - 2026-09-15.csv', r), shift: C('Reports, 2026-08-01 - 2026-10-31.csv', r), long: C('Reports, 2025-07-01 - 2026-09-30.csv', r) }; });
+  check('a quarter export that misses part of the quarter is flagged, not filed in silence',
+    cl.good.k === 'q' && cl.good.key === '2026-q3' && !cl.good.warn
+    && cl.late.k === 'q' && /1 July to 30 September 2026/.test(cl.late.warn || '')
+    && cl.short.k === 'q' && /1 July to 30 September 2026/.test(cl.short.warn || '')
+    && cl.shift.k === 't' && /neither a whole quarter nor a half year/.test(cl.shift.warn || '')
+    && cl.long.k === 't' && /contract to date runs from October 2025/.test(cl.long.warn || ''),
+    { late: cl.late.warn, short: cl.short.warn, shift: cl.shift.warn, long: cl.long.warn });
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btn-gen')]);
   const dlName = dl.suggestedFilename(); const dlPath = OUT + '/' + dlName; await dl.saveAs(dlPath);
   await p.waitForTimeout(500);
@@ -229,6 +241,8 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('generated: choosing a period collapses the dropdown and selects that period', dd.before === true && dd.after === false && dd.picked === true, dd);
   await np.close();
   const published = fs.readFileSync(dlPath, 'utf8');
+  const ARQ = await p.evaluate(() => window.FinOpsStudio.quarterRange('2026-q3', true));
+  const ARQrx = ARQ.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   check('downloaded file equals publishedHtml()', published === await p.evaluate(() => window.FinOpsStudio.publishedHtml()));
   check('downloaded file: one self-contained motion script, no em dash, standalone marker', (published.match(/<script/g) || []).length === 1 && /de-motifs/.test(published) && /addEventListener\('mousemove'/.test(published) && !/FinOpsStudio|\bS\.clouds\b/.test(published.slice(published.indexOf('<script'))) && !published.replace(/base64,[A-Za-z0-9+/=]+/g, '').includes('\u2014') && /Studio v1\.3/.test(published));
   // an edit after the download hides the stale result panel
@@ -272,6 +286,13 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('generated (print): statement paragraphs and calc table open, summary hidden', pr.summary === 'none' && pr.body === true && pr.calc === true && pr.period === 'block', pr);
   await g.emulateMedia({ media: 'screen' }); await g.waitForTimeout(100);
   const q = await g.evaluate(() => ({ tab: !!document.getElementById('pv-gcp-q'), opts: [...document.querySelectorAll('.sw.for-gcp .seg.s-q .dd-opt')].map(l => l.textContent.replace(/\s+/g, ' ')) }));
+  check('generated: a quarter states the months it covers, in both languages, on screen and in print',
+    published.includes('Q3 2026 <i>1 July to 30 September 2026</i>')
+    && published.includes('H1 2026 <i>1 January to 30 June 2026</i>')
+    && published.includes('Q3 2026 · <bdi>1 July to 30 September 2026</bdi>')
+    && published.includes('after discounts and credits, from 1 July to 30 September 2026.')
+    && ARQ.length > 10 && published.includes('<i>' + ARQ + '</i>') && new RegExp('<bdi>[^<]*' + ARQrx + '</bdi>').test(published),
+    { ar: ARQ });
   check('generated: the Quarter tab carries Q1, Q2 and H1 2026 as in v20, with the quarter this edition closes at the top', q.tab && q.opts.length === 4 && /Q3 2026/.test(q.opts[0]) && q.opts.some(t => /Q1 2026/.test(t)) && q.opts.some(t => /Q2 2026/.test(t)) && q.opts.some(t => /H1 2026/.test(t)), q.opts);
   const mf = await g.evaluate(() => {
     const vis = () => [...document.querySelectorAll('.mfig-card.for-gcp')].filter(e => e.offsetParent !== null);

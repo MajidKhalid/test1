@@ -15,6 +15,13 @@ function newPeriod(c,k,key){var C=S.clouds[c];return {key:key,kind:k==='m'?'mont
 function ensurePeriod(c,k,key){var P=S.clouds[c].periods,p=P[key];if(!p||p.source!=='upload')p=P[key]=newPeriod(c,k,key);if(!p.raw)p.raw={};if(!p.files)p.files={};return p;}
 
 /* ---------- classification and placement ---------- */
+/* monthsBetween compares year and month only, so a quarter export that starts mid July or stops
+   mid September still counts as three months and is filed as the whole quarter. These read the
+   days too, and the report now states the span out loud, so a short pull has to be caught here. */
+function tdStart(c){var m=/^([A-Za-z]+)\s+(\d{4})\s+to\b/.exec(S.clouds[c].tdLabelEn||'');if(!m)return null;var i=MEN.indexOf(m[1]);return i<0?null:m[2]+'-'+(i<9?'0':'')+(i+1);}
+function spanOf(name){var d=String(name||'').match(/\d{4}-\d{2}-\d{2}/g)||[];return d.length>=2?{a:d[0],b:d[d.length-1]}:null;}
+function quarterEdges(key){var q=quarterSpan(key);return q?{a:q.start+'-01',b:q.end+'-'+(lastDayOf(q.end)<10?'0':'')+lastDayOf(q.end)}:null;}
+function quarterMismatch(key,name){var e=quarterEdges(key),g=spanOf(name);return (e&&g&&(g.a!==e.a||g.b!==e.b))?{want:e,got:g}:null;}
 function monthsBetween(a,b){var x=ym(a),y=ym(b);return (y[0]-x[0])*12+(y[1]-x[1])+1;}
 function nextMonth(iso){var p=ym(iso),y=p[0],m=p[1]+1;if(m>12){m=1;y++;}return y+'-'+(m<10?'0':'')+m;}
 function classify(name,rows){var E=S.edition,head=Object.keys(rows[0]||{}),has=function(n){return head.indexOf(n)>=0;},lower=name.toLowerCase(),cloud=null,part=null;
@@ -37,7 +44,14 @@ function classify(name,rows){var E=S.edition,head=Object.keys(rows[0]||{}),has=f
        gross=rows.reduce(function(a,r){return a+fnum(r['List cost ($)']);},0);
    if(pt)part=(netSar<pt*0.5)?'sandbox':'service';
    else if(rows.length<=14&&gross<25000)part='sandbox';}}
- var warn=null;if(k==='m'&&key!==E.month)warn='covers '+monthLabel(key)+' but the edition is '+monthLabel(E.month);
+ var warn=null;
+ if(k==='m'&&key!==E.month)warn='covers '+monthLabel(key)+' but the edition is '+monthLabel(E.month);
+ else if(k==='q'){var qm=dates.length>=2&&quarterMismatch(key,name);
+  if(qm)warn='covers '+qm.got.a+' to '+qm.got.b+', but '+quarterLabel(key)+' runs '+quarterRange(key)+'. Re-pull it with the console date range set to the whole quarter';
+  else if(key!==quarterKey(E.month))warn='is '+quarterLabel(key)+', but the edition closes '+quarterLabel(quarterKey(E.month));}
+ else if(k==='t'&&dates.length>=2){var ts=tdStart(cloud);
+  if(n>=2&&n<=6)warn='covers '+a+' to '+b+', which is neither a whole quarter nor a half year, so it was filed under contract to date';
+  else if(ts&&am!==ts)warn='starts '+a+', but contract to date runs from '+monthLabel(ts)+'; a to-date export pulled from the wrong start overwrites the credit balance';}
  return {cloud:cloud,part:part,k:k,key:key,warn:warn,detected:detected};}
 function normalizeRows(cloud,part,rows){if(cloud==='gcp')return part==='project'?gcpProjects(rows,FX()):gcpServices(rows,FX());var parsed=azureRows(rows,FX(),S.edition.azureCurrency);return parsed.rows.map(function(r){return {name:r.name,id:r.id||'',net:r.net,gross:r.net,chg:'n/a'};});}
 function place(cloud,part,k,key,fileName,data){var p=ensurePeriod(cloud,k,key);
@@ -54,6 +68,7 @@ function unplace(cloud,key,part){var P=S.clouds[cloud].periods,p=P[key];if(!p)re
  p.sample=Object.keys(p.files).some(function(x){return /^sample_/i.test(p.files[x]);});if(cloud==='gcp')recomputeGcp(p);else recomputeAzure(p);}
 function ingestOne(file,forced){return file.text().then(function(text){var rows=parseCSV(text);if(!rows.length)throw new Error('the file has no data rows');
   var route=forced?{cloud:forced.cloud,part:forced.part,k:forced.k,key:slotKey(forced.k),warn:null}:classify(file.name,rows);
+  if(route&&forced&&route.k==='q'){var fm=quarterMismatch(route.key,file.name);if(fm)route.warn='covers '+fm.got.a+' to '+fm.got.b+', but '+quarterLabel(route.key)+' runs '+quarterRange(route.key);}
   if(!route)throw new Error('not a GCP Reports CSV (needs Service description or Project ID plus Subtotal ($)) and not an Azure Cost analysis CSV (needs a name column plus Cost or CostUSD)');
   if(route.cloud==='gcp'){if(route.part==='project'&&!('Project ID' in rows[0]))throw new Error('this is not a by-project Reports CSV');if(route.part!=='project'&&!('Service description' in rows[0]))throw new Error('this is not a by-service Reports CSV');}
   var data=normalizeRows(route.cloud,route.part,rows);if(!data.length)throw new Error('no usable rows after parsing');
@@ -76,7 +91,7 @@ function ingestFiles(files,forced){var list=Array.prototype.slice.call(files);Pr
   ok.forEach(function(r){place(r.route.cloud,r.route.part,r.route.k,r.route.key,r.file,r.data);
    if(r.route.cloud==='azure'&&!S.clouds.azure.enabled){S.clouds.azure.enabled=true;syncInputs();}});
   bad.forEach(function(r){toast('Could not read '+r.file+': '+r.error,'err');});
-  ok.filter(function(r){return r.route.warn;}).forEach(function(r){toast(r.file+' '+r.route.warn+'. It is filed under '+monthLabel(r.route.key)+'.','warn');});
+  ok.filter(function(r){return r.route.warn;}).forEach(function(r){toast(r.file+' '+r.route.warn+'. It is filed under '+(r.route.k==='m'?monthLabel(r.route.key):r.route.k==='q'?quarterLabel(r.route.key):(S.clouds[r.route.cloud].tdLabelEn||'contract to date'))+'.','warn');});
   if(ok.length===1){var r=ok[0];toast('Loaded '+r.file+' as '+cloudName(r.route.cloud)+' · '+slotLabel(r.route.cloud,r.route.part,r.route.k),'ok');}
   else if(ok.length>1){var g=ok.filter(function(r){return r.route.cloud==='gcp';}).length,a=ok.length-g;toast('Loaded '+ok.length+' files: '+g+' Google Cloud, '+a+' Azure. The table shows where each one landed.','ok');}
   if(ok.length){var pick=ok.filter(function(r){return r.route.cloud==='gcp'&&r.route.k==='m';})[0]||ok.filter(function(r){return r.route.k==='m';})[0]||ok[0];focus={cloud:pick.route.cloud,k:pick.route.k,key:pick.route.key};onChange('full');}});}
@@ -118,7 +133,7 @@ function updateCredit(c){var el=$('#report .mfig-card.for-'+c);if(el)el.outerHTM
 function filesTable(){var E=S.edition,host=$('#ftable'),h='<table><thead><tr><th>Slot</th><th>Status</th><th>File</th><th class="acts"></th></tr></thead><tbody>',extra=[];
  ['gcp','azure'].forEach(function(c){if(c==='azure'&&!S.clouds.azure.enabled)return;h+='<tr class="cloud"><td colspan="4">'+cloudName(c)+'</td></tr>';
   SLOTS[c].forEach(function(sl,i){if(sl.q&&E.showQuarter===false)return;var key=slotKey(sl.k),p=S.clouds[c].periods[key],f=p&&p.files&&p.files[sl.part];var badge=f?'<span class="badge '+(p.sample?'sample':'ok')+'">'+(p.sample?'Sample':'Loaded')+'</span>':'<span class="badge '+(sl.req?'req':'')+'">'+(sl.req?'Required':'Optional')+'</span>';
-   h+='<tr><td>'+esc(sl.en)+'</td><td>'+badge+'</td><td class="fn">'+(f?esc(f):'<span style="color:var(--mut)">'+esc(sl.k==='t'?'contract start to date':sl.k==='q'?quarterLabel(key):monthLabel(key))+'</span>')+'</td><td class="acts"><label class="btn sm">'+(f?'Replace':'Choose file')+'<input type="file" accept=".csv,text/csv" data-slot="'+c+'|'+i+'"></label>'+(f?' <button class="btn sm" type="button" data-remove="'+c+'|'+key+'|'+sl.part+'">Remove</button>':'')+'</td></tr>';});
+   h+='<tr><td>'+esc(sl.en)+'</td><td>'+badge+'</td><td class="fn">'+(f?esc(f):'<span style="color:var(--mut)">'+esc(sl.k==='t'?'contract start to date':sl.k==='q'?quarterLabel(key)+', '+quarterRange(key):monthLabel(key))+'</span>')+'</td><td class="acts"><label class="btn sm">'+(f?'Replace':'Choose file')+'<input type="file" accept=".csv,text/csv" data-slot="'+c+'|'+i+'"></label>'+(f?' <button class="btn sm" type="button" data-remove="'+c+'|'+key+'|'+sl.part+'">Remove</button>':'')+'</td></tr>';});
   var P=S.clouds[c].periods;Object.keys(P).forEach(function(key){var p=P[key];if(!p||p.source!=='upload')return;var k=kindKey(p);if(key===slotKey(k))return;Object.keys(p.files||{}).forEach(function(part){extra.push({c:c,key:key,part:part,name:p.files[part],p:p});});});});
  h+='</tbody></table>';
  if(extra.length){h+='<h4 style="margin:14px 0 4px;font-size:13px">Files loaded under other periods</h4><table><tbody>'+extra.map(function(o){return '<tr><td>'+esc(cloudName(o.c)+' · '+slotLabel(o.c,o.part,kindKey(o.p))+' · '+o.p.label)+'</td><td><span class="badge '+(o.p.sample?'sample':'ok')+'">'+(o.p.sample?'Sample':'Loaded')+'</span></td><td class="fn">'+esc(o.name)+'</td><td class="acts"><button class="btn sm" type="button" data-remove="'+o.c+'|'+o.key+'|'+o.part+'">Remove</button></td></tr>';}).join('')+'</tbody></table>';}
@@ -165,7 +180,13 @@ function checklist(){var E=S.edition,m=E.month,items=[],add=function(l,t,act){it
    else{if(p.subs)add('ok',name+': by subscription loaded, department split exact'+(p.subTotal!=null&&Math.abs(p.subTotal-p.totals.net)>5?' but the subscription total ('+num(p.subTotal,0)+') differs from the service total ('+num(p.totals.net,0)+'): check scope and date range':'')+'.');else add('warn',name+': by-subscription export missing, so the department chart will say so.');if(!p.regions||!p.regions.length)add('warn',name+': by-location export missing; the region table and residency note will not appear.');}
    if(p.unmapped&&p.unmapped.length)add('err',name+': unmapped '+(c==='gcp'?'projects':'subscriptions')+': '+p.unmapped.map(function(x){return x||'(blank id)';}).join(', ')+'. Pick their departments in step 4.');}
   if(!C.periods.td||!C.periods.td.services||!C.periods.td.services.length)add('err',name+': contract-to-date by-service export is missing (step 2).');else if(C.periods.td.source!=='upload')add('warn',name+': the to-date view still carries the previous edition ("'+C.periods.td.label+'"). Drop the fresh to-date export to bring it, and the credit balance, to '+ML+'.');else add('ok',name+': contract to date loaded ('+C.periods.td.label+').');
-  if(E.showQuarter!==false&&isQuarterEnd(m)){var qk=quarterKey(m);if(!C.periods[qk])add('err',name+': '+monthLabel(m)+' closes a quarter but no '+quarterLabel(qk)+' export is loaded; drop it in step 2 or switch the Quarter tab off in step 1.');}});
+  if(E.showQuarter!==false&&isQuarterEnd(m)){var qk=quarterKey(m),qp=C.periods[qk],qr=quarterRange(qk);
+   if(!qp)add('err',name+': '+monthLabel(m)+' closes a quarter but no '+quarterLabel(qk)+' export is loaded; pull it with the date range set to '+qr+' and drop it in step 2, or switch the Quarter tab off in step 1.');
+   else{var fn=Object.keys(qp.files||{}).map(function(x){return qp.files[x];}),bad=[],nod=[];
+    fn.forEach(function(f){var mm=quarterMismatch(qk,f);if(mm)bad.push(f+' covers '+mm.got.a+' to '+mm.got.b);else if(!spanOf(f))nod.push(f);});
+    if(bad.length)add('err',name+': the '+quarterLabel(qk)+' report says it covers '+qr+', but '+bad.join('; ')+'. Re-pull with the console date range set to the whole quarter.');
+    else if(nod.length)add('warn',name+': '+nod.length+' of the '+fn.length+' '+quarterLabel(qk)+' files carry no dates in the name, so the Studio cannot confirm they cover '+qr+'.');
+    else add('ok',name+': '+fn.length+' '+quarterLabel(qk)+' file'+(fn.length===1?'':'s')+' loaded, each covering '+qr+'.');}}});
  var r=creditCalc('gcp');if(!r.po.length||r.startingUsd<=0)add('err','Google Cloud credit: add at least one purchase order with its $ amount (step 3).');else if(r.basis==='none')add('err','Google Cloud credit: the remaining balance is computed from the contract-to-date export; drop it in step 2.');else{if(r.remainingSar<0)add('err','Google Cloud credit: the computed balance is negative ('+num(r.remainingSar,0)+' Riyals). Check the purchase orders and the drawdowns in step 3.');else add('ok','Google Cloud credit: remaining balance '+num(r.remainingSar,0)+' Riyals, computed from '+num(r.startingSar,0)+' starting credit less '+num(r.fixedSar,0)+' of drawdowns and '+num(r.consumptionSar,0)+' of consumption ('+r.rangeEn+').');r.commitments.forEach(function(k){var nm='Commitment "'+(k.name||'unnamed')+'"';if(!k.found)add('warn',nm+' maps to '+(k.services.length?k.services.join(', '):'no service')+', but no service row in the contract-to-date export matches it (case-insensitive, part of the name is enough), so it reads as fully remaining. Check the billing service row in step 3.');});
   if(!E.ledgerConfirmed)add('warn','Google Cloud credit: the ledger is read as '+(r.ledger==='SAR'?'Riyals net of VAT':'US dollars at '+r.fx)+' and procurement has not confirmed the ledger currency yet; the report says so under the arithmetic. Tick the confirmation in step 3 once it is.');}
  if(E.showStatement===false)add('ok','The statement of the month is switched off for this edition, as agreed.');else if(!S.statement.headEn||!lines(S.statement.bodyEn).length)add('err','The FinOps statement of the month needs a headline and at least one paragraph (step 5).');else add('ok','Statement of the month written'+(S.statement.bodyAr&&S.statement.headAr?' in English and Arabic.':' (Arabic falls back to English).'));
@@ -232,5 +253,5 @@ function initStudio(){fillMonthSelect();bindInputs();syncInputs();creditEditors(
  if(MIGRATED){recomputeAll();save();syncInputs();}if(refreshPublished()){save();syncInputs();}renderPreview();renderStudio();showStep(1);
  if(MIGRATED){toast('The Studio was updated (build '+BASE.meta.stamp.slice(0,10)+'). Your files, ledger rows, maps and statement were carried over; run through step 6 once.','ok');}else if(RESUMED){var at=S.meta&&S.meta.savedAt?new Date(S.meta.savedAt):null;toast('Picked up where you left off'+(at&&!isNaN(at)?' (saved '+at.getDate()+' '+MEN[at.getMonth()]+', '+(at.getHours()<10?'0':'')+at.getHours()+':'+(at.getMinutes()<10?'0':'')+at.getMinutes()+')':'')+': every edit and file from your last visit is here. Reset in step 6 starts over from the embedded baseline.','ok');}}
 document.addEventListener('DOMContentLoaded',initStudio);
-window.FinOpsStudio={state:function(){return S;},build:buildReport,checklist:checklist,generate:generate,classify:classify,publishedHtml:publishedHtml,creditCalc:creditCalc,showStep:showStep,resultPanel:resultPanel,derivedVersion:derivedVersion,refreshPublished:refreshPublished,lastGen:function(){return lastGen;},genUrl:function(){return genUrl;},resumed:function(){return RESUMED;},migrated:function(){return MIGRATED;}};
+window.FinOpsStudio={state:function(){return S;},build:buildReport,checklist:checklist,generate:generate,classify:classify,quarterRange:quarterRange,publishedHtml:publishedHtml,creditCalc:creditCalc,showStep:showStep,resultPanel:resultPanel,derivedVersion:derivedVersion,refreshPublished:refreshPublished,lastGen:function(){return lastGen;},genUrl:function(){return genUrl;},resumed:function(){return RESUMED;},migrated:function(){return MIGRATED;}};
 })();
