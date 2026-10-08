@@ -49,9 +49,13 @@ function classify(name,rows){var E=S.edition,head=Object.keys(rows[0]||{}),has=f
  else if(k==='q'){var qm=dates.length>=2&&quarterMismatch(key,name);
   if(qm)warn='covers '+qm.got.a+' to '+qm.got.b+', but '+quarterLabel(key)+' runs '+quarterRange(key)+'. Re-pull it with the console date range set to the whole quarter';
   else if(key!==quarterKey(E.month))warn='is '+quarterLabel(key)+', but the edition closes '+quarterLabel(quarterKey(E.month));}
+ /* A to-date pull that reaches back further than the contract start is a superset: there is no
+    spend before the account was billing, so a wider net cannot change the total. Starting late is
+    the one that loses money, and stopping short of the edition month loses the latest month. */
  else if(k==='t'&&dates.length>=2){var ts=tdStart(cloud);
   if(n>=2&&n<=6)warn='covers '+a+' to '+b+', which is neither a whole quarter nor a half year, so it was filed under contract to date';
-  else if(ts&&am!==ts)warn='starts '+a+', but contract to date runs from '+monthLabel(ts)+'; a to-date export pulled from the wrong start overwrites the credit balance';}
+  else if(ts&&am>ts)warn='starts '+a+', after contract to date begins in '+monthLabel(ts)+', so the spend before that is missing from the balance';
+  else if(bm<E.month)warn='stops at '+b+', before '+monthLabel(E.month)+' closes, so this edition\'s month is missing from the to-date figures';}
  return {cloud:cloud,part:part,k:k,key:key,warn:warn,detected:detected};}
 function normalizeRows(cloud,part,rows){if(cloud==='gcp')return part==='project'?gcpProjects(rows,FX()):gcpServices(rows,FX());var parsed=azureRows(rows,FX(),S.edition.azureCurrency);return parsed.rows.map(function(r){return {name:r.name,id:r.id||'',net:r.net,gross:r.net,chg:'n/a'};});}
 function place(cloud,part,k,key,fileName,data){var p=ensurePeriod(cloud,k,key);

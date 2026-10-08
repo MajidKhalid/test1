@@ -203,14 +203,16 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
      September still counts as three months. The report now states the span, so a short pull has to
      be caught rather than filed in silence. */
   const cl = await p.evaluate(() => { const r = [{ 'Project ID': 'p', 'Subtotal ($)': '1', 'List cost ($)': '1' }], C = window.FinOpsStudio.classify;
-    return { good: C('Reports, 2026-07-01 - 2026-09-30.csv', r), late: C('Reports, 2026-07-15 - 2026-09-30.csv', r), short: C('Reports, 2026-07-01 - 2026-09-15.csv', r), shift: C('Reports, 2026-08-01 - 2026-10-31.csv', r), long: C('Reports, 2025-07-01 - 2026-09-30.csv', r) }; });
-  check('a quarter export that misses part of the quarter is flagged, not filed in silence',
+    return { good: C('Reports, 2026-07-01 - 2026-09-30.csv', r), late: C('Reports, 2026-07-15 - 2026-09-30.csv', r), short: C('Reports, 2026-07-01 - 2026-09-15.csv', r), shift: C('Reports, 2026-08-01 - 2026-10-31.csv', r), wide: C('Reports, 2025-07-01 - 2026-09-30.csv', r), tdLate: C('Reports, 2026-01-01 - 2026-09-30.csv', r), stops: C('Reports, 2025-07-01 - 2026-08-31.csv', r) }; });
+  check('a short quarter pull and a late or short to-date pull are flagged; a wider to-date pull is not',
     cl.good.k === 'q' && cl.good.key === '2026-q3' && !cl.good.warn
     && cl.late.k === 'q' && /1 July to 30 September 2026/.test(cl.late.warn || '')
     && cl.short.k === 'q' && /1 July to 30 September 2026/.test(cl.short.warn || '')
     && cl.shift.k === 't' && /neither a whole quarter nor a half year/.test(cl.shift.warn || '')
-    && cl.long.k === 't' && /contract to date runs from October 2025/.test(cl.long.warn || ''),
-    { late: cl.late.warn, short: cl.short.warn, shift: cl.shift.warn, long: cl.long.warn });
+    && cl.wide.k === 't' && !cl.wide.warn
+    && cl.tdLate.k === 't' && /after contract to date begins in October 2025/.test(cl.tdLate.warn || '')
+    && cl.stops.k === 't' && /before September 2026 closes/.test(cl.stops.warn || ''),
+    { short: cl.short.warn, shift: cl.shift.warn, wide: cl.wide.warn, tdLate: cl.tdLate.warn, stops: cl.stops.warn });
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#btn-gen')]);
   const dlName = dl.suggestedFilename(); const dlPath = OUT + '/' + dlName; await dl.saveAs(dlPath);
   await p.waitForTimeout(500);

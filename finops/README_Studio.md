@@ -84,7 +84,7 @@ Six steps, one at a time, on a light page: **Month** (a dropdown; dates, labels,
 | Month · all GCP by service | Reports grouped by Service, the month | yes | key figures, service chart, highlight |
 | Month · all GCP by project | Reports grouped by Project, the month | yes | the department donut, exact, and the project table |
 | Month · SPARK by service | same as the first, filtered to the SPARK folder (969004756048), or to every project whose id starts `prj-moenergy-iw-` | yes | the SPARK figure and its service chart |
-| To date · all GCP by service | 1 Oct 2025 to today | yes | the Contract to date tab |
+| To date · all GCP by service | 1 Oct 2025 to today, or any earlier start: reaching further back is a superset and cannot change the total, so the Studio accepts it. It flags a pull that starts later than the contract to date begins, or stops before the reporting month closes | yes | the Contract to date tab |
 | To date · by project, To date · SPARK | same ranges | optional | exact split and SPARK on the to-date tab |
 | Quarter · three slots | the same three exports with the range set to the whole quarter, the 1st of its first month to the last day of its third | optional (expected in quarter-end months; the Studio checks the dates in the file name) | the Quarter tab, alongside Q1, Q2 and H1 2026 |
 | Credit position | Billing > Credits plus the PO ledger | yes | the credit card in the hero |
