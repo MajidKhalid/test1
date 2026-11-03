@@ -29,7 +29,7 @@
 .de-glass__ring{position:absolute;inset:2.5%;border:1px solid rgba(255,255,255,.07)}
 
 /* navy diamond · far plane */
-.de-mo--diamond{top:11.7%;inset-inline-end:55.5%;width:5%;--k:0.3}
+.de-mo--diamond{top:96px;inset-inline-end:55.5%;width:5%;--k:0.3}
 .de-mo--diamond .de-mo__i{animation-name:de-drift-b;animation-duration:44s}
 .de-mo--diamond .de-glass{
   border-radius:12%;
@@ -53,7 +53,7 @@
 }
 
 /* orange rounded square · accent */
-.de-mo--coral{top:8.1%;inset-inline-end:35.8%;width:6.1%;--k:0.55}
+.de-mo--coral{top:85px;inset-inline-end:35.8%;width:6.1%;--k:0.55}
 .de-mo--coral .de-mo__i{animation-name:de-drift-a;animation-duration:31s}
 .de-mo--coral .de-glass{
   border-radius:15%;
@@ -76,7 +76,7 @@
 }
 
 /* blue square · mid plane */
-.de-mo--square{top:15.3%;inset-inline-end:3.4%;width:6.9%;--k:0.6}
+.de-mo--square{top:161px;inset-inline-end:3.4%;width:6.9%;--k:0.6}
 .de-mo--square .de-mo__i{animation-name:de-drift-c;animation-duration:36s}
 .de-mo--square .de-glass{
   border-radius:3.5%;
@@ -143,14 +143,14 @@
   /* the hero is the same height but the copy column is wider, so the square has nowhere left to
      sit without landing on the chips; the other three keep clear space and carry the depth */
   .de-mo--square{display:none}
-  .de-mo--diamond{top:9%;inset-inline-end:60%;width:5.6%}
-  .de-mo--coral{top:5.5%;inset-inline-end:38%;width:6.4%}
+  .de-mo--diamond{top:95px;inset-inline-end:60%;width:5.6%}
+  .de-mo--coral{top:58px;inset-inline-end:38%;width:6.4%}
   .de-mo--circle{top:60%;inset-inline-end:1.5%;width:7.4%}
 }
 @media (max-width:900px){
   .de-motifs{--presence:.7}
   .de-mo--diamond{display:none}
-  .de-mo--coral{top:3%;inset-inline-end:46%;width:7.6%}
+  .de-mo--coral{top:32px;inset-inline-end:46%;width:7.6%}
   .de-mo--circle{top:58%;inset-inline-end:0.5%;width:9.4%}
 }
 /* a phone hero is too tight to carry them */

@@ -42,6 +42,12 @@ const A_Q_SUB = route('SAMPLE_azure_cost_by_subscription_2026-08.csv', `SAMPLE_a
 const near = (a, b, tol) => Math.abs(a - b) <= (tol || 0.06);
 const fails = [];
 const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name + (extra !== undefined ? ' | ' + JSON.stringify(extra) : '')); if (!ok) fails.push(name); };
+const setMonth = async (pg, iso) => {
+  const [y, m] = iso.split('-');
+  await pg.selectOption('#f-mon', m);
+  await pg.fill('#f-year', y);
+  await pg.waitForTimeout(450);
+};
 (async () => {
   const b = await chromium.launch();
   const ctx = await b.newContext({ viewport: { width: 1280, height: 900 }, acceptDownloads: true });
@@ -58,49 +64,42 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('fresh load: published refreshed to today', s.published === today, s.published);
   check('fresh load: derived chips show version and refresh note', /Version\s*v22/.test(s.derived) && /refreshed on download/.test(s.derived));
   check('fresh load: not resumed', s.resumed === false);
-  await p.selectOption('#f-month', '2026-10'); await p.waitForTimeout(300);
+  await setMonth(p, '2026-10'); await p.waitForTimeout(300);
   s = await p.evaluate(() => ({ version: document.getElementById('f-version').value, note: document.getElementById('ver-note').textContent }));
   check('month 2026-10 derives v23', s.version === '23', s.note);
-  await p.selectOption('#f-month', '2026-07'); await p.waitForTimeout(300);
+  await setMonth(p, '2026-07'); await p.waitForTimeout(300);
   check('month 2026-07 derives v20', (await p.inputValue('#f-version')) === '20');
-  await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(300);
+  await setMonth(p, '2026-09'); await p.waitForTimeout(300);
   await p.fill('#f-version', '25'); await p.waitForTimeout(300);
-  await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(300);
+  await setMonth(p, '2026-09'); await p.waitForTimeout(300);
   s = await p.evaluate(() => ({ version: document.getElementById('f-version').value, note: document.getElementById('ver-note').textContent, manual: window.FinOpsStudio.state().edition.versionManual }));
   check('hand-set version survives a month change', s.version === '25' && s.manual === true, s.note);
-  await p.click('.adjust > summary'); await p.waitForTimeout(150);
+  await p.evaluate(() => { [...document.querySelectorAll('.st-panel[data-panel="1"] details.adjust')].forEach(d => { if (/derived dates/.test(d.querySelector('summary').textContent)) d.open = true; }); }); await p.waitForTimeout(150);
   await p.fill('#f-pub', '1 January 2030'); await p.waitForTimeout(300);
   s = await p.evaluate(() => ({ manual: window.FinOpsStudio.state().edition.publishedManual, derived: document.getElementById('derived').textContent }));
   check('hand-set published date is flagged', s.manual === true && /set by hand/.test(s.derived));
   await p.click('#btn-derive'); await p.waitForTimeout(300);
   s = await p.evaluate(() => ({ version: document.getElementById('f-version').value, pub: window.FinOpsStudio.state().edition.published, vm: window.FinOpsStudio.state().edition.versionManual, pm: window.FinOpsStudio.state().edition.publishedManual }));
   check('refill returns version and published to derived', s.version === '22' && s.pub === today && !s.vm && !s.pm, s);
-  await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(300);
+  await setMonth(p, '2026-09'); await p.waitForTimeout(300);
   check('back on September: v22', (await p.inputValue('#f-version')) === '22');
-  // ---- the August edition as shipped: no opening paragraph, no statement, Google Cloud only
-  s = await p.evaluate(() => ({ lead: !!document.querySelector('#report .hero .wrap > p.sub'), stmt: !!document.querySelector('#report .stmt'), sw: !!document.querySelector('#report .cloudsw'), off: [...document.querySelectorAll('#checklist li.ok')].some(l => /statement of the month is switched off/.test(l.textContent)) }));
-  check('as shipped: no opening paragraph, no statement, no cloud switch, and the statement check passes as switched off', !s.lead && !s.stmt && !s.sw && s.off, s);
-  await p.check('input[data-bind="edition.showLead"]'); await p.check('input[data-bind="edition.showStatement"]'); await p.check('input[data-bind="clouds.azure.enabled"]'); await p.waitForTimeout(600);
-  check('switching the three back on restores the paragraph, the statement and the cloud switch', await p.evaluate(() => !!document.querySelector('#report .hero .wrap > p.sub') && !!document.querySelector('#report .stmt') && !!document.querySelector('#report .cloudsw')));
-  // ---- statement: collapsed in the report, open in the live preview
-  s = await p.evaluate(() => ({ reportMore: !!document.querySelector('#report .stmt details.more'), reportOpen: !!document.querySelector('#report .stmt details.more[open]'), dirBeforeMore: (() => { const st = document.querySelector('#report .stmt'); const i1 = [...st.children].findIndex(e => e.classList.contains('dir')); const i2 = [...st.children].findIndex(e => e.classList.contains('more')); return i1 > -1 && i2 > i1; })(), paragraphs: document.querySelectorAll('#report .stmt .more-body .en p').length }));
-  check('report statement: headline, direction points, then Read more (closed)', s.reportMore && !s.reportOpen && s.dirBeforeMore && s.paragraphs === 4, s);
-  await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(200);
-  check('step 5 live preview shows the paragraphs open', await p.evaluate(() => !!document.querySelector('#stmt-preview details.more[open]')));
-  // ---- Azure switched off with the draft still mentioning it: the check names the field and offers the fix
-  await p.click('#st-steps button[data-step="1"]'); await p.waitForTimeout(150);
-  await p.uncheck('input[data-bind="clouds.azure.enabled"]'); await p.waitForTimeout(400);
-  await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
-  s = await p.evaluate(() => { const li = [...document.querySelectorAll('#checklist li.err')].find(l => /Azure is not included/.test(l.textContent)); return { found: !!li, text: li ? li.textContent : '', btn: !!(li && li.querySelector('button[data-act="dropAzure"]')), tokensDead: [...document.querySelectorAll('#tokchips button.dead')].map(b => b.dataset.tok) }; });
-  check('Azure off: the blocker names the Azure tokens and the fields, with a fix button', s.found && /Statement \(EN\)/.test(s.text) && /Statement \(AR\)/.test(s.text) && s.btn && s.tokensDead.includes('azure.net') && s.tokensDead.includes('azure.credit.remaining'), s.text.slice(0, 160));
-  await p.click('#checklist button[data-act="dropAzure"]'); await p.waitForTimeout(500);
-  s = await p.evaluate(() => { const st = window.FinOpsStudio.state().statement; return { en: st.bodyEn, ar: st.bodyAr, azureErr: [...document.querySelectorAll('#checklist li.err')].some(l => /Azure|azure/.test(l.textContent)), paragraphs: document.querySelectorAll('#report .stmt .more-body .en p').length, arParas: document.querySelectorAll('#report .stmt .more-body .ar p').length, gcpOnly: !document.querySelector('#report .cloudsw') }; });
-  check('one click removes the Azure lines from both languages and clears the blocker', !/azure/i.test(s.en) && !/azure/i.test(s.ar) && !s.azureErr && s.paragraphs === 3 && s.arParas === 3 && s.gcpOnly, [s.paragraphs, s.arParas, s.azureErr, s.gcpOnly]);
-  await p.click('#st-steps button[data-step="1"]'); await p.waitForTimeout(150);
-  await p.check('input[data-bind="clouds.azure.enabled"]'); await p.waitForTimeout(300);
-  await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(150);
-  await p.click('#btn-draft'); await p.waitForTimeout(400);
-  check('Azure back on and the draft restored', await p.evaluate(() => /azure\.net/.test(window.FinOpsStudio.state().statement.bodyEn) && !!document.querySelector('#report .cloudsw')));
+  // ---- the statement is gone: no step, no editor, no block in the report
+  s = await p.evaluate(() => ({
+    lead: !!document.querySelector('#report .hero .wrap > p.sub'),
+    stmt: !!document.querySelector('#report .stmt'),
+    sw: !!document.querySelector('#report .cloudsw'),
+    editor: !!document.querySelector('#stmt-preview, #tokchips, [data-bind^="statement."], #btn-draft'),
+    rail: [...document.querySelectorAll('#st-steps button')].map(b => b.querySelector('span').textContent),
+    inState: 'statement' in window.FinOpsStudio.state()
+  }));
+  check('the statement is removed everywhere: no step, no editor, no block in the report, nothing left in state',
+    !s.stmt && !s.editor && !s.inState && s.rail.length === 5 && s.rail.join(',') === 'Month,Files,Credits,Ownership,Generate', s);
+  await p.check('input[data-bind="edition.showLead"]'); await p.check('input[data-bind="clouds.azure.enabled"]');
+  await p.waitForTimeout(400);
+  check('switching the opening paragraph and the cloud switch back on still works',
+    await p.evaluate(() => !!document.querySelector('#report .hero .wrap > p.sub') && !!document.querySelector('#report .cloudsw')));
+  await p.uncheck('input[data-bind="edition.showLead"]'); await p.waitForTimeout(300);
+
   // ---- step 3: ledger currency and confirmation
   await p.click('#st-steps button[data-step="3"]'); await p.waitForTimeout(300);
   let c = await p.evaluate(() => window.FinOpsStudio.creditCalc('gcp'));
@@ -182,21 +181,21 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   s = await p.evaluate(() => { const src = document.querySelector('#report .mfig-card.for-gcp .src'); return { sub: [...src.querySelectorAll('.s.sub')].map(e => e.textContent), withSub: src.querySelectorAll('.s.with-sub').length }; });
   check('the drawdowns sit under the live purchase order and say so', s.withSub === 1 && s.sub.length === 2 && /Enhanced Support/.test(s.sub[0]) && /drawn from this order/.test(s.sub[0]) && /Log Optimization/.test(s.sub[1]), s.sub);
   await p.click('#st-steps button[data-step="4"]'); await p.waitForTimeout(200);
-  check('ownership picker offers the six departments', await p.evaluate(() => { const o = [...document.querySelector('#qm-azure select[data-qm]').options].map(x => x.value).filter(Boolean); return o.length === 6 && o.includes('dtgd') && o.includes('dea'); }));
-  for (const [name, dept] of Object.entries({ 'MOE-SEC-PRD': 'cyber', 'MOE-INFRA-HUB': 'itsvc', 'MOE-BUSINESS-APPS': 'dtgd' })) { await p.selectOption(`#qm-azure select[data-qm="${name}"]`, dept); await p.waitForTimeout(250); }
+  check('the ownership table offers the six departments', await p.evaluate(() => { const o = [...document.querySelector('#qm-azure select[data-own]').options].map(x => x.value).filter(Boolean); return o.length === 6 && o.includes('dtgd') && o.includes('dea'); }));
+  for (const [name, dept] of Object.entries({ 'MOE-SEC-PRD': 'cyber', 'MOE-INFRA-HUB': 'itsvc', 'MOE-BUSINESS-APPS': 'dtgd' })) { await p.selectOption(`#qm-azure select[data-id="${name.toLowerCase()}"]`, dept); await p.waitForTimeout(250); }
   await p.waitForTimeout(400);
   s = await p.evaluate(() => { const d = window.FinOpsStudio.state().clouds.azure.periods['2026-09'].departments; const leg = [...document.querySelectorAll('#report .mv-azure-2026-09 .dleg li')].map(l => l.textContent); return { dtgd: (d.find(x => x.key === 'dtgd') || {}).net, legend: leg.length, hasName: leg.some(t => /Digital Transformation GD/.test(t)), zeroShown: leg.some(t => /Digital Enterprise Architecture/.test(t)) }; });
   check('a subscription mapped to Digital Transformation GD shows in the legend; the unused department stays out', s.dtgd > 0 && s.hasName && !s.zeroShown && s.legend === 3, s);
-  // ---- step 6: one-click download, result panel, open in a new tab, secondary downloads
-  await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
+  // ---- step 5: one-click download, result panel, open in a new tab, secondary downloads
+  await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(200);
   s = await p.evaluate(() => ({ errs: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent.slice(0, 80)), gen: document.getElementById('btn-gen').textContent, disabled: document.getElementById('btn-gen').disabled, stable: !!document.getElementById('btn-gen-stable'), bar: document.getElementById('bar-status').textContent, keep: [...document.querySelectorAll('#checklist li.ok')].some(l => /keeps every edit/.test(l.textContent)) }));
-  check('step 6: one primary button, no stable button, reminder about the saved state', s.gen === 'Download FinOps_Dashboard_v22.html' && !s.stable && s.keep, s);
+  check('step 5: one primary button, no stable button, reminder about the saved state', s.gen === 'Download FinOps_Dashboard_v22.html' && !s.stable && s.keep, s);
   console.log('   blockers left (sample files expected):', s.errs);
   // sample files block the download: prove it, then lift the block by pretending the files are real
   await p.evaluate(() => window.FinOpsStudio.generate()); await p.waitForTimeout(300);
   check('download refused while blockers remain', await p.evaluate(() => document.getElementById('gen-result').hidden === true && !window.FinOpsStudio.lastGen()));
   await p.evaluate(() => { const S = window.FinOpsStudio.state(); ['gcp', 'azure'].forEach(c => Object.values(S.clouds[c].periods).forEach(pp => { if (pp.sample) { pp.sample = false; Object.keys(pp.files).forEach(k => { pp.files[k] = pp.files[k].replace(/^SAMPLE_/i, 'real_'); }); } })); });
-  await p.click('#st-steps button[data-step="1"]'); await p.waitForTimeout(100); await p.selectOption('#f-month', '2026-09'); await p.waitForTimeout(400); await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
+  await p.click('#st-steps button[data-step="1"]'); await p.waitForTimeout(100); await setMonth(p, '2026-08'); await setMonth(p, '2026-09'); await p.waitForTimeout(400); await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(200);
   s = await p.evaluate(() => ({ errs: [...document.querySelectorAll('#checklist li.err')].map(l => l.textContent.slice(0, 80)), disabled: document.getElementById('btn-gen').disabled }));
   check('no blockers once real files are in', s.errs.length === 0 && !s.disabled, s.errs);
   /* monthsBetween reads year and month only, so a quarter export that starts mid July or stops mid
@@ -227,8 +226,8 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   const [np] = await Promise.all([ctx.waitForEvent('page'), p.click('#btn-open')]);
   await np.waitForLoadState(); await np.waitForTimeout(400);
   const npReqs = []; np.on('request', r => { if (!r.url().startsWith('blob:')) npReqs.push(r.url()); });
-  s = await np.evaluate(() => ({ title: document.title, scripts: document.querySelectorAll('script').length, more: !!document.querySelector('.stmt details.more'), url: location.protocol }));
-  check('open in a new tab shows the report itself (blob, one motion script)', /FinOps Report/.test(s.title) && s.scripts === 1 && s.more && s.url === 'blob:', s);
+  s = await np.evaluate(() => ({ title: document.title, scripts: document.querySelectorAll('script').length, stmt: !!document.querySelector('.stmt'), url: location.protocol }));
+  check('open in a new tab shows the report itself (blob, one motion script)', /FinOps Report/.test(s.title) && s.scripts === 1 && !s.stmt && s.url === 'blob:', s);
   // the period menu is CSS-only until the one script closes it, so prove the click actually collapses it
   const dd = await np.evaluate(() => {
     const d = document.querySelector('details.dd');
@@ -248,44 +247,42 @@ const check = (name, ok, extra) => { console.log((ok ? 'PASS ' : 'FAIL ') + name
   check('downloaded file equals publishedHtml()', published === await p.evaluate(() => window.FinOpsStudio.publishedHtml()));
   check('downloaded file: one self-contained motion script, no em dash, standalone marker', (published.match(/<script/g) || []).length === 1 && /de-motifs/.test(published) && /addEventListener\('mousemove'/.test(published) && !/FinOpsStudio|\bS\.clouds\b/.test(published.slice(published.indexOf('<script'))) && !published.replace(/base64,[A-Za-z0-9+/=]+/g, '').includes('\u2014') && /Studio v1\.3/.test(published));
   // an edit after the download hides the stale result panel
-  await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(100);
-  await p.fill('#f-sh', 'We know where every riyal sits, and we manage to it.'); await p.waitForTimeout(400);
+  await p.click('#st-steps button[data-step="1"]'); await p.waitForTimeout(100);
+  await p.evaluate(() => { [...document.querySelectorAll('.st-panel[data-panel="1"] details.adjust')].forEach(d => { if (/Report notes/.test(d.querySelector('summary').textContent)) d.open = true; }); });
+  await p.fill('#f-gcn', 'Credit note carried over for the resume check.'); await p.waitForTimeout(400);
   check('an edit after the download clears the result panel', await p.evaluate(() => document.getElementById('gen-result').hidden && !window.FinOpsStudio.lastGen()));
-  await p.click('#st-steps button[data-step="6"]'); await p.waitForTimeout(200);
+  await p.click('#st-steps button[data-step="5"]'); await p.waitForTimeout(200);
   await p.screenshot({ path: OUT + '/studio_v13_full.png', fullPage: true });
   console.log('STUDIO errors:', errs, 'external requests:', reqs.length);
   check('studio: zero page errors and zero external requests', errs.length === 0 && reqs.length === 0);
   // ---- resume: reload keeps everything and says so
   await p.reload(); await p.waitForTimeout(900);
-  s = await p.evaluate(() => ({ resumed: window.FinOpsStudio.resumed(), head: document.getElementById('f-sh').value, toast: [...document.querySelectorAll('.toast')].map(t => t.textContent).join(' | '), files: document.querySelectorAll('#ftable .badge.ok').length }));
-  check('reload resumes the saved state with a toast', s.resumed && /manage to it/.test(s.head) && /Picked up where you left off/.test(s.toast) && s.files >= 8, [s.files, s.toast.slice(0, 80)]);
-  await p.evaluate(() => { const k = 'finops-studio-v1', st = JSON.parse(localStorage.getItem(k)); st.meta.stamp = 'older-build'; delete st.edition.showLead; delete st.edition.showStatement; delete st.clouds.gcp.sparkProjectsText; delete st.edition.showQuarter; st.edition.quarterEnd = false; localStorage.setItem(k, JSON.stringify(st)); });
+  s = await p.evaluate(() => ({ resumed: window.FinOpsStudio.resumed(), note: document.getElementById('f-gcn').value, toast: [...document.querySelectorAll('.toast')].map(t => t.textContent).join(' | '), files: document.querySelectorAll('#ftable .badge.ok').length }));
+  check('reload resumes the saved state with a toast', s.resumed && /carried over/.test(s.note) && /Picked up where you left off/.test(s.toast) && s.files >= 8, [s.files, s.toast.slice(0, 80)]);
+  await p.evaluate(() => { const k = 'finops-studio-v1', st = JSON.parse(localStorage.getItem(k)); st.meta.stamp = 'older-build'; delete st.edition.showLead; delete st.clouds.gcp.sparkProjectsText; delete st.edition.showQuarter; st.edition.quarterEnd = false; localStorage.setItem(k, JSON.stringify(st)); });
   await p.reload(); await p.waitForTimeout(900);
-  s = await p.evaluate(() => { const S = window.FinOpsStudio.state(); return { migrated: window.FinOpsStudio.migrated(), head: document.getElementById('f-sh').value, lead: S.edition.showLead, spark: S.clouds.gcp.sparkProjectsText, showQuarter: S.edition.showQuarter, files: document.querySelectorAll('#ftable .badge.ok').length, toast: [...document.querySelectorAll('.toast')].map(t => t.textContent).join(' | '), stamp: S.meta.stamp, migratedFrom: S.meta.migratedFrom }; });
-  check('an older saved state is migrated into the new build: edits and files kept, new fields filled, toast shown', s.migrated && /manage to it/.test(s.head) && s.lead === false && /prj-moenergy-iw-/.test(s.spark || '') && s.showQuarter === true && s.files >= 8 && /Studio was updated/.test(s.toast) && s.stamp !== 'older-build' && s.migratedFrom === 'older-build', [s.lead, s.spark, s.showQuarter, s.files, s.toast.slice(0, 60)]);
+  s = await p.evaluate(() => { const S = window.FinOpsStudio.state(); return { migrated: window.FinOpsStudio.migrated(), note: document.getElementById('f-gcn').value, lead: S.edition.showLead, spark: S.clouds.gcp.sparkProjectsText, showQuarter: S.edition.showQuarter, files: document.querySelectorAll('#ftable .badge.ok').length, toast: [...document.querySelectorAll('.toast')].map(t => t.textContent).join(' | '), stamp: S.meta.stamp, migratedFrom: S.meta.migratedFrom }; });
+  check('an older saved state is migrated into the new build: edits and files kept, new fields filled, toast shown', s.migrated && /carried over/.test(s.note) && s.lead === false && /prj-moenergy-iw-/.test(s.spark || '') && s.showQuarter === true && s.files >= 8 && /Studio was updated/.test(s.toast) && s.stamp !== 'older-build' && s.migratedFrom === 'older-build', [s.lead, s.spark, s.showQuarter, s.files, s.toast.slice(0, 60)]);
   await ctx.close();
   // ---- the generated file with JavaScript disabled
   const ctx2 = await b.newContext({ viewport: { width: 1280, height: 900 }, javaScriptEnabled: false });
   const g = await ctx2.newPage(); const reqs2 = []; g.on('request', r => { if (!r.url().startsWith('file:')) reqs2.push(r.url()); });
   await g.goto('file://' + dlPath); await g.waitForTimeout(400);
   const vis = sel => g.evaluate(s => { const e = document.querySelector(s); return e ? getComputedStyle(e).display : 'MISSING'; }, sel);
-  const t = { aug: await vis('.mv-gcp-2026-09'), moreSummary: await vis('.stmt .more>summary'), bodyBefore: await g.evaluate(() => document.querySelector('.stmt .more-body p').checkVisibility()) };
-  await g.click('.stmt .more>summary'); await g.waitForTimeout(200);
-  t.bodyAfter = await g.evaluate(() => document.querySelector('.stmt .more-body p').checkVisibility());
-  check('generated (no JS): Read more opens the paragraphs', t.moreSummary !== 'none' && t.bodyBefore === false && t.bodyAfter === true, t);
-  await g.click('.stmt .more>summary'); await g.waitForTimeout(150);
+  const t = { aug: await vis('.mv-gcp-2026-09'), stmt: await g.evaluate(() => !!document.querySelector('.stmt')) };
+  check('generated (no JS): the month view renders and carries no statement block', t.aug === 'block' && t.stmt === false, t);
   await g.screenshot({ path: OUT + '/generated_v13_hero.png', fullPage: false });
   await g.click('.calc>summary'); await g.waitForTimeout(150); t.calcOpenRows = await g.evaluate(() => document.querySelectorAll('.calc[open] tbody tr').length);
   t.calcNote = await g.evaluate(() => document.querySelector('.calc-note .en').textContent);
   check('generated: calc table opens and states the ledger basis plus the unconfirmed line', t.calcOpenRows >= 8 && /converted at 3.75/.test(t.calcNote) && /still being confirmed/.test(t.calcNote));
   await g.click('label[for="c-azure"]'); await g.waitForTimeout(150); t.azure = await vis('.mv-azure-2026-09');
   await g.click('label[for="lang"]'); await g.waitForTimeout(150); t.rtl = await g.evaluate(() => getComputedStyle(document.querySelector('main')).direction);
-  t.arMore = await g.evaluate(() => getComputedStyle(document.querySelector('.stmt .more>summary .ar')).display);
-  check('generated: cloud switch, RTL flip, Arabic Read more label', t.aug === 'block' && t.azure === 'block' && t.rtl === 'rtl' && t.arMore !== 'none', t);
+  t.arCalc = await g.evaluate(() => getComputedStyle(document.querySelector('.calc>summary .ar')).display);
+  check('generated: cloud switch, RTL flip, Arabic labels', t.aug === 'block' && t.azure === 'block' && t.rtl === 'rtl' && t.arCalc !== 'none', t);
   await g.click('label[for="lang"]'); await g.click('label[for="c-gcp"]'); await g.waitForTimeout(150);
   await g.emulateMedia({ media: 'print' }); await g.waitForTimeout(200);
-  const pr = await g.evaluate(() => ({ summary: getComputedStyle(document.querySelector('.stmt .more>summary')).display, body: document.querySelector('.stmt .more-body p').checkVisibility(), calc: document.querySelector('.calc tbody tr td').checkVisibility(), period: getComputedStyle(document.querySelector('.print-period')).display }));
-  check('generated (print): statement paragraphs and calc table open, summary hidden', pr.summary === 'none' && pr.body === true && pr.calc === true && pr.period === 'block', pr);
+  const pr = await g.evaluate(() => ({ calc: document.querySelector('.calc tbody tr td').checkVisibility(), period: getComputedStyle(document.querySelector('.print-period')).display }));
+  check('generated (print): the calc table opens and the reporting period prints', pr.calc === true && pr.period === 'block', pr);
   await g.emulateMedia({ media: 'screen' }); await g.waitForTimeout(100);
   const q = await g.evaluate(() => ({ tab: !!document.getElementById('pv-gcp-q'), opts: [...document.querySelectorAll('.sw.for-gcp .seg.s-q .dd-opt')].map(l => l.textContent.replace(/\s+/g, ' ')) }));
   check('generated: a quarter states the months it covers, in both languages, on screen and in print',

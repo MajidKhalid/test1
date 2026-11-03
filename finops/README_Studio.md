@@ -1,6 +1,6 @@
 # FinOps Report Studio
 
-`FinOps_Studio_v1.html` is one HTML page that does the whole monthly job: it asks for the month's exports, the team drops them in, the FinOps statement of the month is written in place, and the page generates the report that gets circulated (`FinOps_Dashboard.html`, the same shape as the July 2026 edition, v20, with two additions: a cloud switch between Google Cloud and Microsoft Azure, and the statement of the month above it).
+`FinOps_Studio_v1.html` is one HTML page that does the whole monthly job: it asks for the month and year, the team drops the exports in, every project is assigned to an owning department, and the page generates the report that gets circulated (`FinOps_Dashboard.html`, the same shape as the July 2026 edition, v20, with two additions: a cloud switch between Google Cloud and Microsoft Azure, and the statement of the month above it).
 
 It replaces `FinOps_Builder.html` and continues the version line: the July 2026 edition was Report v20, so the August 2026 edition generates as v21. The Studio itself is versioned separately (Studio v1) because it changes far less often than the report.
 
@@ -28,13 +28,11 @@ Fortinet is a one-time payment too, but it appears in the billing dashboard as F
 
 The file people open is the standalone HTML page the Studio downloads, so the flow now ends there. A review of the tool from the CIO and CFO seat produced these changes:
 
-- **One click.** "Download FinOps_Dashboard_v21.html" is the only primary button, in the header, the fixed bar and step 6. It writes the versioned standalone file. A result panel then states what the file is (one page, no internet connection, no Studio, nothing else has to travel with it) and offers three secondary actions: **Open the report in a new tab** (the same content, for the read-through), **Download the stable copy** (`FinOps_Dashboard.html`, the one SharePoint overwrites so the link never changes) and **Download the edition state**. Any edit after the download clears the panel, because the downloaded file no longer matches.
-- **Above the fold.** Leadership sees the statement headline and the three "where we are heading" points first, then the key figures. The paragraphs open under "Read the full statement", a CSS-only control that needs no script and prints open. The Studio's live preview in step 5 shows the paragraphs open while you write.
+- **One click.** "Download FinOps_Dashboard_v21.html" is the only primary button, in the header, the fixed bar and step 5. It writes the versioned standalone file. A result panel then states what the file is (one page, no internet connection, no Studio, nothing else has to travel with it) and offers three secondary actions: **Open the report in a new tab** (the same content, for the read-through), **Download the stable copy** (`FinOps_Dashboard.html`, the one SharePoint overwrites so the link never changes) and **Download the edition state**. Any edit after the download clears the panel, because the downloaded file no longer matches.
 - **The version derives from the month.** July 2026 was v20 and each month adds one, so August is v21 and September v22. Editing the number by hand sticks until "Refill everything from the month".
 - **The published date is the download day.** It refreshes when the Studio opens, when you preview as published and when you download, unless you set it by hand in the Adjust section.
 - **The ledger currency is explicit** (see the credit section above) and the report says whether procurement has confirmed it.
 - **The pull guide is in the page.** Step 2 carries the Google Cloud and Azure export steps inline, so nobody has to open a runbook to know which Group by and which date range each file needs.
-- **The statement check names the field and the language.** A token with no data behind it is reported as "{{gcp.net}} in Statement (AR)", so the offending line is found in one look. When Microsoft Azure is unticked, any Azure token left in the statement (the collapsed Arabic text included) is reported as "Azure is not included in this edition" with a one-click "Remove the Azure lines" button that drops those lines from both languages.
 - **The credit meter reads as spend.** The coloured part of the bar is what has been consumed, the grey part what remains, with a slow shine across the colour; the caption says "52.2% consumed, 47.8% remaining".
 - **The Quarter tab is back as in v20.** Q1 2026, Q2 2026 and H1 2026 from the July report show in every edition; the current quarter joins when its export is dropped in step 2. A tick in step 1 hides the tab if an edition should not carry it.
 - **Commitments are paid as the service is used** (see the credit section above): the contracted total less the usage the contract-to-date export has already billed for its rows. On the August 2026 data this lands on 2,281,341.90 Riyals of remaining commitment, the figure the GCP balance sheet carries.
@@ -47,21 +45,20 @@ The file people open is the standalone HTML page the Studio downloads, so the fl
 - **One ownership map across the whole series.** The January to July periods were lifted from v20, which predates two ownership decisions: the DevOps pipelines moved to Digital Transformation GD and the shared SPARK development environment to Digital Enterprise Architecture. The assembler now applies both to every baseline period, so a reader flipping from January to September sees one consistent map instead of a department appearing mid-series. It restates July's split: Business departments 61,920 rather than 69,557, with 7,637 to Digital Transformation GD and 1,486 to Digital Enterprise Architecture.
 - **August 2026 is carried in the baseline, recovered by arithmetic.** Its exports are not in the repo, but a quarter export contains its months: August = Q3 2026 less July less September, service by service and department by department. Every figure was checked against the August pull that produced v21 and agrees to the riyal (net 579,899.25 against 579,899.10; Cybersecurity 298,471, IT Services GD 193,912, Digital Transformation GD 12,127, Digital Enterprise Architecture 2,847, Business departments 72,542). This is also how the by-service split that was missing from v21 was finally obtained.
 - **Telling the two by-service exports apart is done on the numbers.** Google gives every export the same name and only a date range to tell them apart, so a period can receive two by-service files: all GCP and SPARK. The all-GCP one is the file whose total matches the by-project total for that period; with no by-project file, the larger of the two. When they arrive one at a time, a by-service file worth less than half the by-project total already loaded for that period is SPARK, and only with neither of those to go on does the Studio fall back to guessing from file size. A whole batch is now placed in one deterministic pass after every file is parsed, instead of in whichever order the reads happened to finish.
-- **Two edition switches for a leaner front page.** Step 1 carries "Show the opening paragraph under the title" and "Show the FinOps statement of the month". The August 2026 edition ships with both off, so the hero runs title, chips, credit card, period picker; with the statement off the readiness list stops asking for it and stops checking its tokens.
-- **A new Studio build keeps your work.** Opening a newer build over a saved session carries the files, ledger rows, maps and statement across, refreshes the embedded baseline and says so; before, a new build started over.
+- **One edition switch for a leaner front page.** Step 1 carries "Show the opening paragraph under the title". The statement of the month has been removed from the Studio and from the report entirely.
+- **A new Studio build keeps your work.** Opening a newer build over a saved session carries the files, ledger rows and maps across, refreshes the embedded baseline and says so; before, a new build started over.
 - **Six owning departments.** The ownership picker and the map keys cover Cybersecurity (`cyber`), IT Services GD (`itsvc`), Digital Transformation GD (`dtgd`), Digital Enterprise Architecture (`dea`), Business departments (`business`) and Other (`other`). A department appears in the donut and the legend as soon as a project or subscription is mapped to it; at zero it stays out of the chart.
 - **Continuity.** One person runs the Studio from one machine, so the browser keeps every edit and file between months and says so when the page reopens ("Picked up where you left off"). The edition state file is the backup and the hand-over: save it with the month's CSVs, load it on another machine to continue from there.
 
 ## How it feels to use (Studio v1.2)
 
-Six steps, one at a time, on a light page: **Month** (a dropdown; dates, labels, to-date ranges and the quarter rule fill themselves), **Files** (one drop zone for everything, then a table that shows each slot as Loaded, Required or Optional with Replace and Remove), **Credits** (the ledger rows above, with the balance computed live in the panel beside them), **Ownership** (a picker for anything unmapped), **Statement** (token chips and a live preview) and **Generate** (the readiness list and the buttons). A progress strip shows the state of every step, a fixed bar shows the blocker count, and "Preview as published" shows exactly what will be generated.
+Five steps, one at a time, on a light page: **Month** (a month picker and a year box; dates, labels, to-date ranges and the quarter rule fill themselves), **Files** (one drop zone for everything, then a table that shows each slot as Loaded, Required or Optional with Replace and Remove), **Credits** (the ledger rows above, with the balance computed live in the panel beside them), **Ownership** (a table of every project and subscription with the department it is charged to, unmapped rows highlighted and sorted to the top) and **Generate** (the readiness list and the buttons). A progress strip shows the state of every step, a fixed bar shows the blocker count, and "Preview as published" shows exactly what will be generated.
 
 ## What v1.1 added
 
 - **One drop zone.** Drop every CSV for the month at once. The Studio reads each file's header (GCP by service, GCP by project, Azure by service, by subscription, by location) and its date range (from the file name) and files it into the right slot. Each loaded file gets a chip with a selector to re-route or remove it. A month file whose dates do not match the edition is flagged, not refused.
-- **One field drives the edition.** Set the reporting month and the data-as-of date, the edition label, the to-date ranges and the quarter rule fill themselves, English and Arabic. Edit any of them after.
-- **Unmapped means a picker, not a text edit.** A project or subscription the map does not know appears with a department picker; choosing one writes the map line for you.
-- **The statement writes itself around the numbers.** Click a token chip to insert it at the cursor; the live preview on the right shows the panel as it will read in the report; the preview updates as you type without re-rendering the whole report.
+- **Two fields drive the edition.** Pick the month and type the year; the data-as-of date, the edition label, the to-date ranges, the version and the quarter rule fill themselves. Nothing is capped to today, so a month can be prepared before it closes and any year works without the Studio being rebuilt.
+- **Ownership is a table you can revise, not an append-only list.** Step 4 lists every project and subscription the loaded exports carry, plus every id already in the map, each with the department it is charged to today and its spend for the month. Unmapped rows are highlighted and sort to the top. Changing a picker rewrites that id's line in the map rather than appending a second one, and clearing it removes the line, so a decision made months ago is as easy to revise as one made just now. A filter box handles long lists; the raw map stays available under "Full maps" for bulk edits.
 - **You always know where you are.** A five-step progress strip at the top, a fixed bar at the bottom with the blocker count and the Generate button, and toasts for every file loaded, mapped or refused.
 - **Preview as published.** One click shows exactly what will be generated (publishing rules applied, studio hidden), and one click brings the Studio back.
 - **Month-on-month in the report.** The key figures carry a delta chip against the previous month for both clouds.
@@ -72,7 +69,7 @@ Six steps, one at a time, on a light page: **Month** (a dropdown; dates, labels,
 |---|---|---|
 | 1 | Cloud team | Pull the exports on the 3rd of the month or later. Google Cloud per `GCP_Data_Pull_Runbook.md`, Azure per `Azure_Data_Pull_Runbook.md`. |
 | 2 | Cloud team | Open `FinOps_Studio_v1.html` from disk, drop each file into its slot. The readiness list goes green item by item and says what still does not reconcile. |
-| 3 | FinOps owner | Refresh the credit positions, write the statement of the month (English, Arabic optional), set Data as of and Published. |
+| 3 | FinOps owner | Refresh the credit positions, check the ownership table, set Data as of and Published. |
 | 4 | FinOps owner | Download. Open the report in a new tab from the result panel and read it through, English and Arabic. Download the stable copy and upload it to SharePoint over the previous edition so the link never changes; keep `FinOps_Dashboard_v21.html` as the archive copy; download the edition state and keep it next to the month's CSVs in `finops/data/YYYY-MM/`. |
 
 ## What the Studio asks for
@@ -108,18 +105,9 @@ Untick "Include Microsoft Azure" in the Edition box to publish a Google Cloud on
 - Every GCP project and every Azure subscription is mapped to a general department. An unmapped one is named and blocks the build, the same rule as the Python generator.
 - The account-level bucket `[Charges not specific to a project]` reconciles to the security services (Chronicle, Security Command Center, Fortinet Security SaaS) to the riyal.
 - The by-project total and the by-service total agree; for Azure, the by-subscription and by-service totals agree.
-- The statement has a headline and at least one paragraph, and every token in it has data behind it.
 - No `SAMPLE_` file is still loaded.
 
 Warnings (amber) do not block: a missing by-project file (the split is apportioned on the latest exact period instead), a missing SPARK file, a missing region file, a to-date view still carrying the previous edition.
-
-## The FinOps statement of the month
-
-The statement opens the report, above the cloud switch, so it is the first thing leadership reads. Above the fold it shows the headline and the up to three "where we are heading" points; the paragraphs sit under "Read the full statement" (CSS only, open in print). It is written in the Studio, one paragraph per line, with the direction points and a signature. Tokens fill themselves from the loaded files and stay correct if a file is replaced:
-
-`{{month}}` `{{prevMonth}}` `{{gcp.net}}` `{{gcp.gross}}` `{{gcp.discounts}}` `{{gcp.change}}` `{{gcp.sandbox}}` `{{gcp.top.name}}` `{{gcp.top.share}}` `{{gcp.td.net}}` `{{gcp.credit.remaining}}` `{{gcp.credit.pct}}` `{{azure.net}}` `{{azure.change}}` `{{azure.top.name}}` `{{azure.top.share}}` `{{azure.credit.remaining}}`
-
-A token with no data behind it shows as an amber "awaiting August 2026 data" marker in the preview and blocks generation. The embedded draft for the September 2026 edition (August data) is written around those tokens; rewrite it freely.
 
 ## Publishing rules the Studio applies on generate
 
@@ -133,10 +121,10 @@ A token with no data behind it shows as an amber "awaiting August 2026 data" mar
 
 | File | What it is |
 |---|---|
-| `FinOps_Studio_v1.html` | the Studio (v1.3): intake, credits, statement, preview, download. Open from disk. Never publish. |
+| `FinOps_Studio_v1.html` | the Studio (v1.3): intake, credits, ownership, preview, download. Open from disk. Never publish. |
 | `Azure_Data_Pull_Runbook.md` | the Azure half of the monthly pull |
 | `README_Studio.md` | this file |
-| `data/2026-09.edition.baseline.json` | the state the Studio ships with: every July-stream period (Jan to Jul 2026, Q1, Q2, H1, contract to date) lifted from `FinOps_Dashboard_v20.html`, the Azure H1 2026 figures from the Q2 quarterly report, the credit positions, the statement draft. Load it with "Load edition state" to start over. |
+| `data/2026-09.edition.baseline.json` | the state the Studio ships with: every July-stream period (Jan to Jul 2026, Q1, Q2, H1, contract to date) lifted from `FinOps_Dashboard_v20.html`, the Azure H1 2026 figures from the Q2 quarterly report, the credit positions. Load it with "Load edition state" to start over. |
 | `data/SAMPLE_*.csv` | the six export shapes, for testing the intake. **Every figure in them is invented.** A loaded sample file puts a "Sample data" chip on the report and blocks generation until replaced. |
 | `studio-src/` | the pieces the Studio is assembled from (`report.css`, `studio.css`, `body.html`, `app.js`, the identity assets, the baseline extras) and `assemble.py`, which inlines them into the single file. Edit a piece, run the assembler, bump the Studio version. |
 
@@ -149,7 +137,7 @@ The GCP runbook, the Python generator and the July editions live in the `finops/
 - Bilingual in one page: every string ships EN and AR twins, the switch flips to RTL, charts and tables stay LTR, figures sit inside `bdi` so they never reverse.
 - The credit card is a contract position (from 1 June 2025, support and tax included); the spend figures are metered usage in the billing account (from 1 October 2025). The report now says so under both, so nobody subtracts one from the other again.
 - The department split is read from the billing project (or subscription), never from labels; a security appliance can be owned by IT Services GD, and the type column says so. Six departments are tracked: Cybersecurity, IT Services GD, Digital Transformation GD, Digital Enterprise Architecture, Business departments and Other.
-- Arabic added in this edition (the statement, the Azure strings, the cloud switch) is fresh modern standard Arabic and needs a native review before the first bilingual send, as the earlier additions did.
+- Arabic added in this edition (the Azure strings, the cloud switch) is fresh modern standard Arabic and needs a native review before the first bilingual send, as the earlier additions did.
 
 ## Rebuilding the Studio
 

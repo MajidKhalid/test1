@@ -15,8 +15,7 @@
     <button type="button" data-step="2"><b>2</b><span>Files</span><em></em></button>
     <button type="button" data-step="3"><b>3</b><span>Credits</span><em></em></button>
     <button type="button" data-step="4"><b>4</b><span>Ownership</span><em></em></button>
-    <button type="button" data-step="5"><b>5</b><span>Statement</span><em></em></button>
-    <button type="button" data-step="6"><b>6</b><span>Generate</span><em></em></button>
+    <button type="button" data-step="5"><b>5</b><span>Generate</span><em></em></button>
   </nav>
 
   <div class="wrap st-panels">
@@ -24,11 +23,20 @@
     <section class="st-panel" data-panel="1">
       <h2>Which month is this edition about?</h2>
       <div class="row">
-        <div class="field big"><label for="f-month">Reporting month</label><select id="f-month" data-bind="edition.month"></select></div>
+        <div class="field"><label for="f-mon">Reporting month</label><select id="f-mon"></select></div>
+        <div class="field"><label for="f-year">Year</label><input id="f-year" type="number" min="2020" max="2099" step="1" inputmode="numeric"></div>
         <div class="field"><label for="f-version">Report version</label><input id="f-version" type="number" min="1" step="1" data-bind="edition.version"><small id="ver-note"></small></div>
       </div>
       <div class="derived" id="derived"></div>
       <label class="check"><input type="checkbox" data-bind="clouds.azure.enabled"> Include Microsoft Azure in this edition (adds the cloud switch to the report)</label>
+      <details class="adjust"><summary>Report notes and highlight overrides</summary>
+          <div class="field"><label for="f-gcn">GCP credits note under the service chart (EN)</label><textarea id="f-gcn" data-bind="clouds.gcp.notes.creditsEn"></textarea></div>
+          <div class="field"><label for="f-gcn-ar">GCP credits note (AR)</label><textarea id="f-gcn-ar" dir="rtl" data-bind="clouds.gcp.notes.creditsAr"></textarea></div>
+          <div class="field"><label for="f-acn">Azure note under the service chart (EN)</label><textarea id="f-acn" data-bind="clouds.azure.notes.servicesEn"></textarea></div>
+          <div class="field"><label for="f-acn-ar">Azure note (AR)</label><textarea id="f-acn-ar" dir="rtl" data-bind="clouds.azure.notes.servicesAr"></textarea></div>
+          <div class="field"><label>Key highlight override, GCP (empty = automatic)</label><div class="grid3"><input type="text" placeholder="Month" data-bind="clouds.gcp.highlights.m"><input type="text" placeholder="Quarter" data-bind="clouds.gcp.highlights.q"><input type="text" placeholder="To date" data-bind="clouds.gcp.highlights.t"></div></div>
+          <div class="field"><label>Key highlight override, Azure (empty = automatic)</label><div class="grid3"><input type="text" placeholder="Month" data-bind="clouds.azure.highlights.m"><input type="text" placeholder="Quarter" data-bind="clouds.azure.highlights.q"><input type="text" placeholder="To date" data-bind="clouds.azure.highlights.t"></div></div>
+        </details>
       <details class="adjust"><summary>Adjust the derived dates and labels</summary>
         <div class="grid2">
           <div class="field"><label for="f-asof">Data as of (EN)</label><input id="f-asof" type="text" data-bind="edition.dataAsOf"></div>
@@ -126,7 +134,7 @@
 
     <section class="st-panel" data-panel="4" hidden>
       <h2>Who owns what</h2>
-      <p class="lead-s">Every GCP project and Azure subscription is charged to a general department: Cybersecurity, IT Services GD, Digital Transformation GD, Digital Enterprise Architecture, Business departments or Other. Anything the map does not know yet appears here with a picker; choosing a department writes the map for you.</p>
+      <p class="lead-s">Every GCP project and Azure subscription is charged to a general department: Cybersecurity, IT Services GD, Digital Transformation GD, Digital Enterprise Architecture, Business departments or Other. Every project and subscription is listed below, mapped or not, with what it is charged to today. Change a picker and the map is rewritten for that id, so a decision made last month is as easy to revise as one made just now. Unmapped rows are highlighted and sort to the top.</p>
       <div class="quickmap" id="qm-gcp" hidden></div>
       <div class="quickmap" id="qm-azure" hidden></div>
       <p class="allgood" id="allmapped" hidden>Everything loaded is mapped to a department.</p>
@@ -138,41 +146,11 @@
           <div class="field"><label for="f-amap">Azure subscription map</label><textarea id="f-amap" class="code" data-bind="clouds.azure.subMapText" spellcheck="false"></textarea><small>One line per subscription: <span class="tok">name or id = cyber | itsvc | dtgd | dea | business | other</span>, case-insensitive.</small></div>
         </div>
       </details>
-      <div class="nav"><button class="btn" type="button" data-next="3">Back</button><button class="btn primary" type="button" data-next="5">Next: statement</button></div>
+      <div class="nav"><button class="btn" type="button" data-next="3">Back</button><button class="btn primary" type="button" data-next="5">Next: generate</button></div>
     </section>
+
 
     <section class="st-panel" data-panel="5" hidden>
-      <h2>FinOps statement of the month</h2>
-      <p class="lead-s">Where we are, what we are dealing with, where we are heading. One paragraph per line. Click a token to insert a live number at the cursor. Leadership sees the headline and the direction points first; the paragraphs open under "Read the full statement".</p>
-      <div class="tokchips" id="tokchips"></div>
-      <div class="grid-stmt">
-        <div>
-          <div class="field"><label for="f-sh">Headline</label><input id="f-sh" type="text" data-bind="statement.headEn" data-stmt></div>
-          <div class="field"><label for="f-sb">Statement</label><textarea id="f-sb" style="min-height:180px" data-bind="statement.bodyEn" data-stmt></textarea></div>
-          <div class="field"><label for="f-sd">Where we are heading (up to three lines)</label><textarea id="f-sd" data-bind="statement.dirEn" data-stmt></textarea></div>
-          <div class="field"><label for="f-ss">Signature</label><input id="f-ss" type="text" data-bind="statement.signEn" data-stmt></div>
-          <details class="adjust"><summary>Arabic</summary>
-            <div class="field"><label for="f-sh-ar">Headline (AR)</label><input id="f-sh-ar" type="text" dir="rtl" data-bind="statement.headAr" data-stmt></div>
-            <div class="field"><label for="f-sb-ar">Statement (AR)</label><textarea id="f-sb-ar" dir="rtl" style="min-height:150px" data-bind="statement.bodyAr" data-stmt></textarea></div>
-            <div class="field"><label for="f-sd-ar">Where we are heading (AR)</label><textarea id="f-sd-ar" dir="rtl" data-bind="statement.dirAr" data-stmt></textarea></div>
-            <div class="field"><label for="f-ss-ar">Signature (AR)</label><input id="f-ss-ar" type="text" dir="rtl" data-bind="statement.signAr" data-stmt></div>
-          </details>
-          <details class="adjust"><summary>Notes and highlight overrides</summary>
-            <div class="field"><label for="f-gcn">GCP credits note under the service chart (EN)</label><textarea id="f-gcn" data-bind="clouds.gcp.notes.creditsEn"></textarea></div>
-            <div class="field"><label for="f-gcn-ar">GCP credits note (AR)</label><textarea id="f-gcn-ar" dir="rtl" data-bind="clouds.gcp.notes.creditsAr"></textarea></div>
-            <div class="field"><label for="f-acn">Azure note under the service chart (EN)</label><textarea id="f-acn" data-bind="clouds.azure.notes.servicesEn"></textarea></div>
-            <div class="field"><label for="f-acn-ar">Azure note (AR)</label><textarea id="f-acn-ar" dir="rtl" data-bind="clouds.azure.notes.servicesAr"></textarea></div>
-            <div class="field"><label>Key highlight override, GCP (empty = automatic)</label><div class="grid3"><input type="text" placeholder="Month" data-bind="clouds.gcp.highlights.m"><input type="text" placeholder="Quarter" data-bind="clouds.gcp.highlights.q"><input type="text" placeholder="To date" data-bind="clouds.gcp.highlights.t"></div></div>
-            <div class="field"><label>Key highlight override, Azure (empty = automatic)</label><div class="grid3"><input type="text" placeholder="Month" data-bind="clouds.azure.highlights.m"><input type="text" placeholder="Quarter" data-bind="clouds.azure.highlights.q"><input type="text" placeholder="To date" data-bind="clouds.azure.highlights.t"></div></div>
-          </details>
-          <div class="btnrow"><button class="btn" id="btn-draft" type="button">Restore the embedded draft</button></div>
-        </div>
-        <div><div class="plabel">Live preview</div><div class="stmt-wrap" id="stmt-preview"></div></div>
-      </div>
-      <div class="nav"><button class="btn" type="button" data-next="4">Back</button><button class="btn primary" type="button" data-next="6">Next: generate</button></div>
-    </section>
-
-    <section class="st-panel" data-panel="6" hidden>
       <h2>Ready to download the report?</h2>
       <ul class="chk" id="checklist"></ul>
       <div class="btnrow">
@@ -189,7 +167,7 @@
         </div>
         <p class="hint">This browser keeps every edit and file between months on its own. The edition state file is the backup and the hand-over: keep it with the month's CSVs, and load it on another machine to continue from there.</p>
       </details>
-      <div class="nav"><button class="btn" type="button" data-next="5">Back</button><span></span></div>
+      <div class="nav"><button class="btn" type="button" data-next="4">Back</button><span></span></div>
     </section>
   </div>
 </section>

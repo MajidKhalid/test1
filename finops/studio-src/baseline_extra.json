@@ -12,21 +12,10 @@
   "azureCurrency": "USD",
   "showQuarter": true,
   "showLead": false,
-  "showStatement": false,
   "ledgerCurrency": "USD",
   "ledgerConfirmed": false,
   "versionManual": false,
   "publishedManual": false
- },
- "statement": {
-  "headEn": "We know where every riyal sits, and we are now managing to that.",
-  "headAr": "نعرف أين يقع كل ريال، ونُدير الإنفاق على هذا الأساس.",
-  "bodyEn": "{{month}} closed with GCP net spend of {{gcp.net}} after {{gcp.discounts}} of discounts on {{gcp.gross}} of usage, {{gcp.change}} on {{prevMonth}}. Every charge is read from the billing project it sits in, so each general department sees its own number rather than a share of a pool.\nThe purchase-order balance stands at {{gcp.credit.remaining}}, {{gcp.credit.pct}} of the starting credit, and the migration credit is fully consumed. From here spend runs at negotiated contract rates, so the run-rate, not the credit, is the number to manage.\nAzure joins this edition for the first time: {{azure.net}} for the month, {{azure.top.share}} of it {{azure.top.name}}. One report, both clouds, the same basis, every month.\nWe are also closing the gap between the credit consumed and the spend reported. It is explained, not mysterious: enhanced support, VAT and four months the billing account cannot see. One invoice settles it, and we have asked for it.",
-  "bodyAr": "أُغلق {{month}} بصافي إنفاق على GCP قدره {{gcp.net}} بعد خصومات بلغت {{gcp.discounts}} على استهلاك إجمالي قدره {{gcp.gross}}، {{gcp.change}} عن {{prevMonth}}. يُقرأ كل بند من مشروع الفوترة الذي يقع تحته، فترى كل إدارة عامة رقمها الخاص لا حصة من وعاء مشترك.\nيبلغ رصيد أوامر الشراء {{gcp.credit.remaining}}، أي {{gcp.credit.pct}} من الرصيد الابتدائي، وقد استُهلك رصيد الترحيل بالكامل. ومن هنا يجري الإنفاق وفق الأسعار التعاقدية المتفق عليها، فيصبح معدل الإنفاق الشهري، لا الرصيد، هو الرقم الذي نُديره.\nتنضم Azure إلى هذا الإصدار للمرة الأولى: {{azure.net}} خلال الشهر، منها {{azure.top.share}} لخدمة {{azure.top.name}}. تقرير واحد، ومنصتان، وعلى الأساس نفسه، كل شهر.\nونعمل كذلك على إغلاق الفجوة بين الائتمان المستهلك والإنفاق المعروض. فهي فجوة مفسَّرة لا غامضة: الدعم المتقدم، وضريبة القيمة المضافة، وأربعة أشهر لا يراها حساب الفوترة. وتحسمها فاتورة واحدة، وقد طلبناها.",
-  "dirEn": "Both clouds in one report, on the same basis, every month, with the quarter view in quarter-end editions.\nEvery Azure subscription and every GCP project mapped to a general department by the October edition, with nothing left unattributed.\nThe credit position reconciled to the invoice, support and VAT included, so the balance on this page and the ledger never disagree again.",
-  "dirAr": "المنصتان في تقرير واحد، وعلى الأساس نفسه، كل شهر، مع عرض الربع في إصدارات نهاية الربع.\nربط كل اشتراك في Azure وكل مشروع في GCP بإدارة عامة بحلول إصدار أكتوبر، دون أي بند غير منسوب.\nمطابقة الرصيد الائتماني مع الفاتورة، شاملاً الدعم وضريبة القيمة المضافة، حتى لا يختلف الرصيد في هذه الصفحة عن السجل مرة أخرى.",
-  "signEn": "IT Strategy & Planning Department · Information Technology and Digital Transformation",
-  "signAr": "إدارة استراتيجية وتخطيط تقنية المعلومات · تقنية المعلومات والتحول الرقمي"
  },
  "gcp": {
   "enabled": true,

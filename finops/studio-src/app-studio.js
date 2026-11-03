@@ -1,7 +1,6 @@
 /* ---------- studio v1.2: six-step operator flow (appended to app.js inside the same closure) ---------- */
 var SLOTS={gcp:[{k:'m',part:'service',en:'Month · all GCP by service',req:true},{k:'m',part:'project',en:'Month · all GCP by project',req:true},{k:'m',part:'sandbox',en:'Month · SPARK by service',req:true},{k:'q',part:'service',en:'Quarter · all GCP by service',req:false,q:true},{k:'q',part:'project',en:'Quarter · all GCP by project',req:false,q:true},{k:'q',part:'sandbox',en:'Quarter · SPARK by service',req:false,q:true},{k:'t',part:'service',en:'Contract to date · all GCP by service',req:true},{k:'t',part:'project',en:'Contract to date · all GCP by project',req:false},{k:'t',part:'sandbox',en:'Contract to date · SPARK by service',req:false}],
  azure:[{k:'m',part:'service',en:'Month · by service',req:true},{k:'m',part:'sub',en:'Month · by subscription',req:true},{k:'m',part:'region',en:'Month · by resource location',req:false},{k:'q',part:'service',en:'Quarter · by service',req:false,q:true},{k:'q',part:'sub',en:'Quarter · by subscription',req:false,q:true},{k:'t',part:'service',en:'Contract to date · by service',req:true},{k:'t',part:'sub',en:'Contract to date · by subscription',req:false}]};
-var TOKENS=['month','prevMonth','gcp.net','gcp.gross','gcp.discounts','gcp.change','gcp.sandbox','gcp.top.name','gcp.top.share','gcp.td.net','gcp.credit.remaining','gcp.credit.pct','gcp.credit.consumption','gcp.credit.committed','gcp.credit.uncommitted','azure.net','azure.change','azure.top.name','azure.top.share','azure.credit.remaining'];
 var REQ={gcp:{m:['service','project','sandbox'],t:['service']},azure:{m:['service','sub'],t:['service']}};
 var CREDIT_EDITORS=[
  {path:'purchaseOrders',title:'Purchase orders',sub:'From the procurement ledger. The $ column is the ledger value net of 15% VAT; the report converts it at the peg.',cols:[{f:'name',l:'Purchase order'},{f:'sar',l:'Price (Riyals, with VAT)',t:'number'},{f:'usd',l:'Price ($, net of VAT)',t:'number'},{f:'status',l:'Status',t:'select',o:[['live','Live'],['full','Fully utilized']]}],add:'Add a purchase order',blank:{name:'',sar:null,usd:null,status:'live'}},
@@ -112,25 +111,35 @@ function deriveEdition(){var E=S.edition,m=E.month;if(!/^\d{4}-\d{2}$/.test(m||'
 function derivedVersion(m){var B=BASE.edition;return Math.max(1,(+B.version||1)+monthsBetween(B.month,m)-1);}
 function today(){var d=new Date();return {en:d.getDate()+' '+MEN[d.getMonth()]+' '+d.getFullYear(),ar:d.getDate()+' '+MAR[d.getMonth()]+' '+d.getFullYear()};}
 function refreshPublished(){var E=S.edition;if(E.publishedManual)return false;var t=today();if(E.published===t.en&&E.publishedAr===t.ar)return false;E.published=t.en;E.publishedAr=t.ar;return true;}
-function monthOptions(){var keys=Object.keys(S.clouds.gcp.periods||{}).concat(Object.keys(S.clouds.azure.periods||{})).filter(function(k){return /^\d{4}-\d{2}$/.test(k);});var start=keys.length?keys.sort()[0]:'2026-01';if(start>'2026-01')start='2026-01';var now=new Date(),end=now.getFullYear()+'-'+(now.getMonth()+1<10?'0':'')+(now.getMonth()+1);if(S.edition.month>end)end=S.edition.month;var out=[],cur=start;while(cur<=end&&out.length<60){out.push(cur);cur=nextMonth(cur);}return out.reverse();}
-function fillMonthSelect(){var sel=$('#f-month'),opts=monthOptions();if(opts.indexOf(S.edition.month)<0&&/^\d{4}-\d{2}$/.test(S.edition.month||''))opts.unshift(S.edition.month);sel.innerHTML=opts.map(function(m){return '<option value="'+m+'">'+esc(monthLabel(m))+'</option>';}).join('');sel.value=S.edition.month;}
+/* The edition month is a month and a year, picked separately, so the Studio keeps working in
+   any year without a list having to be extended. Nothing here is capped to today: a month can be
+   prepared before it closes, and an old one can be reopened. */
+function fillMonthSelect(){var sel=$('#f-mon');if(!sel)return;
+ sel.innerHTML=MEN.map(function(n,i){return '<option value="'+(i<9?'0':'')+(i+1)+'">'+esc(n)+'</option>';}).join('');
+ syncMonthYear();}
+function syncMonthYear(){var m=/^(\d{4})-(\d{2})$/.exec(S.edition.month||''),sel=$('#f-mon'),yr=$('#f-year');
+ if(!sel||!yr||!m)return;
+ if(document.activeElement!==sel)sel.value=m[2];
+ if(document.activeElement!==yr)yr.value=m[1];}
+function readMonthYear(){var sel=$('#f-mon'),yr=$('#f-year');if(!sel||!yr)return null;
+ var y=String(yr.value||'').trim();if(!/^\d{4}$/.test(y))return null;
+ return y+'-'+sel.value;}
+function monthYearChanged(){var v=readMonthYear();if(!v||v===S.edition.month)return;
+ S.edition.month=v;deriveEdition();syncInputs();
+ toast('Dates, labels and to-date ranges set for '+monthLabel(v)+'. Adjust any of them below if needed.','ok');
+ onChange('full');}
 function renderDerived(){var E=S.edition,m=E.month,B=BASE.edition,chip=function(l,v){return '<span><b>'+esc(l)+'</b>'+esc(v)+'</span>';};var vn=$('#ver-note');if(vn)vn.textContent=E.versionManual?'Set by hand. "Refill everything from the month" returns to the derived number.':monthLabel(prevMonth(B.month))+' was v'+((+B.version||1)-1)+' and each month adds one, so '+monthLabel(m)+' is v'+derivedVersion(m)+'. Edit to override.';$('#derived').innerHTML=chip('Version','v'+(E.version||'?')+(E.versionManual?' (set by hand)':''))+chip('Data as of',E.dataAsOf||'')+chip('Published',(E.published||'')+(E.publishedManual?' (set by hand)':' · refreshed on download'))+chip('Quarter tab',E.showQuarter===false?'off':'on ('+(periodsOf('gcp').quarter.map(function(q){return q.label;}).join(', ')||'no quarter loaded yet')+')')+chip('GCP to date',S.clouds.gcp.tdLabelEn||'')+(S.clouds.azure.enabled?chip('Azure to date',S.clouds.azure.tdLabelEn||''):'')+chip('Label',E.labelEn||'')+chip('Rate',FX()+' Riyals per US dollar');}
 
 /* ---------- bindings ---------- */
-function scopeOf(path){if(path.indexOf('statement.')===0)return 'statement';var m=/^clouds\.(gcp|azure)\.credit\./.exec(path);if(m)return 'credit:'+m[1];return 'full';}
-function syncInputs(){$$('[data-bind]').forEach(function(el){var v=get(S,el.dataset.bind);if(el.type==='checkbox')el.checked=!!v;else if(document.activeElement!==el)el.value=v==null?'':v;});}
+function scopeOf(path){var m=/^clouds\.(gcp|azure)\.credit\./.exec(path);if(m)return 'credit:'+m[1];return 'full';}
+function syncInputs(){$$('[data-bind]').forEach(function(el){var v=get(S,el.dataset.bind);if(el.type==='checkbox')el.checked=!!v;else if(document.activeElement!==el)el.value=v==null?'':v;});syncMonthYear();}
 function bindInputs(){$$('[data-bind]').forEach(function(el){var p=el.dataset.bind;var ev=(el.tagName==='SELECT'||el.type==='checkbox')?'change':'input';el.addEventListener(ev,function(){var val=el.type==='checkbox'?el.checked:el.value;if(el.type==='number')val=el.value===''?null:+el.value;set(S,p,val);
-  if(p==='edition.month'){deriveEdition();toast('Dates, labels and to-date ranges set for '+monthLabel(el.value)+'. Adjust any of them below if needed.','ok');onChange('full');return;}
   if(p==='edition.version'){S.edition.versionManual=true;onChange('full');return;}
   if(p==='edition.published'||p==='edition.publishedAr'){S.edition.publishedManual=true;onChange('full');return;}
   if(p==='edition.ledgerCurrency'||p==='edition.ledgerConfirmed'){creditEditors();onChange('full');return;}
-  if(p==='edition.fx'||p==='clouds.azure.enabled'||p==='edition.showQuarter'||p==='edition.showLead'||p==='edition.showStatement'||p==='edition.azureCurrency'){onChange('full');return;}
+  if(p==='edition.fx'||p==='clouds.azure.enabled'||p==='edition.showQuarter'||p==='edition.showLead'||p==='edition.azureCurrency'){onChange('full');return;}
   onChange(scopeOf(p));});
- if(el.hasAttribute('data-stmt'))el.addEventListener('focus',function(){lastField=el;});});}
-var lastField=null;
-function tokenChips(){var host=$('#tokchips'),T=tokenMap(false);host.innerHTML=TOKENS.map(function(t){return '<button type="button" data-tok="'+t+'" class="'+(T[t]==null?'dead':'')+'" title="'+(T[t]==null?'no data behind this token yet':'insert at the cursor')+'">{{'+t+'}}</button>';}).join('');
- $$('button[data-tok]',host).forEach(function(b){b.addEventListener('click',function(){var el=lastField||$('#f-sb');var ins='{{'+b.dataset.tok+'}}';if(typeof el.setRangeText==='function'){el.focus();el.setRangeText(ins,el.selectionStart||0,el.selectionEnd||0,'end');}else el.value+=ins;set(S,el.dataset.bind,el.value);onChange('statement');});});}
-function updateStatement(){var el=$('#report .stmt');if(el)el.outerHTML=statement();var pv=$('#stmt-preview');if(pv)pv.innerHTML=statement(true);}
+});}
 function updateCredit(c){var el=$('#report .mfig-card.for-'+c);if(el)el.outerHTML=creditCard(c);else renderPreview();}
 
 /* ---------- step 2: files table ---------- */
@@ -166,11 +175,70 @@ function balancePanel(){var r=creditCalc('gcp'),host=$('#balance'),sarL=r.ledger
  host.innerHTML=h;}
 
 /* ---------- step 4: quick maps ---------- */
-function quickMaps(){var any=false;['gcp','azure'].forEach(function(c){var host=$('#qm-'+c),P=S.clouds[c].periods,un={};Object.keys(P).forEach(function(k){(P[k]&&P[k].unmapped||[]).forEach(function(u){un[u||'(blank id)']=u;});});var list=Object.keys(un);
- if(!list.length){host.innerHTML='';host.hidden=true;return;}any=true;host.hidden=false;
- host.innerHTML='<div class="qm-title">'+cloudName(c)+': '+list.length+' unmapped '+(c==='gcp'?'project':'subscription')+(list.length>1?'s':'')+'</div>'+list.map(function(label){return '<div class="qm-row"><code title="'+esc(label)+'">'+esc(label)+'</code><select data-qm="'+esc(un[label])+'" aria-label="Department for '+esc(label)+'"><option value="">Choose the owning department</option>'+DEPT_ORDER.map(function(d){return '<option value="'+d+'">'+esc(DEPT[d].en)+'</option>';}).join('')+'</select></div>';}).join('');
- $$('select[data-qm]',host).forEach(function(sel){sel.addEventListener('change',function(){if(!sel.value)return;var key=c==='gcp'?'projectMapText':'subMapText',id=sel.dataset.qm===''?'[account-level]':sel.dataset.qm;S.clouds[c][key]=(S.clouds[c][key]||'').replace(/\s*$/,'')+'\n'+id+' = '+sel.value+'\n';syncInputs();toast('Mapped '+id+' to '+DEPT[sel.value].en,'ok');onChange('full');});});});
- var loaded=['gcp','azure'].some(function(c){return Object.keys(S.clouds[c].periods).some(function(k){return S.clouds[c].periods[k]&&S.clouds[c].periods[k].source==='upload';});});$('#allmapped').hidden=any||!loaded;}
+/* Ownership used to be a one-way street: a picker appeared only for an id the map had never
+   seen, and choosing a department appended a line. Changing an earlier decision meant editing the
+   textarea by hand, and a second append silently shadowed the first. This lists every id the
+   loaded exports carry plus every id already in the map, shows what it is mapped to now, and
+   rewrites that id's line in place when it is changed. */
+function mapLineId(l){var i=l.indexOf('=');return i<0?null:l.slice(0,i).trim().toLowerCase();}
+function upsertMap(c,id,dept){var key=c==='gcp'?'projectMapText':'subMapText',
+ txt=S.clouds[c][key]||'',ls=txt.split(/\n/),want=(id===''?'[account-level]':id).toLowerCase(),hit=false;
+ var out=ls.filter(function(l){
+  if(l.charAt(0)==='#')return true;
+  if(mapLineId(l)!==want)return true;
+  if(!dept)return false;                       /* cleared: drop the line entirely */
+  if(hit)return false;                         /* a duplicate from an older append */
+  hit=true;return true;});
+ if(dept){out=out.map(function(l){return mapLineId(l)===want?(id===''?'[account-level]':id)+' = '+dept:l;});
+  if(!hit)out.push((id===''?'[account-level]':id)+' = '+dept);}
+ S.clouds[c][key]=out.join('\n').replace(/\n{3,}/g,'\n\n').replace(/\s*$/,'')+'\n';}
+
+/* every id worth a row: what the exports carry, and what the map already names */
+function ownerRows(c){
+ var P=S.clouds[c].periods,seen={},map=parseMap(S.clouds[c][c==='gcp'?'projectMapText':'subMapText']);
+ Object.keys(P).forEach(function(k){var p=P[k];if(!p)return;
+  var rows=c==='gcp'?(p.projectsRaw||[]):(p.subsRaw||[]);
+  rows.forEach(function(r){var id=(c==='gcp'?r.pid:(r.name||r.id)||'').toLowerCase(),nm=c==='gcp'?(r.name||r.pid||''):(r.id||'');
+   var e=seen[id]||(seen[id]={id:id,name:nm,net:0,loaded:true});if(nm&&!e.name)e.name=nm;
+   if(p.kind==='month')e.net+=(+r.net||0);e.loaded=true;});});
+ Object.keys(map).forEach(function(id){if(!seen[id])seen[id]={id:id,name:'',net:0,loaded:false};});
+ return Object.keys(seen).map(function(id){var e=seen[id];e.dept=map[id]||'';return e;})
+  .sort(function(a,b){if(!a.dept!==!b.dept)return a.dept?1:-1;   /* unmapped first */
+   if(b.net!==a.net)return b.net-a.net;return a.id<b.id?-1:1;});}
+
+function ownerTable(c){var host=$('#qm-'+c);if(!host)return 0;
+ var rows=ownerRows(c),un=rows.filter(function(r){return !r.dept;}).length;
+ if(!rows.length){host.innerHTML='';host.hidden=true;return 0;}
+ host.hidden=false;
+ var q=(S.ui&&S.ui['own'+c]||'').toLowerCase();
+ var show=q?rows.filter(function(r){return (r.id+' '+r.name).toLowerCase().indexOf(q)>=0;}):rows;
+ var opt=function(sel){return '<option value="">not set</option>'+DEPT_ORDER.map(function(d){
+   return '<option value="'+d+'"'+(sel===d?' selected':'')+'>'+esc(DEPT[d].en)+'</option>';}).join('');};
+ host.innerHTML='<div class="qm-title">'+cloudName(c)+': '+rows.length+' '+(c==='gcp'?'project':'subscription')
+  +(rows.length>1?'s':'')+(un?', <b>'+un+' not mapped</b>':', all mapped')+'</div>'
+  +'<input class="qm-find" type="search" data-find="'+c+'" placeholder="Filter by id or name" value="'+esc(q)+'">'
+  +'<div class="qm-list">'+show.map(function(r){
+    return '<div class="qm-row'+(r.dept?'':' un')+'">'
+     +'<code title="'+esc(r.id||'[account-level]')+'">'+esc(r.id||'[account-level]')+'</code>'
+     +'<span class="qm-nm">'+esc(r.name||(r.loaded?'':'in the map, not in these exports'))+'</span>'
+     +'<span class="qm-net">'+(r.net?num(r.net,0):'')+'</span>'
+     +'<select data-own="'+c+'" data-id="'+esc(r.id)+'" aria-label="Department for '+esc(r.id||'account level')+'">'
+     +opt(r.dept)+'</select></div>';}).join('')
+  +(show.length?'':'<div class="qm-none">Nothing matches that filter.</div>')+'</div>';
+ $$('select[data-own]',host).forEach(function(sel){sel.addEventListener('change',function(){
+   upsertMap(c,sel.dataset.id,sel.value);syncInputs();
+   toast(sel.value?('Mapped '+(sel.dataset.id||'[account-level]')+' to '+DEPT[sel.value].en)
+                  :('Cleared '+(sel.dataset.id||'[account-level]')),'ok');
+   onChange('full');});});
+ var f=$('input[data-find]',host);if(f)f.addEventListener('input',function(){
+   S.ui=S.ui||{};S.ui['own'+c]=f.value;var at=f.selectionStart;ownerTable(c);
+   var g=$('#qm-'+c+' input[data-find]');if(g){g.focus();g.setSelectionRange(at,at);}});
+ return un;}
+
+function quickMaps(){var un=0;['gcp','azure'].forEach(function(c){un+=ownerTable(c);});
+ var loaded=['gcp','azure'].some(function(c){return Object.keys(S.clouds[c].periods).some(function(k){
+   return S.clouds[c].periods[k]&&S.clouds[c].periods[k].source==='upload';});});
+ $('#allmapped').hidden=!!un||!loaded;}
 
 /* ---------- readiness ---------- */
 function recomputeAll(){['gcp','azure'].forEach(function(c){var P=S.clouds[c].periods;Object.keys(P).forEach(function(k){var p=P[k];if(p&&p.source==='upload'){if(k==='td'){p.label=S.clouds[c].tdLabelEn||p.label;p.labelAr=S.clouds[c].tdLabelAr||p.labelAr;}if(c==='gcp')recomputeGcp(p);else recomputeAzure(p);}});});}
@@ -193,10 +261,6 @@ function checklist(){var E=S.edition,m=E.month,items=[],add=function(l,t,act){it
     else add('ok',name+': '+fn.length+' '+quarterLabel(qk)+' file'+(fn.length===1?'':'s')+' loaded, each covering '+qr+'.');}}});
  var r=creditCalc('gcp');if(!r.po.length||r.startingUsd<=0)add('err','Google Cloud credit: add at least one purchase order with its $ amount (step 3).');else if(r.basis==='none')add('err','Google Cloud credit: the remaining balance is computed from the contract-to-date export; drop it in step 2.');else{if(r.remainingSar<0)add('err','Google Cloud credit: the computed balance is negative ('+num(r.remainingSar,0)+' Riyals). Check the purchase orders and the drawdowns in step 3.');else add('ok','Google Cloud credit: remaining balance '+num(r.remainingSar,0)+' Riyals, computed from '+num(r.startingSar,0)+' starting credit less '+num(r.fixedSar,0)+' of drawdowns and '+num(r.consumptionSar,0)+' of consumption ('+r.rangeEn+').');r.commitments.forEach(function(k){var nm='Commitment "'+(k.name||'unnamed')+'"';if(!k.found)add('warn',nm+' maps to '+(k.services.length?k.services.join(', '):'no service')+', but no service row in the contract-to-date export matches it (case-insensitive, part of the name is enough), so it reads as fully remaining. Check the billing service row in step 3.');});
   if(!E.ledgerConfirmed)add('warn','Google Cloud credit: the ledger is read as '+(r.ledger==='SAR'?'Riyals net of VAT':'US dollars at '+r.fx)+' and procurement has not confirmed the ledger currency yet; the report says so under the arithmetic. Tick the confirmation in step 3 once it is.');}
- if(E.showStatement===false)add('ok','The statement of the month is switched off for this edition, as agreed.');else if(!S.statement.headEn||!lines(S.statement.bodyEn).length)add('err','The FinOps statement of the month needs a headline and at least one paragraph (step 5).');else add('ok','Statement of the month written'+(S.statement.bodyAr&&S.statement.headAr?' in English and Arabic.':' (Arabic falls back to English).'));
- var mt=missingTokens(),where=function(list){var f=[];list.forEach(function(t){t.fields.forEach(function(x){if(f.indexOf(x)<0)f.push(x);});});return f.join(', ');},mtA=mt.filter(function(t){return t.azure;}),mtD=mt.filter(function(t){return !t.azure;});
- if(mtA.length)add('err','Microsoft Azure is not included in this edition, but the statement still uses '+mtA.map(function(t){return '{{'+t.tok+'}}';}).join(' ')+' in: '+where(mtA)+'. Remove those lines (the Arabic text counts too), or include Azure in step 1.',{id:'dropAzure',label:'Remove the Azure lines'});
- if(mtD.length)add('err','Statement tokens still waiting for data: '+mtD.map(function(t){return '{{'+t.tok+'}} in '+t.fields.join(', ');}).join('; ')+'. Drop the files in step 2 or take the tokens out.');
  var sample=['gcp','azure'].some(function(c){var P=S.clouds[c].periods;return S.clouds[c].enabled!==false&&Object.keys(P).some(function(k){return P[k]&&P[k].sample;});});if(sample)add('err','A SAMPLE_ file is loaded. The report carries a "Sample data" chip until every sample file is replaced with a real export.');
  if(E.showQuarter===false)add('warn','The Quarter tab is switched off for this edition; the July report carried it (Q1, Q2 and H1 2026).');else add('ok','Quarter tab on: '+(periodsOf('gcp').quarter.map(function(q){return q.label;}).join(', ')||'no quarter period loaded yet')+'.');
  add('ok','This browser keeps every edit and file between months. After the download, also save the edition state as the backup copy to keep with the month\'s CSVs.');
@@ -206,22 +270,20 @@ function flowState(items){var E=S.edition,m=E.month,st={};st[1]=/^\d{4}-\d{2}$/.
  st[2]=have===need?'ok':(have?'part':'todo');st.files=have+' of '+need+' required';
  var r=creditCalc('gcp');st[3]=(r.po.length&&r.startingUsd>0&&r.basis!=='none'&&r.remainingSar>=0)?(r.basis==='baseline'?'part':'ok'):'todo';st.credit=r.basis==='none'?'needs the to-date export':r.basis==='baseline'?'on last edition\'s spend':'computed';
  var un=items.some(function(i){return /unmapped/.test(i.text);});st[4]=un?'todo':'ok';
- st[5]=(S.edition.showStatement===false||(S.statement.headEn&&lines(S.statement.bodyEn).length&&!missingTokens().length))?'ok':'todo';
- st.errs=items.filter(function(i){return i.level==='err';}).length;st[6]=st.errs?'todo':'ok';return st;}
+ st.errs=items.filter(function(i){return i.level==='err';}).length;st[5]=st.errs?'todo':'ok';return st;}
 var step=1;
 function showStep(n){step=n;$$('.st-panel').forEach(function(p){p.hidden=+p.dataset.panel!==n;});$$('#st-steps button').forEach(function(b){b.classList.toggle('active',+b.dataset.step===n);});if(n===3)creditEditors();var y=$('#st-steps').getBoundingClientRect().top+window.scrollY-8;if(window.scrollY>y)window.scrollTo({top:y});}
-function renderStudio(){renderDerived();filesTable();quickMaps();tokenChips();balancePanel();var pv=$('#stmt-preview');if(pv)pv.innerHTML=statement(true);
+function renderStudio(){renderDerived();filesTable();quickMaps();balancePanel();
  var items=checklist(),ul=$('#checklist');ul.innerHTML=items.map(function(i){return '<li class="'+i.level+'"><span>'+esc(i.text)+(i.action?' <button type="button" class="btn sm" data-act="'+esc(i.action.id)+'">'+esc(i.action.label)+'</button>':'')+'</span></li>';}).join('');
- $$('#checklist button[data-act]',ul).forEach(function(b){b.addEventListener('click',function(){if(b.dataset.act==='dropAzure'){var n=dropAzureLines();syncInputs();toast(n?n+' line'+(n>1?'s':'')+' mentioning Azure removed from the statement, English and Arabic.':'No Azure lines found in the statement.','ok');onChange('statement');}});});
- var st=flowState(items),labels={1:st[1]==='ok'?monthLabel(S.edition.month):'choose',2:st.files,3:st.credit,4:st[4]==='ok'?'mapped':'pick departments',5:st[5]==='ok'?'ready':'needs data or text',6:st.errs?st.errs+' blocker'+(st.errs>1?'s':''):'ready'};
+  var st=flowState(items),labels={1:st[1]==='ok'?monthLabel(S.edition.month):'choose',2:st.files,3:st.credit,4:st[4]==='ok'?'mapped':'pick departments',5:st.errs?st.errs+' blocker'+(st.errs>1?'s':''):'ready'};
  $$('#st-steps button').forEach(function(b){var n=+b.dataset.step;b.classList.remove('ok','part','todo');b.classList.add(st[n]);$('em',b).textContent=labels[n];});
  var ok=!st.errs;['#btn-gen','#btn-gen-top','#btn-gen-bar'].forEach(function(s){var b=$(s);if(b)b.disabled=!ok;});$('#btn-gen').textContent='Download FinOps_Dashboard_v'+S.edition.version+'.html';
- var bs=$('#bar-status');bs.textContent=ok?'Ready to download Report v'+S.edition.version+' · '+monthLabel(S.edition.month):st.errs+' blocker'+(st.errs>1?'s':'')+' before download · see step 6';bs.className='bar-status '+(ok?'ready':'blocked');
+ var bs=$('#bar-status');bs.textContent=ok?'Ready to download Report v'+S.edition.version+' · '+monthLabel(S.edition.month):st.errs+' blocker'+(st.errs>1?'s':'')+' before download · see step 5';bs.className='bar-status '+(ok?'ready':'blocked');
  $('#bz-month').textContent=monthLabel(S.edition.month);}
 function markSaved(){var d=new Date();$('#saved').textContent='Saved in this browser '+(d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes();}
 function toast(msg,kind){var host=$('#toasts');if(!host)return;var t=document.createElement('div');t.className='toast '+(kind||'');t.textContent=msg;host.appendChild(t);setTimeout(function(){t.remove();},kind==='err'?7000:4200);}
 function setStatus(t,cls){toast(t,cls==='err'?'err':cls==='ok'?'ok':'warn');}
-var timer=null;function onChange(scope){save();if(lastGen){lastGen=null;resultPanel();}clearTimeout(timer);timer=setTimeout(function(){if(scope==='statement'){updateStatement();}else if(scope&&scope.indexOf('credit:')===0){updateCredit(scope.slice(7));}else{recomputeAll();renderPreview();}renderStudio();markSaved();},scope==='full'?40:140);}
+var timer=null;function onChange(scope){save();if(lastGen){lastGen=null;resultPanel();}clearTimeout(timer);timer=setTimeout(function(){if(scope&&scope.indexOf('credit:')===0){updateCredit(scope.slice(7));}else{recomputeAll();renderPreview();}renderStudio();markSaved();},scope==='full'?40:140);}
 
 /* ---------- generate, preview as published, state ---------- */
 function download(text,name,type){var blob=new Blob([text],{type:type||'text/html;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},2000);}
@@ -229,10 +291,10 @@ function publishedHtml(){var E=S.edition,html=buildReport(true,{cloud:'gcp',lang
  var css=$('#fonts-css').textContent+'\n'+$('#report-css').textContent,title='MoEnergy Cloud FinOps Report · '+monthLabel(E.month);
  return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<meta name="robots" content="noindex">\n<title>'+esc(title)+'</title>\n<link rel="icon" href="'+FAVICON+'">\n<style>\n'+css+'\n</style>\n</head>\n<body class="published">\n<div id="report" class="report">'+box.innerHTML+'</div>\n<script>('+reportScript.toString()+')();<\/script>\n<!-- Report v'+esc(E.version)+' · generated by FinOps Report Studio v1.3 · one inline script, the hero pointer lean; no external requests -->\n</body>\n</html>\n';}
 var genUrl=null,lastGen=null;
-function generate(){var items=checklist();if(items.some(function(i){return i.level==='err';})){toast('Not ready: clear the red items in step 6 first.','err');showStep(6);return;}
+function generate(){var items=checklist();if(items.some(function(i){return i.level==='err';})){toast('Not ready: clear the red items in step 5 first.','err');showStep(5);return;}
  if(refreshPublished()){syncInputs();renderPreview();}var E=S.edition,out=publishedHtml(),name='FinOps_Dashboard_v'+E.version+'.html';download(out,name);
  if(genUrl){try{URL.revokeObjectURL(genUrl);}catch(e){}}genUrl=URL.createObjectURL(new Blob([out],{type:'text/html;charset=utf-8'}));lastGen={html:out,name:name,kb:Math.round(out.length/1024),version:E.version,month:E.month,published:E.published};
- save();renderStudio();resultPanel();toast('Downloaded '+name+'. If nothing arrived, this viewer blocks downloads: open the Studio file from disk in a normal browser tab.','ok');showStep(6);}
+ save();renderStudio();resultPanel();toast('Downloaded '+name+'. If nothing arrived, this viewer blocks downloads: open the Studio file from disk in a normal browser tab.','ok');showStep(5);}
 function resultPanel(){var r=$('#gen-result'),g=lastGen;if(!r)return;if(!g){r.hidden=true;r.innerHTML='';return;}r.hidden=false;
  r.innerHTML='<div class="gr-head"><b>'+esc(g.name)+'</b> is in your Downloads folder.<span class="gr-meta">'+g.kb+' KB · Report v'+esc(g.version)+' · '+esc(monthLabel(g.month))+' · published '+esc(g.published)+'</span></div>'
   +'<p>This is the file leadership opens: one standalone page, no internet connection, no Studio. Nothing else has to travel with it. It carries a single inline script, the hero pointer lean from the July edition; with scripts off the page still reads and the shapes still drift, they simply stop following the pointer.</p>'
@@ -244,18 +306,21 @@ function resultPanel(){var r=$('#gen-result'),g=lastGen;if(!r)return;if(!g){r.hi
 function saveState(){download(JSON.stringify(S,null,1),'finops_edition_'+S.edition.month+'.json','application/json');toast('Edition state downloaded: finops_edition_'+S.edition.month+'.json.','ok');}
 var pubPreview=false;
 function togglePubPreview(on){pubPreview=on;document.body.classList.toggle('pub-preview',on);$('#btn-back').hidden=!on;if(on){if(refreshPublished())syncInputs();$('#report').innerHTML=buildReport(true,{cloud:'gcp',lang:false,pv:{},p:{}});$$('#report .studio-only').forEach(function(n){n.remove();});reportScript();window.scrollTo({top:0});}else{renderPreview();}}
-function initStudio(){fillMonthSelect();bindInputs();syncInputs();creditEditors();creditEditorEvents();
+function initStudio(){fillMonthSelect();bindInputs();syncInputs();
+ $('#f-mon').addEventListener('change',monthYearChanged);
+ $('#f-year').addEventListener('change',monthYearChanged);
+ $('#f-year').addEventListener('input',function(){if(/^\d{4}$/.test($('#f-year').value||''))monthYearChanged();});
+creditEditors();creditEditorEvents();
  var bz=$('#bigzone'),bzi=$('input',bz);bzi.addEventListener('change',function(){if(bzi.files.length)ingestFiles(bzi.files);bzi.value='';});['dragenter','dragover'].forEach(function(ev){bz.addEventListener(ev,function(e){e.preventDefault();bz.classList.add('over');});});['dragleave','drop'].forEach(function(ev){bz.addEventListener(ev,function(e){e.preventDefault();bz.classList.remove('over');});});bz.addEventListener('drop',function(e){if(e.dataTransfer.files.length)ingestFiles(e.dataTransfer.files);});bz.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();bzi.click();}});
  document.addEventListener('dragover',function(e){e.preventDefault();});document.addEventListener('drop',function(e){e.preventDefault();});
  $$('#st-steps button').forEach(function(b){b.addEventListener('click',function(){showStep(+b.dataset.step);});});$$('[data-next]').forEach(function(b){b.addEventListener('click',function(){showStep(+b.dataset.next);});});
  ['#btn-gen','#btn-gen-top','#btn-gen-bar'].forEach(function(s){$(s).addEventListener('click',function(){generate();});});$('#btn-print').addEventListener('click',function(){window.print();});
  $('#btn-save').addEventListener('click',saveState);$('#btn-derive').addEventListener('click',function(){S.edition.versionManual=false;S.edition.publishedManual=false;if(deriveEdition()){toast('Dates, labels, version and to-date ranges refilled from '+monthLabel(S.edition.month)+'.','ok');onChange('full');}});
- $('#btn-draft').addEventListener('click',function(){S.statement=clone(BASE.statement);syncInputs();toast('The embedded statement draft is back.','ok');onChange('statement');});
  ['#btn-pubpreview','#btn-pubpreview-bar'].forEach(function(s){$(s).addEventListener('click',function(){togglePubPreview(true);});});$('#btn-back').addEventListener('click',function(){togglePubPreview(false);});
  $('#f-load').addEventListener('change',function(){var f=this.files[0];if(!f)return;f.text().then(function(t){var s=JSON.parse(t);if(!s||!s.meta||!s.clouds)throw new Error('not a Studio state file');S=s;save();location.reload();}).catch(function(e){toast('Could not load that state file: '+e.message,'err');});});
  $('#btn-reset').addEventListener('click',function(){if(!confirm('Discard every edit and file loaded in this browser and return to the embedded baseline?'))return;try{localStorage.removeItem(STORE);}catch(e){}location.reload();});
  if(MIGRATED){recomputeAll();save();syncInputs();}if(refreshPublished()){save();syncInputs();}renderPreview();renderStudio();showStep(1);
- if(MIGRATED){toast('The Studio was updated (build '+BASE.meta.stamp.slice(0,10)+'). Your files, ledger rows, maps and statement were carried over; run through step 6 once.','ok');}else if(RESUMED){var at=S.meta&&S.meta.savedAt?new Date(S.meta.savedAt):null;toast('Picked up where you left off'+(at&&!isNaN(at)?' (saved '+at.getDate()+' '+MEN[at.getMonth()]+', '+(at.getHours()<10?'0':'')+at.getHours()+':'+(at.getMinutes()<10?'0':'')+at.getMinutes()+')':'')+': every edit and file from your last visit is here. Reset in step 6 starts over from the embedded baseline.','ok');}}
+ if(MIGRATED){toast('The Studio was updated (build '+BASE.meta.stamp.slice(0,10)+'). Your files, ledger rows and maps were carried over; run through step 5 once.','ok');}else if(RESUMED){var at=S.meta&&S.meta.savedAt?new Date(S.meta.savedAt):null;toast('Picked up where you left off'+(at&&!isNaN(at)?' (saved '+at.getDate()+' '+MEN[at.getMonth()]+', '+(at.getHours()<10?'0':'')+at.getHours()+':'+(at.getMinutes()<10?'0':'')+at.getMinutes()+')':'')+': every edit and file from your last visit is here. Reset in step 6 starts over from the embedded baseline.','ok');}}
 document.addEventListener('DOMContentLoaded',initStudio);
 window.FinOpsStudio={state:function(){return S;},build:buildReport,checklist:checklist,generate:generate,classify:classify,quarterRange:quarterRange,publishedHtml:publishedHtml,creditCalc:creditCalc,showStep:showStep,resultPanel:resultPanel,derivedVersion:derivedVersion,refreshPublished:refreshPublished,lastGen:function(){return lastGen;},genUrl:function(){return genUrl;},resumed:function(){return RESUMED;},migrated:function(){return MIGRATED;}};
 })();
